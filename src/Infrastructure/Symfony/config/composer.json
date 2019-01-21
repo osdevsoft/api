@@ -1,0 +1,17 @@
+{
+  "repositories": [
+    {
+      "url": "git@bitbucket.org:xavicx/api.git",
+      "type": "git"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/",
+      "Osds\\Api\\": "vendor/osds/api/src"
+    }
+  },
+  "bin": [
+    "bin/post_install"
+  ]
+}

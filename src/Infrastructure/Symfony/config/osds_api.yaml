@@ -1,0 +1,25 @@
+services:
+    Illuminate\Http\Request:
+        autowire: true
+
+    Osds\Api\Infrastructure\Controllers\BaseController:
+        autowire: true
+
+    Osds\Api\Infrastructure\Controllers\SymfonyController:
+        autowire: true
+        tags: ['controller.service_arguments']
+
+    Osds\Api\Infrastructure\Repositories\DoctrineModelRepository:
+        autowire: true
+        class: App\Infrastructure\Repositories\DoctrineModelRepository
+        arguments: ["@doctrine.orm.entity_manager"]
+
+#nelmio_api_doc:
+#    documentation:
+#        info:
+#            title: Osds API
+#            description: API that can handle any entity you have on App\Entity
+#            version: 1.0.0
+#    areas: # to filter documented areas
+#        path_patterns:
+#            - ^/api/{entity} # Accepts routes under /api except /api/doc
