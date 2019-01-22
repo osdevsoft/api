@@ -19,8 +19,24 @@ copy src/Framework/Symfony/config/osds_api.yaml to config/packages/osds_api.yaml
 
 on config/routes.yaml, add
 osds_api:
-    resource: '../../vendor/osds/api/src/Framework/Symfony/'
-    type:     annotation
+  resource: '../vendor/osds/api/src/Infrastructure/Controllers/'
+  type:     annotation
+
+on config/packages/nelmio_api_doc.yaml replace all content with:
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Osds API
+            description: API that can handle any entity you have on App\Entity
+            version: 1.0.0
+    areas: # to filter documented areas
+        path_patterns:
+            - ^/api/{entity} # Accepts routes under /api except /api/doc
+on config/routes/nelmio_api_doc.yaml replace all content with:
+app.swagger_ui:
+    path: /api/doc
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
 
 una vez creada la DB, para crear las entidades de Symfony en src/Entity, ejecutar:
 php bin/console doctrine:mapping:import 'App\Entity' annotation --path=src/Entity

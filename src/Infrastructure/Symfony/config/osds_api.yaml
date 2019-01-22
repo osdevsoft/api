@@ -14,7 +14,7 @@ services:
         class: App\Infrastructure\Repositories\DoctrineModelRepository
         arguments: ["@doctrine.orm.entity_manager"]
 
-#nelmio_api_doc:
+#config/packages/nelmio_api_doc:
 #    documentation:
 #        info:
 #            title: Osds API
