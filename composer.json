@@ -29,7 +29,8 @@
 
   "scripts": {
     "post-install-cmd": [
-      "bash bin/post-install.sh"
+      "bash vendor/osds/bin/post-install.sh",
+      "touch /tmp/qwer"
     ]
   }
 
