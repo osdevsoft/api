@@ -25,6 +25,12 @@
     "files": [
       "src/utils.php"
     ]
+  },
+
+  "scripts": {
+    "post-install-cmd": [
+      "bash bin/post-install.sh"
+    ]
   }
 
 }
