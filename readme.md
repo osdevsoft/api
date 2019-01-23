@@ -1,18 +1,21 @@
-Install on Symfony
--------------------
+#Osds API
+Basic API system to handle basic CRUD operations on a Laravel - Mysql Server
 
-composer require osds/api
+##Install on Symfony
 
-copy content of src/Framework/Symfony/config/.env.example to /.env
+> composer require osds/api
 
-ejecutar ./vendor/osds/api/bin/post-install.sh
+> ./vendor/osds/api/bin/post-install.sh
 
-una vez creada la DB, para crear las entidades de Symfony en src/Entity, ejecutar:
+> Configurar .env
+
+> una vez creada la DB, para crear las entidades de Symfony en src/Entity, ejecutar:
+```
 php bin/console doctrine:mapping:import 'App\Entity' annotation --path=src/Entity
+```
 cambiar los atriutos de las entidades a underscore y generar getters y setters 
 
----
-Basic API system to handle basic CRUD operations on a Laravel - Mysql Server
+
 
 
 pending
