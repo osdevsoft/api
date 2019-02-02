@@ -2,24 +2,27 @@
 
 namespace Osds\Api\Infrastructure\Controllers;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
-
 trait ControllerTrait
 {
 
-    private $commands_ns = '\Osds\Api\Application\%action%\%action%EntityUseCase';
+    private $action_ns = '\Osds\Api\Application\%action%\%action%EntityAction';
+
+    private $request;
 
     public function callAction($action)
     {
         try
         {
-            #get command location based on the action required
-            $command_location = $this->getUseCaseLocation($action);
+            #get action location based on the action required
+            $action_location = $this->getActionLocation($action);
 
-            #execute loaded command
-            $command = new $command_location();
-            $command->setBaseSettings($this->request->custom_parameters->entity, $this->request);
-            $res = $command->execute();
+            #execute loaded action
+            $action = new $action_location($this->services['query_bus']);
+
+            $message_object = $action->getMessageObject($this->request->custom_parameters->entity, $this->request);
+            $res = $action->call($message_object, $this->services['query_bus']);
+
+
         } catch(\Exception $e)
         {
 
@@ -38,10 +41,11 @@ trait ControllerTrait
      * @param $action
      * @return mixed
      */
-    private function getUseCaseLocation($action)
+    private function getActionLocation($action)
     {
-        #does this entityhave a custom command on the project src?
-        $model_command = 'App\Application\%action%\\' . ucfirst($this->request->custom_parameters->entity) . '\\' . ucfirst($action) . ucfirst($this->request->custom_parameters->entity) . 'Command';
+        #does this entity have a custom command on the project src?
+        $model_command = 'App\Application\%action%\\' . ucfirst($this->request->custom_parameters->entity) . '\\' . ucfirst($action) .
+            ucfirst($this->request->custom_parameters->entity) . 'Command';
         if(class_exists($model_command))
         {
             return $model_command;
@@ -51,7 +55,7 @@ trait ControllerTrait
         return str_replace(
             '%action%',
             ucfirst($action),
-            $this->commands_ns
+            $this->action_ns
         );
     }
 

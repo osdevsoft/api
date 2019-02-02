@@ -14,7 +14,7 @@ class DoctrineRepository implements BaseRepository
 
     public function search($entity, Array $search_fields, Array $query_filters)
     {
-
+        return $this->retrieve($entity, $search_fields, $query_filters);
     }
 
     public function update($entity_id, $data)

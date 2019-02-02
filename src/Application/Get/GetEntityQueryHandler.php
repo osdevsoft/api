@@ -3,22 +3,22 @@
 namespace Osds\Api\Application\Get;
 
 use Osds\Api\Domain\Bus\Query\QueryHandler;
-use function Lambdish\Phunctional\apply;
-use function Lambdish\Phunctional\pipe;
 
 final class GetEntityQueryHandler implements QueryHandler
 {
-    private $getter;
+    private $useCase;
 
-    public function __construct(GetEntityUseCase $finder)
+    public function __construct(GetEntityUseCase $useCase)
     {
-        $this->getter = pipe($finder, new EntityResponseConverter());
+        $this->useCase = $useCase;
     }
 
-    public function __invoke(GetEntityQuery $query): EntityResponse
+    public function handle(GetEntityQuery $query)
     {
-        $id = new EntityId($query->id());
-
-        return apply($this->getter, [$id]);
+        return $this->useCase->execute(
+            $query->entity(),
+            $query->searchFields(),
+            $query->queryFilters()
+            );
     }
 }

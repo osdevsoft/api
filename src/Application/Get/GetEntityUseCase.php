@@ -3,6 +3,8 @@
 namespace Osds\Api\Application\Get;
 
 
+use Osds\Api\Application\Commands\GetSchemaModelCommand;
+
 final class GetEntityUseCase
 {
     private $repository;
@@ -43,25 +45,11 @@ final class GetEntityUseCase
      *                 items : items got
      *                 schema : schema (db fields) of the entity requested
      */
-    public function __invoke($entity = null, $search_fields = [], $query_filters = [])
+    public function execute($entity = null, $search_fields = [], $query_filters = [])
     {
-        $entity_schema = [];
-
-        #if no entity is received, use the one on the request
-        if ($entity == null) {
-            $entity = $this->repository->getEntity();
-        } else {
-            $entity = $this->repository->setEntity($entity);
-        }
-
-        $search_fields = $this->getSearchFields($search_fields);
-        $query_filters = $this->getQueryFilters($query_filters);
-
-        #we don't want to filter by this ID anymore (remove it because we are calling this function recursively)
-        unset($this->entity_id);
 
         #retrieve the data from the database, using the specified repository
-        $result_data = $this->repository->retrieve(
+        $result_data = $this->repository->search(
             $entity,
             $search_fields,
             $query_filters
@@ -83,8 +71,9 @@ final class GetEntityUseCase
             }
         }
 
-        $command = new GetSchemaModelCommand($entity);
-        $result_data['schema'] = $command->execute();
+        #TODO
+        /*$command = new GetSchemaModelCommand();
+        $result_data['schema'] = $command->execute($entity);*/
 
 
         if(isset($this->request->parameters['referenced_entities_contents'])) {
@@ -106,43 +95,6 @@ final class GetEntityUseCase
         return $result_data;
     }
 
-    /**
-     * @param $search_fields
-     * @return array
-     */
-    private function getSearchFields($search_fields)
-    {
-        #if we have received an id, set the search fields to look for it
-        if (isset($this->request->custom_parameters->entity_id)) {
-            #we are filtering by an entry
-            if (!is_array($search_fields)) $search_fields = [];
-            $search_fields['id'] = $this->request->custom_parameters->entity_id;
-        }
-
-        #we are filtering by something recieved from the external request
-        if (isset($this->request->parameters['search_fields'])) {
-            if (!isset($search_fields)) $search_fields = [];
-            $search_fields += $this->request->parameters['search_fields'];
-            #we don't need them anymore
-            unset($this->request->parameters['search_fields']);
-        }
-        return $search_fields;
-    }
-
-    /**
-     * @param $query_filters
-     * @return array
-     */
-    private function getQueryFilters($query_filters)
-    {
-        #we are filtering the result query
-        if (isset($this->request->parameters['query_filters'])) {
-            $query_filters += $this->request->parameters['query_filters'];
-            #we don't need them anymore
-            unset($this->request->parameters['query_filters']);
-        }
-        return $query_filters;
-    }
 
     private function generateReferencedEntitiesArray($referenced_entities) {
         $referenced_entities_array = [];

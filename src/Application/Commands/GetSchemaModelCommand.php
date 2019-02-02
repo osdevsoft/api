@@ -11,10 +11,8 @@ class GetSchemaModelCommand extends BaseCommand
     /**
      * @return array
      */
-    public function execute()
+    public function execute($entity)
     {
-        $entity = $this->repository->getEntity();
-
         $entity_data['fields'] = $this->repository->getEntityFields($entity);
 
         return $entity_data;

@@ -1,14 +1,6 @@
 <?php
 
-/**
- * Base class for Commands that does basic stuff (normalize request params and set a repository)
- */
 namespace Osds\Api\Application;
-
-use App\Application\Helpers;
-use Osds\Api\Infrastructure\Repositories\ApiRepository;
-use Osds\Api\Infrastructure\Repositories\DoctrineModelRepository;
-use Osds\Api\Infrastructure\Repositories\EloquentModelRepository;
 
 use Osds\Api\Domain\Bus\Command\Command;
 use Osds\Api\Domain\Bus\Command\CommandBus;
@@ -33,7 +25,7 @@ class BaseAction
 
     public function __construct(
         QueryBus $queryBus,
-        CommandBus $commandBus
+        CommandBus $commandBus = null
     ) {
         $this->queryBus         = $queryBus;
         $this->commandBus       = $commandBus;
@@ -42,40 +34,15 @@ class BaseAction
 
     /**
      * BaseCommand constructor.
-     * @param null $repository_model : entity that is going to be treated
-     * @param null $parameters : get / post arguments. If uri has an id, it's assigned to $this->entity_id
+     * @param null $request : get / post arguments. If uri has an id, it's assigned to $this->entity_id
      */
-    public function setBaseSettings($entity = null, $request = null) {
+/*    public function getMessageObject($entity, $request = null) {
 
-//        $this->repository = $this->getRepository();
-
-//        $this->repository->setEntity($entity);
-
+        $this->entity = $entity;
         #request (get / post / custom (set by the app) parameters
         $this->request = $request;
 
-        #services we may need
-//        $this->services = Helpers::getRequiredServices();
-
-        // id comes from Internal API Requests, get or post (not by query string)
-        if (
-            (isset($this->request->custom_parameters) && $this->request->custom_parameters->entity_id == null)
-            && isset($this->request->parameters['id'])
-        ) {
-            $this->request->custom_parameters->entity_id = $this->request->parameters['id'];
-        }
-
-    }
-
-//    /**
-//     * Gets the repository to use
-//     *
-//     * @return DoctrineModelRepository|EloquentModelRepository
-//     */
-//    private function getRepository()
-//    {
-//        return new DoctrineModelRepository();
-//    }
+    }*/
 
     protected function ask(Query $query)
     {

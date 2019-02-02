@@ -2,7 +2,7 @@
 
 namespace Osds\Api\Infrastructure\Controllers;
 
-use Osds\Api\Infrastructure\Controllers\BaseController;
+use Osds\Api\Application\Get\GetEntityQueryBus;
 
 use Illuminate\Http\Request;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,24 +14,20 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Swagger\Annotations as SWG;
 
-use Psr\Log\LoggerInterface;
-//use App\Util\Aws\AwsS3Util;
-//use App\Util\Aws\AwsSnsUtil;
-//use App\Service\Mailer\MailClients\SimpleEmailServiceClient;
-//use App\Application\Commands\Email\SendVoucherEmailCommand;
-
+// use Psr\Log\LoggerInterface;
 
 /**
  * @Route("/api/{entity}")
  */
 class SymfonyController extends BaseController {
 
-    private $services;
+    public $services;
 
     public function __construct(
+        GetEntityQueryBus $query_bus,
         Request $request,
-        EntityManagerInterface $entity_manager,
-        LoggerInterface $logger
+        EntityManagerInterface $entity_manager
+//        LoggerInterface $logger,
 //        AwsS3Util $awss3util,
 //        SimpleEmailServiceClient $awsSes,
 //        AwsSnsUtil $awsSns
@@ -39,7 +35,8 @@ class SymfonyController extends BaseController {
     {
         $this->services = [
             'entity_manager' => $entity_manager,
-            'logger' => $logger,
+            'query_bus' => $query_bus
+//            'logger' => $logger,
 //            'awss3util' => $awss3util,
 //            'awsSes' => $awsSes,
 //            'awsSns' => $awsSns
