@@ -3,12 +3,10 @@
 namespace Osds\Api\UI;
 
 use Illuminate\Http\Request;
-use Doctrine\ORM\EntityManagerInterface;
 
+use Osds\Api\Application\Get\GetEntityQuery;
 use Osds\Api\Application\Get\GetEntityQueryBus;
-use Osds\Api\Domain\Bus\Query\QueryBus;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
@@ -89,16 +87,65 @@ class GetEntityController extends BaseUIController
      * @Security(name="Bearer")
      */
 
-    public function handle()
+    public function handle($entity, $id = null)
     {
         $this->build($this->request);
 
-        $entity = 'user';
-        $message_object = $this->getEntityMessageObject($entity, $this->request);
+        $message_object = $this->getEntityMessageObject($entity, $this->request, $id);
 
         $result = $this->query_bus->ask($message_object);
 
-        return JsonResponse::fromJsonString(json_encode($result));
+        return $this->generateResponse($result);
+    }
+
+    public function getEntityMessageObject($entity, $request, $id = null)
+    {
+        if ($id != null) {
+            $request->parameters = ['search_fields' => ['id' => $id]];
+        }
+        $search_fields = $this->getSearchFields($request);
+        $query_filters = $this->getQueryFilters($request);
+
+        return new GetEntityQuery(
+            $entity,
+            $search_fields,
+            $query_filters
+        );
+
+    }
+
+    /**
+     * @param $request
+     * @return array
+     */
+    private function getSearchFields($request)
+    {
+        $search_fields = [];
+
+        #we are filtering by something received from the external request
+        if (isset($request->parameters['search_fields'])) {
+            $search_fields += $request->parameters['search_fields'];
+            #we don't need them anymore
+            unset($request->parameters['search_fields']);
+        }
+        return $search_fields;
+    }
+
+    /**
+     * @param $request
+     * @return array
+     */
+    private function getQueryFilters($request)
+    {
+        $query_filters = [];
+
+        #we are filtering the result query
+        if (isset($request->parameters['query_filters'])) {
+            $query_filters += $request->parameters['query_filters'];
+            #we don't need them anymore
+            unset($request->parameters['query_filters']);
+        }
+        return $query_filters;
     }
 
 }

@@ -3,7 +3,7 @@
 namespace Osds\Api\UI;
 
 use Illuminate\Http\Request;
-use Osds\Api\Application\Get\GetEntityQuery;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * @property array services
@@ -28,56 +28,28 @@ class BaseUIController
         }
     }
 
-    public function getEntityMessageObject($entity, $request)
+    public function generateResponse($data, $action = null)
     {
 
-        $search_fields = $this->getSearchFields($request);
-        $query_filters = $this->getQueryFilters($request);
-
-        return new GetEntityQuery(
-            $entity,
-            $search_fields,
-            $query_filters
-        );
-
+        #assigned to have it on the destruct()
+        $this->response = $data;
+        // All actions except 'get' do not return 'items schema' => Generate it!!
+        if($action != 'get'){
+            return JsonResponse::fromJsonString(json_encode($this->prepareResponseByItems($data)));
+        } else {
+            return JsonResponse::fromJsonString(json_encode($data));
+        }
     }
 
-    /**
-     * @param $request
-     * @return array
-     */
-    private function getSearchFields($request)
+    public function prepareResponseByItems($data)
     {
-        $search_fields = [];
-        #if we have received an id, set the search fields to look for it
-        if (isset($request->custom_parameters->entity_id)) {
-            #we are filtering by an entry
-            $search_fields['id'] = $request->custom_parameters->entity_id;
-        }
+        $items[] = $data;
+        $num_items = ($data != true)? 0: count($items);
 
-        #we are filtering by something received from the external request
-        if (isset($request->parameters['search_fields'])) {
-            $search_fields += $request->parameters['search_fields'];
-            #we don't need them anymore
-            unset($request->parameters['search_fields']);
-        }
-        return $search_fields;
+        return [
+            'total_items' => $num_items,
+            'items' => $items
+        ];
     }
 
-    /**
-     * @param $request
-     * @return array
-     */
-    private function getQueryFilters($request)
-    {
-        $query_filters = [];
-
-        #we are filtering the result query
-        if (isset($request->parameters['query_filters'])) {
-            $query_filters += $request->parameters['query_filters'];
-            #we don't need them anymore
-            unset($request->parameters['query_filters']);
-        }
-        return $query_filters;
-    }
 }

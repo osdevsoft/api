@@ -8,9 +8,20 @@ use function Osds\Api\Utils\underscoreToCamelCase;
 class DoctrineRepository implements BaseRepository
 {
 
+    private $entity_manager;
+
+    const ENTITY_PATH = '\App\Entity\\';
+
+    public function __construct(
+        EntityManagerInterface $entity_manager
+    )
+    {
+        $this->entity_manager = $entity_manager;
+    }
+
+    #TODO: use this function names as they're more standard
     public function insert($entity_id, $data)
     {
-
     }
 
     public function search($entity, Array $search_fields, Array $query_filters)
@@ -20,21 +31,11 @@ class DoctrineRepository implements BaseRepository
 
     public function update($entity_id, $data)
     {
-
     }
 
     public function delete($entity_id)
     {
-
-    }
-
-    const ENTITY_PATH = '\App\Entity\\';
-
-    public function __construct(
-        EntityManagerInterface $entity_manager
-    )
-    {
-        $this->entity_manager = $entity_manager;
+        return $this->remove($entity_id);
     }
 
     /**

@@ -2,14 +2,27 @@ services:
     Illuminate\Http\Request:
         autowire: true
 
-    Osds\Api\Infrastructure\Controllers\BaseController:
+    Osds\Api\Application\Get\GetEntityQueryBus:
         autowire: true
-
-    Osds\Api\Infrastructure\Controllers\SymfonyController:
+    Osds\Api\Application\Get\GetEntityQueryHandler:
+        autowire: true
+    Osds\Api\Application\Get\GetEntityUseCase:
+        autowire: true
+    Osds\Api\Application\Get\GetEntityRepository:
+        autowire: true
+    Osds\Api\UI\GetEntityController:
         autowire: true
         tags: ['controller.service_arguments']
 
-    Osds\Api\Infrastructure\Repositories\DoctrineModelRepository:
+
+    Osds\Api\Application\Delete\DeleteEntityCommandBus:
         autowire: true
-        class: App\Infrastructure\Repositories\DoctrineModelRepository
-        arguments: ["@doctrine.orm.entity_manager"]
+    Osds\Api\Application\Delete\DeleteEntityCommandHandler:
+        autowire: true
+    Osds\Api\Application\Delete\DeleteEntityUseCase:
+        autowire: true
+    Osds\Api\Application\Delete\DeleteEntityRepository:
+        autowire: true
+    Osds\Api\UI\DeleteEntityController:
+        autowire: true
+        tags: ['controller.service_arguments']

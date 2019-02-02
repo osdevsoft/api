@@ -1,4 +1,4 @@
 
 osds_api:
-  resource: '../vendor/osds/api/src/Infrastructure/Controllers/'
+  resource: '../vendor/osds/api/src/UI/'
   type:     annotation
