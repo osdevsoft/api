@@ -2,6 +2,7 @@
 
 namespace Osds\Api\Infrastructure\Repositories;
 
+use Doctrine\ORM\EntityManagerInterface;
 use function Osds\Api\Utils\underscoreToCamelCase;
 
 class DoctrineRepository implements BaseRepository
@@ -29,9 +30,11 @@ class DoctrineRepository implements BaseRepository
 
     const ENTITY_PATH = '\App\Entity\\';
 
-    public function __construct()
+    public function __construct(
+        EntityManagerInterface $entity_manager
+    )
     {
-        $this->entity_manager = $_SESSION['services']['entity_manager'];
+        $this->entity_manager = $entity_manager;
     }
 
     /**
