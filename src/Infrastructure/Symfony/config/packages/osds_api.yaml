@@ -2,6 +2,19 @@ services:
     Illuminate\Http\Request:
         autowire: true
 
+
+    Osds\Api\Application\Insert\InsertEntityCommandBus:
+        autowire: true
+    Osds\Api\Application\Insert\InsertEntityCommandHandler:
+        autowire: true
+    Osds\Api\Application\Insert\InsertEntityUseCase:
+        autowire: true
+    Osds\Api\Application\Insert\InsertEntityRepository:
+        autowire: true
+    Osds\Api\UI\InsertEntityController:
+        autowire: true
+        tags: ['controller.service_arguments']
+
     Osds\Api\Application\Get\GetEntityQueryBus:
         autowire: true
     Osds\Api\Application\Get\GetEntityQueryHandler:

@@ -22,6 +22,11 @@ class DoctrineRepository implements BaseRepository
     #TODO: use this function names as they're more standard
     public function insert($entity_id, $data)
     {
+        $entity = $this->getEntity();
+        $repository = new $entity();
+
+        
+
     }
 
     public function search($entity, Array $search_fields, Array $query_filters)
@@ -37,6 +42,9 @@ class DoctrineRepository implements BaseRepository
     {
         return $this->remove($entity_id);
     }
+
+    ###################################
+
 
     /**
      * @param $entity entity name
