@@ -44,10 +44,12 @@ class DoctrineRepository implements BaseRepository
         return $this->entity;
     }
 
+    /*
     public function getEntityName()
     {
         return str_replace('App\Entity\\', '', get_class($this->entity));
     }
+    */
 
     public function getEntityFQName() {
         return get_class($this->entity);
@@ -67,7 +69,7 @@ class DoctrineRepository implements BaseRepository
     }
 
     /**
-     * DEPECRATED!
+     * DEPECRATED! We expect to receive the referenced entities we want
      *
      * @param $entity
      * @return mixed

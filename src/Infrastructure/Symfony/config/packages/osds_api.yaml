@@ -15,15 +15,15 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
 
-    Osds\Api\Application\Get\GetEntityQueryBus:
+    Osds\Api\Application\Search\SearchEntityQueryBus:
         autowire: true
-    Osds\Api\Application\Get\GetEntityQueryHandler:
+    Osds\Api\Application\Search\SearchEntityQueryHandler:
         autowire: true
-    Osds\Api\Application\Get\GetEntityUseCase:
+    Osds\Api\Application\Search\SearchEntityUseCase:
         autowire: true
-    Osds\Api\Application\Get\GetEntityRepository:
+    Osds\Api\Application\Search\SearchEntityRepository:
         autowire: true
-    Osds\Api\UI\GetEntityController:
+    Osds\Api\UI\SearchEntityController:
         autowire: true
         tags: ['controller.service_arguments']
 

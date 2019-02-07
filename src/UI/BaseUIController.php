@@ -34,7 +34,8 @@ class BaseUIController
         #assigned to have it on the destruct()
         $this->response = $data;
         // All actions except 'get' do not return 'items schema' => Generate it!!
-        if($action != 'get'){
+
+        if($action != 'search'){
             return JsonResponse::fromJsonString(json_encode($this->prepareResponseByItems($data)));
         } else {
             return JsonResponse::fromJsonString(json_encode($data));

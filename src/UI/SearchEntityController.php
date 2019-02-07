@@ -83,7 +83,7 @@ class SearchEntityController extends BaseUIController
      *     description="Returns a list of items for the required entity",
      *     )
      * )
-     * @SWG\Tag(name="list")
+     * @SWG\Tag(name="search")
      * @Security(name="Bearer")
      */
 
@@ -95,7 +95,7 @@ class SearchEntityController extends BaseUIController
 
         $result = $this->query_bus->ask($message_object);
 
-        return $this->generateResponse($result);
+        return $this->generateResponse($result, 'search');
     }
 
     public function getEntityMessageObject($entity, $request, $id = null)

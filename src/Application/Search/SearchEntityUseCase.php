@@ -61,6 +61,7 @@ final class SearchEntityUseCase
             if (!is_array($referenced_entities)) {
                 $referenced_entities = [$referenced_entities];
             }
+            #TODO: unhardcode note retrieval, request entity from BO
             $referenced_entities[] = 'note';
             $result_data['items'] = $this->repository->SearchReferencedEntitiesContents($result_data['items'], $referenced_entities);
         } else {
@@ -70,11 +71,6 @@ final class SearchEntityUseCase
                 $item = $this->repository->convertToArray($item);
             }
         }
-
-        #TODO
-        /*$command = new SearchSchemaModelCommand();
-        $result_data['schema'] = $command->execute($entity);*/
-
 
         if(isset($this->request->parameters['referenced_entities_contents'])) {
             #we want to Search all the contents for this entities (for example, list of referenced contents on Backoffice detail)
@@ -91,6 +87,10 @@ final class SearchEntityUseCase
                 }
             }
         }
+
+        $result_data['schema'] = [
+            'fields' => $this->repository->getEntityFields($this->repository->getEntity())
+        ];
 
         return $result_data;
     }

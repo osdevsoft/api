@@ -52,7 +52,7 @@ class UpdateEntityController extends BaseUIController
      *     description="Returns the id of the Updateed item",
      *     )
      * )
-     * @SWG\Tag(name="Update")
+     * @SWG\Tag(name="update")
      * @Security(name="Bearer")
      */
 
