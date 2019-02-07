@@ -1,10 +1,10 @@
 <?php
 
-namespace Osds\Api\Application\Get;
+namespace Osds\Api\Application\Search;
 
 use Osds\Api\Domain\Bus\Query\Query;
 
-final class GetEntityQuery implements Query
+final class SearchEntityQuery implements Query
 {
 
     private $entity;

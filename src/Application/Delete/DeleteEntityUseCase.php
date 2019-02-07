@@ -15,6 +15,6 @@ final class DeleteEntityUseCase
     public function execute($entity, $id)
     {
         $this->repository->setEntity($entity);
-        return $this->repository->remove($id);
+        return $this->repository->delete($id);
     }
 }

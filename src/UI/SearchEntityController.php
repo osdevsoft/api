@@ -4,8 +4,8 @@ namespace Osds\Api\UI;
 
 use Illuminate\Http\Request;
 
-use Osds\Api\Application\Get\GetEntityQuery;
-use Osds\Api\Application\Get\GetEntityQueryBus;
+use Osds\Api\Application\Search\SearchEntityQuery;
+use Osds\Api\Application\Search\SearchEntityQueryBus;
 
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -15,7 +15,7 @@ use Swagger\Annotations as SWG;
 /**
  * @Route("/api/{entity}")
  */
-class GetEntityController extends BaseUIController
+class SearchEntityController extends BaseUIController
 {
 
     protected $request;
@@ -23,7 +23,7 @@ class GetEntityController extends BaseUIController
 
     public function __construct(
         Request $request,
-        GetEntityQueryBus $query_bus
+        SearchEntityQueryBus $query_bus
 
     )
     {
@@ -106,7 +106,7 @@ class GetEntityController extends BaseUIController
         $search_fields = $this->getSearchFields($request);
         $query_filters = $this->getQueryFilters($request);
 
-        return new GetEntityQuery(
+        return new SearchEntityQuery(
             $entity,
             $search_fields,
             $query_filters

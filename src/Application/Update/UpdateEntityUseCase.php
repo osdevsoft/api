@@ -1,13 +1,12 @@
 <?php
 
-namespace Osds\Api\Application\Insert;
+namespace Osds\Api\Application\Update;
 
-
-final class InsertEntityUseCase
+final class UpdateEntityUseCase
 {
     private $repository;
 
-    public function __construct(InsertEntityRepository $repository)
+    public function __construct(UpdateEntityRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -15,6 +14,6 @@ final class InsertEntityUseCase
     public function execute($entity, $id, $data)
     {
         $this->repository->setEntity($entity);
-        return $this->repository->insert($id, $data);
+        return $this->repository->update($id, $data);
     }
 }

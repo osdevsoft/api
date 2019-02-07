@@ -1,19 +1,19 @@
 <?php
 
-namespace Osds\Api\Application\Insert;
+namespace Osds\Api\Application\Update;
 
 use Osds\Api\Domain\Bus\Command\CommandHandler;
 
-final class InsertEntityCommandHandler implements CommandHandler
+final class UpdateEntityCommandHandler implements CommandHandler
 {
     private $use_case;
 
-    public function __construct(InsertEntityUseCase $use_case)
+    public function __construct(UpdateEntityUseCase $use_case)
     {
         $this->use_case = $use_case;
     }
 
-    public function handle(InsertEntityCommand $command)
+    public function handle(UpdateEntityCommand $command)
     {
         return $this->use_case->execute(
             $command->entity(),

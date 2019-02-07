@@ -1,6 +1,6 @@
 <?php
 
-namespace Osds\Api\Application\Delete;
+namespace Osds\Api\Application\Insert;
 
 use Osds\Api\Infrastructure\Repositories\DoctrineRepository;
 

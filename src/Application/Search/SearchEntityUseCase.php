@@ -1,15 +1,15 @@
 <?php
 
-namespace Osds\Api\Application\Get;
+namespace Osds\Api\Application\Search;
 
 
 use Osds\Api\Application\Commands\GetSchemaModelCommand;
 
-final class GetEntityUseCase
+final class SearchEntityUseCase
 {
     private $repository;
 
-    public function __construct(GetEntityRepository $repository)
+    public function __construct(SearchEntityRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -34,12 +34,12 @@ final class GetEntityUseCase
      *             $query_filters['page_items'] = n; number of results to retrieve
      *             $query_filters['page'] = i; pagination. from what index we want to start returning from (LIMIT $page_items, $page -1 * $page_items)
      *
-     * @param array (from url) referenced_entities  :   gets the referenced contents (foreign contents) for each content of the result
+     * @param array (from url) referenced_entities  :   Searchs the referenced contents (foreign contents) for each content of the result
      *                                                       post => in a json structure, "post" is the key of the array
      *                                                          comments => we will treat it recursively
      *                                                      author => in a json structure, "0" is the key of the array
      *
-     * array entities_contents : models that we want to get all their elements
+     * array entities_contents : models that we want to Search all their elements
      *
      * @return array : total_items : total number of elements (with no pagination)
      *                 items : items got
@@ -62,9 +62,9 @@ final class GetEntityUseCase
                 $referenced_entities = [$referenced_entities];
             }
             $referenced_entities[] = 'note';
-            $result_data['items'] = $this->repository->getReferencedEntitiesContents($result_data['items'], $referenced_entities);
+            $result_data['items'] = $this->repository->SearchReferencedEntitiesContents($result_data['items'], $referenced_entities);
         } else {
-            #TODO: refactor, in getReferencedEntitiesContents does the same
+            #TODO: refactor, in SearchReferencedEntitiesContents does the same
             foreach($result_data['items'] as &$item)
             {
                 $item = $this->repository->convertToArray($item);
@@ -72,16 +72,16 @@ final class GetEntityUseCase
         }
 
         #TODO
-        /*$command = new GetSchemaModelCommand();
+        /*$command = new SearchSchemaModelCommand();
         $result_data['schema'] = $command->execute($entity);*/
 
 
         if(isset($this->request->parameters['referenced_entities_contents'])) {
-            #we want to get all the contents for this entities (for example, list of referenced contents on Backoffice detail)
-            $get_entities_contents = explode(',', $this->request->parameters['referenced_entities_contents']);
-            foreach($get_entities_contents as $entity) {
+            #we want to Search all the contents for this entities (for example, list of referenced contents on Backoffice detail)
+            $Search_entities_contents = explode(',', $this->request->parameters['referenced_entities_contents']);
+            foreach($Search_entities_contents as $entity) {
                 $this->repository->setEntity($entity);
-                $result_data['required_entities_contents'][$entity] = $this->repository->retrieve($this->repository->getEntity());
+                $result_data['required_entities_contents'][$entity] = $this->repository->retrieve($this->repository->SearchEntity());
                 if(count($result_data['required_entities_contents'][$entity]['items']) > 0) {
                     $items = [];
                     foreach($result_data['required_entities_contents'][$entity]['items'] as $item) {

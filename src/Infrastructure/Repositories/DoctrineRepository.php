@@ -19,33 +19,6 @@ class DoctrineRepository implements BaseRepository
         $this->entity_manager = $entity_manager;
     }
 
-    #TODO: use this function names as they're more standard
-    public function insert($entity_id, $data)
-    {
-        $entity = $this->getEntity();
-        $repository = new $entity();
-
-        
-
-    }
-
-    public function search($entity, Array $search_fields, Array $query_filters)
-    {
-        return $this->retrieve($entity, $search_fields, $query_filters);
-    }
-
-    public function update($entity_id, $data)
-    {
-    }
-
-    public function delete($entity_id)
-    {
-        return $this->remove($entity_id);
-    }
-
-    ###################################
-
-
     /**
      * @param $entity entity name
      *
@@ -112,7 +85,7 @@ class DoctrineRepository implements BaseRepository
      * @param array|null $query_filters     sorting, pagination
      * @return array
      */
-    public function retrieve($entity, Array $search_fields = [], Array $query_filters = [])
+    public function search($entity, Array $search_fields = [], Array $query_filters = [])
     {
         $this->setEntity($entity);
 
@@ -150,15 +123,11 @@ class DoctrineRepository implements BaseRepository
 
     }
 
-    public function upsert($entity_id, $data): int
+    public function insert($entity_id, $data): string
     {
 
-        if($entity_id == null) {
-            $entity = $this->getEntity();
-            $repository = new $entity();
-        } else {
-            $repository = $this->entity_manager->getRepository($this->getEntityFQName())->find($entity_id);
-        }
+        $entity = $this->getEntity();
+        $repository = new $entity();
 
         #treat fields before updating / inserting
         foreach($data as $field => $value)
@@ -173,22 +142,43 @@ class DoctrineRepository implements BaseRepository
                 }
                 $value = new \DateTime($value);
             }
-            $repository->{"set" . $field}($value);
+            $repository->{"set" . ucfirst($field)}($value);
         }
 
-        if($entity_id == null) {
-            $this->entity_manager->persist($repository);
-            $result = $this->entity_manager->flush();
-            return $repository->getId();
-        } else {
-            $this->entity_manager->merge($repository);
-            $result = $this->entity_manager->flush();
-            return $entity_id;
+        $this->entity_manager->persist($repository);
+        $result = $this->entity_manager->flush();
+        return $entity_id;
+    }
+
+    public function update($entity_id, $data): string
+    {
+
+        $repository = $this->entity_manager->getRepository($this->getEntityFQName())->findBy('id', $entity_id);
+
+        #treat fields before updating / inserting
+        foreach($data as $field => $value)
+        {
+            #if matches a yyyy-mm-dd, yyyy-mm-dd hh:ii, or yyyy-mm-dd hh:ii:ss
+            if(preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2}(:[0-9]{2})?)?$/', $value))
+            {
+                #add seconds to allow this type of date (yyyy-mm-dd hh:ii)
+                if(preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}$/', $value))
+                {
+                    $value .= ':00';
+                }
+                $value = new \DateTime($value);
+            }
+            $repository->{"set" . ucfirst($field)}($value);
         }
+
+        $this->entity_manager->merge($repository);
+        $result = $this->entity_manager->flush();
+        return $entity_id;
 
     }
 
-    public function remove($entity_id) {
+
+    public function delete($entity_id) {
 
         $object = $this->entity_manager->getRepository($this->getEntityFQName())->find($entity_id);
 

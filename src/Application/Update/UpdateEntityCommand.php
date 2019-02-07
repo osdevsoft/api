@@ -1,10 +1,10 @@
 <?php
 
-namespace Osds\Api\Application\Insert;
+namespace Osds\Api\Application\Update;
 
 use Osds\Api\Domain\Bus\Command\Command;
 
-final class InsertEntityCommand implements Command
+final class UpdateEntityCommand implements Command
 {
 
     private $entity;
