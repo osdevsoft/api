@@ -248,7 +248,6 @@ class DoctrineRepository implements BaseRepository
                     }
                     $subitems = $subitems_new;
                 }
-
                 $parsed_items[$ei_key]['references'][$entity_to_gather] = $subitems;
 
             }

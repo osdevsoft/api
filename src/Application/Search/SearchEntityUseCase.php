@@ -55,6 +55,7 @@ final class SearchEntityUseCase
         if (isset($additionalRequests['referenced_entities'])) {
             $referenced_entities = explode(',', $additionalRequests['referenced_entities']);
             $referenced_entities = $this->generateReferencedEntitiesArray($referenced_entities);
+
             if (!is_array($referenced_entities)) {
                 $referenced_entities = [$referenced_entities];
             }
@@ -104,12 +105,13 @@ final class SearchEntityUseCase
                 $parent = array_shift($referenced_entities_splited);
                 $referenced_entities_array[$parent][] = $this->{$fn}($referenced_entities_splited);
             } else {
-                if (is_array($referenced_entities_array) && count($referenced_entities_array) > 0) {
+                //if (is_array($referenced_entities_array) && count($referenced_entities_array) > 0) {
                     $referenced_entities_array[] = $referenced_entity;
-                } else {
-                    $referenced_entities_array = $referenced_entity;
-                }
+                //} else {
+                //    $referenced_entities_array = $referenced_entity;
+                //}
             }
+
         }
 
         return $referenced_entities_array;
