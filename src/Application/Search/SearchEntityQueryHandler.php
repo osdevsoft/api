@@ -6,19 +6,20 @@ use Osds\Api\Domain\Bus\Query\QueryHandler;
 
 final class SearchEntityQueryHandler implements QueryHandler
 {
-    private $use_case;
+    private $useCase;
 
-    public function __construct(SearchEntityUseCase $use_case)
+    public function __construct(SearchEntityUseCase $useCase)
     {
-        $this->use_case = $use_case;
+        $this->useCase = $useCase;
     }
 
     public function handle(SearchEntityQuery $query)
     {
-        return $this->use_case->execute(
+        return $this->useCase->execute(
             $query->entity(),
             $query->searchFields(),
-            $query->queryFilters()
+            $query->queryFilters(),
+            $query->additionalRequests()
             );
     }
 }

@@ -76,10 +76,12 @@ class DoctrineRepository implements BaseRepository
      *
      * Given an Entity, it will return the references with other entities
      */
+    /*
     public function getReferencesWithOtherEntities($entity)
     {
         return $this->entity_manager->getClassMetadata(get_class($entity))->getAssociationMappings();
     }
+    */
 
     /**
      * @param $entity                       name of the entity we want to retrieve items
@@ -125,7 +127,7 @@ class DoctrineRepository implements BaseRepository
 
     }
 
-    public function insert($entity_id, $data): string
+    public function insert($entity_uuid, $data): string
     {
 
         $entity = $this->getEntity();
@@ -149,7 +151,7 @@ class DoctrineRepository implements BaseRepository
 
         $this->entity_manager->persist($repository);
         $result = $this->entity_manager->flush();
-        return $entity_id;
+        return $entity_uuid;
     }
 
     public function update($entity_id, $data): string
@@ -220,7 +222,7 @@ class DoctrineRepository implements BaseRepository
                     $parsed_items[$ei_key] = $this->convertToArray($entity_item);
                 }
 
-                #call the method that recovers the subentity for this entity_item (from a post, get its comment entity)
+                #call the method that recovers the subentity for this entity_item (from a post, get its user entity)
                 $function = "get" . underscoreToCamelCase($entity_to_gather);
                 $subentity = $entity_item->{$function}();
                 if (strstr(get_class($subentity), 'PersistentCollection')) {

@@ -12,9 +12,9 @@ final class InsertEntityUseCase
         $this->repository = $repository;
     }
 
-    public function execute($entity, $id, $data)
+    public function execute($entity, $uuid, $data)
     {
         $this->repository->setEntity($entity);
-        return $this->repository->insert($id, $data);
+        return $this->repository->insert($uuid, $data);
     }
 }

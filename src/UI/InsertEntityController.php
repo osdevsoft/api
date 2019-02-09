@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Osds\Api\Application\Insert\InsertEntityCommand;
 use Osds\Api\Application\Insert\InsertEntityCommandBus;
 
+use Osds\Api\Domain\ValueObject\Uuid;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
@@ -70,13 +71,13 @@ class InsertEntityController extends BaseUIController
     public function getEntityMessageObject($entity, $request)
     {
 
-        $id = uniqid();
+        $uuid = Uuid::random();
 
         $data = $request->parameters;
 
         return new InsertEntityCommand(
             $entity,
-            $id,
+            $uuid,
             $data
         );
 

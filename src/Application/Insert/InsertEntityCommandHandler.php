@@ -6,18 +6,18 @@ use Osds\Api\Domain\Bus\Command\CommandHandler;
 
 final class InsertEntityCommandHandler implements CommandHandler
 {
-    private $use_case;
+    private $useCase;
 
-    public function __construct(InsertEntityUseCase $use_case)
+    public function __construct(InsertEntityUseCase $useCase)
     {
-        $this->use_case = $use_case;
+        $this->useCase = $useCase;
     }
 
     public function handle(InsertEntityCommand $command)
     {
-        return $this->use_case->execute(
+        return $this->useCase->execute(
             $command->entity(),
-            $command->id(),
+            $command->uuid(),
             $command->data()
             );
     }

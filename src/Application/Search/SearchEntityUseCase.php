@@ -2,9 +2,6 @@
 
 namespace Osds\Api\Application\Search;
 
-
-use Osds\Api\Application\Commands\GetSchemaModelCommand;
-
 final class SearchEntityUseCase
 {
     private $repository;
@@ -18,7 +15,7 @@ final class SearchEntityUseCase
      *
      * we allow parameteres in rder to be able to be called from the same API itself
      *
-     * @param string $entity :         if not set, the one from the request will be used
+     * @param string $entity :         entity we will search in
      * @param array $search_fields
      *             $search_fields[$fieldname] = value_to_search (performs a strict search (=));
      *             $search_fields[$fieldname] = [
@@ -45,7 +42,7 @@ final class SearchEntityUseCase
      *                 items : items got
      *                 schema : schema (db fields) of the entity requested
      */
-    public function execute($entity = null, $search_fields = [], $query_filters = [])
+    public function execute($entity = null, $search_fields = [], $query_filters = [], $additionalRequests = [])
     {
 
         #retrieve the data from the database, using the specified repository
@@ -55,15 +52,16 @@ final class SearchEntityUseCase
             $query_filters
         );
 
-        if (isset($this->request->parameters['referenced_entities'])) {
-            $referenced_entities = explode(',', $this->request->parameters['referenced_entities']);
+        if (isset($additionalRequests['referenced_entities'])) {
+            $referenced_entities = explode(',', $additionalRequests['referenced_entities']);
             $referenced_entities = $this->generateReferencedEntitiesArray($referenced_entities);
             if (!is_array($referenced_entities)) {
                 $referenced_entities = [$referenced_entities];
             }
+
             #TODO: unhardcode note retrieval, request entity from BO
-            $referenced_entities[] = 'note';
-            $result_data['items'] = $this->repository->SearchReferencedEntitiesContents($result_data['items'], $referenced_entities);
+            //$referenced_entities[] = 'note';
+            $result_data['items'] = $this->repository->getReferencedEntitiesContents($result_data['items'], $referenced_entities);
         } else {
             #TODO: refactor, in SearchReferencedEntitiesContents does the same
             foreach($result_data['items'] as &$item)
@@ -72,9 +70,9 @@ final class SearchEntityUseCase
             }
         }
 
-        if(isset($this->request->parameters['referenced_entities_contents'])) {
+        if(isset($additionalRequests['referenced_entities_contents'])) {
             #we want to Search all the contents for this entities (for example, list of referenced contents on Backoffice detail)
-            $Search_entities_contents = explode(',', $this->request->parameters['referenced_entities_contents']);
+            $Search_entities_contents = explode(',', $additionalRequests['referenced_entities_contents']);
             foreach($Search_entities_contents as $entity) {
                 $this->repository->setEntity($entity);
                 $result_data['required_entities_contents'][$entity] = $this->repository->retrieve($this->repository->SearchEntity());

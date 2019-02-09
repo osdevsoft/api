@@ -6,7 +6,7 @@ namespace Osds\Api\Infrastructure\Repositories;
 
 class ElasticCacheRepository implements BaseRepository
 {
-    public function insert($entity_id, $data)
+    public function insert($entity_uuid, $data)
     {
 
     }

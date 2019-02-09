@@ -4,7 +4,7 @@ namespace Osds\Api\Infrastructure\Repositories;
 
 class InMemoryModelRepository implements BaseRepository
 {
-    public function insert($entity_id, $data)
+    public function insert($entity_uuid, $data)
     {
         // TODO: Implement insert() method.
     }

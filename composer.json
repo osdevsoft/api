@@ -15,7 +15,8 @@
     "doctrine/annotations": "~1.0",
     "symfony/monolog-bundle": "^3.3",
     "nelmio/api-doc-bundle": "^3.3",
-    "symfony/asset": "^4.1"
+    "symfony/asset": "^4.1",
+    "ramsey/uuid": "^3.8"
   },
 
   "autoload": {

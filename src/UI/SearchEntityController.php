@@ -38,9 +38,8 @@ class SearchEntityController extends BaseUIController
      *     methods={"GET"},
      * )
      * @Route(
-     *     "/{id}",
-     *     methods={"GET"},
-     *     requirements={"id"="\d+"}
+     *     "/{uuid}",
+     *     methods={"GET"}
      * )
      *
      *
@@ -73,10 +72,10 @@ class SearchEntityController extends BaseUIController
      *     description="<u>Which referenced entities we want to get all their items</u><br>Example: <i>&referenced_entities_contents=entity1,entity2</i>"
      * )
      * @SWG\Parameter(
-     *     name="id",
+     *     name="uuid",
      *     in="path",
      *     type="string",
-     *     description="Returns the entity with the ID specified. It's equivalent to '<i>search_fields['id']=$id</i>'. All previous parameters can be applied normally"
+     *     description="Returns the entity with the UUID specified. It's equivalent to '<i>search_fields['uuid']=$uuid</i>'. All previous parameters can be applied normally"
      * )
      * @SWG\Response(
      *     response=200,
@@ -87,29 +86,31 @@ class SearchEntityController extends BaseUIController
      * @Security(name="Bearer")
      */
 
-    public function handle($entity, $id = null)
+    public function handle($entity, $uuid = null)
     {
         $this->build($this->request);
 
-        $message_object = $this->getEntityMessageObject($entity, $this->request, $id);
+        $message_object = $this->getEntityMessageObject($entity, $this->request, $uuid);
 
         $result = $this->query_bus->ask($message_object);
 
         return $this->generateResponse($result, 'search');
     }
 
-    public function getEntityMessageObject($entity, $request, $id = null)
+    public function getEntityMessageObject($entity, $request, $uuid = null)
     {
-        if ($id != null) {
-            $request->parameters = ['search_fields' => ['id' => $id]];
+        if ($uuid != null) {
+            $request->parameters = ['search_fields' => ['uuid' => $uuid]];
         }
         $search_fields = $this->getSearchFields($request);
         $query_filters = $this->getQueryFilters($request);
+        $additional_requests = $this->getAdditionalRequests($request);
 
         return new SearchEntityQuery(
             $entity,
             $search_fields,
-            $query_filters
+            $query_filters,
+            $additional_requests
         );
 
     }
@@ -146,6 +147,20 @@ class SearchEntityController extends BaseUIController
             unset($request->parameters['query_filters']);
         }
         return $query_filters;
+    }
+
+    private function getAdditionalRequests($request)
+    {
+        $possible_additional_requests_parameters = ['referenced_entities', 'referenced_entities_contents'];
+        $additional_requests = [];
+
+        foreach ($possible_additional_requests_parameters as $additional_requests_parameter) {
+            if (isset($request->parameters[$additional_requests_parameter])) {
+                $additional_requests[$additional_requests_parameter] = $request->parameters[$additional_requests_parameter];
+            }
+        }
+
+        return $additional_requests;
     }
 
 }
