@@ -136,7 +136,7 @@ class GetModelCommand extends BaseCommand
         if (isset($this->request->custom_parameters->entity_id)) {
             #we are filtering by an entry
             if (!is_array($search_fields)) $search_fields = [];
-            $search_fields['id'] = $this->request->custom_parameters->entity_id;
+            $search_fields['uuid'] = $this->request->custom_parameters->entity_id;
         }
 
         #we are filtering by something recieved from the external request

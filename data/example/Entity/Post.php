@@ -13,7 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Post
 {
-
     /**
      * @var string
      *
@@ -68,24 +67,8 @@ class Post
      */
     private $user;
 
-
-    /**
-     * @ORM\OneToMany(targetEntity="Comment", mappedBy="postUuid")
-     **/
-    private $comments;
-
-
-    public function __construct() {
-        $this->comments = new ArrayCollection();
-    }
-
     public function getUser()
     {
         return $this->user;
-    }
-
-    public function getComment()
-    {
-        return $this->comments;
     }
 }

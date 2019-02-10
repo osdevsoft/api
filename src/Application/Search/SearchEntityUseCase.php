@@ -103,7 +103,7 @@ final class SearchEntityUseCase
                 // multidimensional entities request
                 $referenced_entities_splited = explode('.', $referenced_entity);
                 $parent = array_shift($referenced_entities_splited);
-                $referenced_entities_array[$parent][] = $this->{$fn}($referenced_entities_splited);
+                $referenced_entities_array[$parent] = $this->{$fn}($referenced_entities_splited);
             } else {
                 //if (is_array($referenced_entities_array) && count($referenced_entities_array) > 0) {
                     $referenced_entities_array[] = $referenced_entity;

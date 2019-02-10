@@ -66,11 +66,5 @@ class Comment
      */
     private $postUuid;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Post", inversedBy="comments")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="comment", referencedColumnName="uuid")
-     * })
-     **/
-    private $post;
+
 }
