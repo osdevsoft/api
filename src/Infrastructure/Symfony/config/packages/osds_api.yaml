@@ -28,6 +28,18 @@ services:
         tags: ['controller.service_arguments']
 
 
+    Osds\Api\Application\Update\UpdateEntityCommandBus:
+        autowire: true
+    Osds\Api\Application\Update\UpdateEntityCommandHandler:
+        autowire: true
+    Osds\Api\Application\Update\UpdateEntityUseCase:
+        autowire: true
+    Osds\Api\Application\Update\UpdateEntityRepository:
+        autowire: true
+    Osds\Api\UI\UpdateEntityController:
+        autowire: true
+        tags: ['controller.service_arguments']
+
     Osds\Api\Application\Delete\DeleteEntityCommandBus:
         autowire: true
     Osds\Api\Application\Delete\DeleteEntityCommandHandler:

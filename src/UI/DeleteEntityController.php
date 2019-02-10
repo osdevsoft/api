@@ -31,8 +31,7 @@ class DeleteEntityController extends BaseUIController
     /**
      * @Route(
      *     "/{id}",
-     *     methods={"DELETE"},
-     *     requirements={"id"="\d+"}
+     *     methods={"DELETE"}
      * )
      *
      * Deletes an item from an entity

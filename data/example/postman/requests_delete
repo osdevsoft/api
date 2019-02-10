@@ -1,0 +1,35 @@
+{
+	"info": {
+		"_postman_id": "6b6331e6-c104-4ebf-90c3-b52a65e510a0",
+		"name": "Delete",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Post 1",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://api.myproject.sandbox/api/post/post-1",
+					"protocol": "http",
+					"host": [
+						"api",
+						"myproject",
+						"sandbox"
+					],
+					"path": [
+						"api",
+						"post",
+						"post-1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

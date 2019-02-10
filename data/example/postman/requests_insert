@@ -1,0 +1,48 @@
+{
+	"info": {
+		"_postman_id": "697f8be0-f3cb-4252-a0ca-d0e02d12081a",
+		"name": "Insert",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Post",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://api.myproject.sandbox/api/post?title=Post title&content=Post content&authorUuid=author-1",
+					"protocol": "http",
+					"host": [
+						"api",
+						"myproject",
+						"sandbox"
+					],
+					"path": [
+						"api",
+						"post"
+					],
+					"query": [
+						{
+							"key": "title",
+							"value": "Post title"
+						},
+						{
+							"key": "content",
+							"value": "Post content"
+						},
+						{
+							"key": "authorUuid",
+							"value": "author-1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

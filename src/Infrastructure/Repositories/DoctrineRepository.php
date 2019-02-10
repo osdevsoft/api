@@ -158,7 +158,7 @@ class DoctrineRepository implements BaseRepository
     public function update($entity_id, $data): string
     {
 
-        $repository = $this->entity_manager->getRepository($this->getEntityFQName())->findBy('uuid', $entity_id);
+        $repository = $this->entity_manager->getRepository($this->getEntityFQName())->find(['uuid' => $entity_id]);
 
         #treat fields before updating / inserting
         foreach($data as $field => $value)
