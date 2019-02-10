@@ -55,7 +55,6 @@ final class SearchEntityUseCase
         if (isset($additionalRequests['referenced_entities'])) {
             $referenced_entities = explode(',', $additionalRequests['referenced_entities']);
             $referenced_entities = $this->generateReferencedEntitiesArray($referenced_entities);
-
             if (!is_array($referenced_entities)) {
                 $referenced_entities = [$referenced_entities];
             }

@@ -8,11 +8,12 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Post
  *
- * @ORM\Table(name="post", indexes={@ORM\Index(name="post_user_idx", columns={"user_uuid"})})
+ * @ORM\Table(name="post", indexes={@ORM\Index(name="post_author_idx", columns={"author_uuid"})})
  * @ORM\Entity
  */
 class Post
 {
+
     /**
      * @var string
      *
@@ -37,7 +38,7 @@ class Post
     private $content = 'NULL';
 
     /**
-     * @var \string|null
+     * @var \DateTime|null
      *
      * @ORM\Column(name="created_at", type="string", nullable=true, options={"default"="current_timestamp()"})
      */
@@ -46,29 +47,60 @@ class Post
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true, options={"default"="current_timestamp()"})
+     * @ORM\Column(name="updated_at", type="string", nullable=true, options={"default"="current_timestamp()"})
      */
     private $updatedAt = 'current_timestamp()';
 
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="deleted_at", type="datetime", nullable=true, options={"default"="NULL"})
+     * @ORM\Column(name="deleted_at", type="string", nullable=true, options={"default"="NULL"})
      */
     private $deletedAt = 'NULL';
 
     /**
-     * @var \User
+     * @var \Author
      *
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="Author")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user_uuid", referencedColumnName="uuid")
+     *   @ORM\JoinColumn(name="author_uuid", referencedColumnName="uuid")
      * })
      */
-    private $user;
+    private $authorUuid;
 
-    public function getUser()
+
+    /**
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="postUuid")
+     **/
+    private $comments;
+
+
+    public function __construct() {
+        $this->comments = new ArrayCollection();
+    }
+
+    public function getAuthor()
     {
-        return $this->user;
+        return $this->authorUuid;
+    }
+
+    public function getComment()
+    {
+        return $this->comments;
+    }
+
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
+
+    public function setAuthorUuid($authorUuid)
+    {
+        $this->authorUuid = $authorUuid;
     }
 }

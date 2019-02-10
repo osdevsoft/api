@@ -2,6 +2,7 @@
 
 namespace Osds\Api\UI;
 
+use App\Entity\Author;
 use Illuminate\Http\Request;
 
 use Osds\Api\Application\Insert\InsertEntityCommand;
@@ -33,8 +34,8 @@ class InsertEntityController extends BaseUIController
 
     /**
      * @Route(
-     *     "",
-     *     methods={"POST"},
+     *     "/insert",
+     *     methods={"GET"},
      * )
      *
      * Inserts an item

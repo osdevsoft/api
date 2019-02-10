@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "05d12e7f-a0a8-4cd1-9480-0b4c24797e06",
+		"name": "Search",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Posts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://api.myproject.sandbox/api/post",
+					"protocol": "http",
+					"host": [
+						"api",
+						"myproject",
+						"sandbox"
+					],
+					"path": [
+						"api",
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Posts with comments & comments users",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://api.myproject.sandbox/api/post?referenced_entities=comment,comment.user",
+					"protocol": "http",
+					"host": [
+						"api",
+						"myproject",
+						"sandbox"
+					],
+					"path": [
+						"api",
+						"post"
+					],
+					"query": [
+						{
+							"key": "referenced_entities",
+							"value": "comment,comment.user"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Posts Paginated",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://api.myproject.sandbox/api/post?query_filters[page_items]=2&query_filters[page]=2",
+					"protocol": "http",
+					"host": [
+						"api",
+						"myproject",
+						"sandbox"
+					],
+					"path": [
+						"api",
+						"post"
+					],
+					"query": [
+						{
+							"key": "query_filters[page_items]",
+							"value": "2"
+						},
+						{
+							"key": "query_filters[page]",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

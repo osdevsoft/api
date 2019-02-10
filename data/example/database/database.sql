@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `blog`.`post` (
   `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` DATETIME NULL,
   PRIMARY KEY (`uuid`),
-  INDEX `post_author` (`author_uuid` ASC) INVISIBLE,
+  INDEX `post_author` (`author_uuid` ASC),
   CONSTRAINT `post_author`
     FOREIGN KEY (`author_uuid`)
     REFERENCES `blog`.`author` (`uuid`)
@@ -88,8 +88,8 @@ CREATE TABLE IF NOT EXISTS `blog`.`comment` (
   `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` DATETIME NULL,
   PRIMARY KEY (`uuid`),
-  INDEX `comment_post_idx` (`post_uuid` ASC) INVISIBLE,
-  INDEX `comment_user_idx` (`user_uuid` ASC) INVISIBLE,
+  INDEX `comment_post_idx` (`post_uuid` ASC),
+  INDEX `comment_user_idx` (`user_uuid` ASC),
   CONSTRAINT `comment_post`
     FOREIGN KEY (`post_uuid`)
     REFERENCES `blog`.`post` (`uuid`)

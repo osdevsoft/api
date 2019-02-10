@@ -51,13 +51,13 @@ class SearchEntityController extends BaseUIController
      *     name="search_fields",
      *     in="query",
      *     type="string",
-     *     description="<u>Fields of the entity we want to filter by</u> <ul><li><b>Simple</b>: Adds a 'WHERE $fieldname=$value' filter<ul><li><i>search_fields[$fielname]=$value</i></li></ul></li></ul><ul><li><b>Complex</b> : Adds a 'WHERE $fieldname $operand $value' filter<ul><li><i>search_fields[$fielname]['value']=$value&search_fields[$fielname]['operand']=$operand</i> . Operand can be IN, LIKE</li></ul></li></ul>"
+     *     description="<u>Fields of the entity we want to filter by</u> <ul><li><b>Simple</b>: Adds a 'WHERE $fieldname=$value' filter<ul><li><i>search_fields[$fielname]=$value</i></li></ul></li></ul><ul><li><b>Complex</b> : Adds a 'WHERE $fieldname $operand $value' filter<ul><li><i>search_fields[$fielname][value]=$value&search_fields[$fielname][operand]=$operand</i> . Operand can be IN, LIKE</li></ul></li></ul>"
      * )
      * @SWG\Parameter(
      *     name="query_filter",
      *     in="query",
      *     type="string",
-     *     description="<u>Filters we want to apply to the query</u> <ul><li><b>Sorting</b>: Order the results<ul><li><i>query_filter['sortby'][$i]['field']</i> . Field we want to sort by</li><li><i>query_filter['sortby'][$i]['dir']</i> . Direction we want this field to sort (ASC / DESC)</li></ul></li></ul><ul><li><b>Pagination</b>: Paginates the results<ul><li>query_filters['page_items']=n . n is number of results to retrieve</li><li><i>query_filters['page']=i</i> . i marks the initial index we want to start returning from. If not set, defaults to 1/li><li>Generated limit would be: LIMIT $page_items, $page-1 * $page_items</li></ul>"
+     *     description="<u>Filters we want to apply to the query</u> <ul><li><b>Sorting</b>: Order the results<ul><li><i>query_filter[sortby][$i][field]</i> . Field we want to sort by</li><li><i>query_filter[sortby][$i][dir]</i> . Direction we want this field to sort (ASC / DESC)</li></ul></li></ul><ul><li><b>Pagination</b>: Paginates the results<ul><li>query_filters[page_items]=n . n is number of results to retrieve</li><li><i>query_filters[page]=i</i> . i marks the initial index we want to start returning from. If not set, defaults to 1/li><li>Generated limit would be: LIMIT $page_items, $page-1 * $page_items</li></ul>"
      * )
      * @SWG\Parameter(
      *     name="referenced_entities",
@@ -75,7 +75,7 @@ class SearchEntityController extends BaseUIController
      *     name="uuid",
      *     in="path",
      *     type="string",
-     *     description="Returns the entity with the UUID specified. It's equivalent to '<i>search_fields['uuid']=$uuid</i>'. All previous parameters can be applied normally"
+     *     description="Returns the entity with the UUID specified. It's equivalent to '<i>search_fields[uuid]=$uuid</i>'. All previous parameters can be applied normally"
      * )
      * @SWG\Response(
      *     response=200,
@@ -100,7 +100,7 @@ class SearchEntityController extends BaseUIController
     public function getEntityMessageObject($entity, $request, $uuid = null)
     {
         if ($uuid != null) {
-            $request->parameters = ['search_fields' => ['uuid' => $uuid]];
+            $request->parameters['search_fields'] = ['uuid' => $uuid];
         }
         $search_fields = $this->getSearchFields($request);
         $query_filters = $this->getQueryFilters($request);
