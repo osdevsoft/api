@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Comment
  *
- * @ORM\Table(name="comment", indexes={@ORM\Index(name="comment_post_idx", columns={"post_uuid"})})
+ * @ORM\Table(name="comment", indexes={@ORM\Index(name="comment_user_idx", columns={"user_uuid"}), @ORM\Index(name="comment_post_idx", columns={"post_uuid"})})
  * @ORM\Entity
  */
 class Comment
@@ -24,16 +24,9 @@ class Comment
     /**
      * @var string|null
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=true, options={"default"="NULL"})
+     * @ORM\Column(name="content", type="text", length=16777215, nullable=true, options={"default"="NULL"})
      */
-    private $name = 'NULL';
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="comment", type="text", length=16777215, nullable=true, options={"default"="NULL"})
-     */
-    private $comment = 'NULL';
+    private $content = 'NULL';
 
     /**
      * @var \DateTime|null
@@ -65,6 +58,16 @@ class Comment
      * })
      */
     private $postUuid;
+
+    /**
+     * @var \User
+     *
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="user_uuid", referencedColumnName="uuid")
+     * })
+     */
+    private $userUuid;
 
 
 }

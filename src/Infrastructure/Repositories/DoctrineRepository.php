@@ -8,15 +8,17 @@ use function Osds\Api\Utils\underscoreToCamelCase;
 class DoctrineRepository implements BaseRepository
 {
 
-    private $entity_manager;
+    private $entity;
+
+    private $entityManager;
 
     const ENTITY_PATH = '\App\Entity\\';
 
     public function __construct(
-        EntityManagerInterface $entity_manager
+        EntityManagerInterface $entityManager
     )
     {
-        $this->entity_manager = $entity_manager;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -63,7 +65,7 @@ class DoctrineRepository implements BaseRepository
      */
     public function getEntityFields($entity)
     {
-        $fields = $this->entity_manager->getClassMetadata(get_class($entity))->getColumnNames();
+        $fields = $this->entityManager->getClassMetadata(get_class($entity))->getColumnNames();
 
         return $fields;
     }
@@ -79,7 +81,7 @@ class DoctrineRepository implements BaseRepository
     /*
     public function getReferencesWithOtherEntities($entity)
     {
-        return $this->entity_manager->getClassMetadata(get_class($entity))->getAssociationMappings();
+        return $this->entityManager->getClassMetadata(get_class($entity))->getAssociationMappings();
     }
     */
 
@@ -103,7 +105,7 @@ class DoctrineRepository implements BaseRepository
         list($items_limit, $items_offset) = $this->getPaginationLimits($query_filters);
 
         #get repository and query builder for the queries
-        $repository = $this->entity_manager->getRepository($this->getEntityFQName());
+        $repository = $this->entityManager->getRepository($this->getEntityFQName());
 
         #perform the query
         $results = $repository->findBy(
@@ -129,7 +131,7 @@ class DoctrineRepository implements BaseRepository
 
     public function insert($entity_uuid, $data): string
     {
-
+        $data['uuid'] = $entity_uuid;
         $entity = $this->getEntity();
         $repository = new $entity();
 
@@ -137,7 +139,7 @@ class DoctrineRepository implements BaseRepository
         foreach($data as $field => $value)
         {
             #if matches a yyyy-mm-dd, yyyy-mm-dd hh:ii, or yyyy-mm-dd hh:ii:ss
-            if(
+            if(is_string($value) &&
                 preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2}(:[0-9]{2})?)?$/', $value))
             {
                 #add seconds to allow this type of date (yyyy-mm-dd hh:ii)
@@ -147,18 +149,30 @@ class DoctrineRepository implements BaseRepository
                 }
                 $value = new \DateTime($value);
             }
+
+            #if another entity uuid comes, search for it to reference it
+            if ($field != 'uuid' && strstr($field,'Uuid')) {
+                $entity_name = str_replace('Uuid', '', $field);
+                $entity_class_name = self::ENTITY_PATH . ucfirst($entity_name);
+                $original_value = $value;
+                $value = $this->entityManager->getRepository($entity_class_name)->find(['uuid' => $original_value]);
+                if (is_null($value)) {
+                   throw new \Exception("$entity_name with uuid '$original_value' not found");
+                }
+            }
+
             $repository->{"set" . ucfirst($field)}($value);
         }
 
-        $this->entity_manager->persist($repository);
-        $result = $this->entity_manager->flush();
+        $this->entityManager->persist($repository);
+        $result = $this->entityManager->flush();
         return $entity_uuid;
     }
 
     public function update($entity_id, $data): string
     {
 
-        $repository = $this->entity_manager->getRepository($this->getEntityFQName())->find(['uuid' => $entity_id]);
+        $repository = $this->entityManager->getRepository($this->getEntityFQName())->find(['uuid' => $entity_id]);
 
         #treat fields before updating / inserting
         foreach($data as $field => $value)
@@ -176,8 +190,8 @@ class DoctrineRepository implements BaseRepository
             $repository->{"set" . ucfirst($field)}($value);
         }
 
-        $this->entity_manager->merge($repository);
-        $result = $this->entity_manager->flush();
+        $this->entityManager->merge($repository);
+        $result = $this->entityManager->flush();
         return $entity_id;
 
     }
@@ -185,13 +199,13 @@ class DoctrineRepository implements BaseRepository
 
     public function delete($entity_id) {
 
-        $object = $this->entity_manager->getRepository($this->getEntityFQName())->find($entity_id);
+        $object = $this->entityManager->getRepository($this->getEntityFQName())->find($entity_id);
 
         // tell Doctrine you want to (eventually) save the Product (no queries yet)
-        $this->entity_manager->remove($object);
+        $this->entityManager->remove($object);
 
         // actually executes the queries (i.e. the INSERT query)
-        $this->entity_manager->flush();
+        $this->entityManager->flush();
 
         return $entity_id;
     }

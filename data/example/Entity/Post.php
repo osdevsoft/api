@@ -19,7 +19,6 @@ class Post
      *
      * @ORM\Column(name="uuid", type="string", length=255, nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $uuid;
 
@@ -40,23 +39,23 @@ class Post
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="created_at", type="string", nullable=true, options={"default"="current_timestamp()"})
+     * @ORM\Column(name="created_at", type="string", nullable=true, options={"default":"CURRENT_TIMESTAMP"})
      */
-    private $createdAt = 'current_timestamp()';
+    private $createdAt;
 
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="updated_at", type="string", nullable=true, options={"default"="current_timestamp()"})
+     * @ORM\Column(name="updated_at", type="string", nullable=true, options={"default":"CURRENT_TIMESTAMP"})
      */
-    private $updatedAt = 'current_timestamp()';
+    private $updatedAt;
 
     /**
      * @var \DateTime|null
      *
      * @ORM\Column(name="deleted_at", type="string", nullable=true, options={"default"="NULL"})
      */
-    private $deletedAt = 'NULL';
+    private $deletedAt;
 
     /**
      * @var \Author
@@ -77,6 +76,8 @@ class Post
 
     public function __construct() {
         $this->comments = new ArrayCollection();
+        //$this->createdAt = date('Y-m-d H:i:s');
+        //$this->updatedAt = date('Y-m-d H:i:s');
     }
 
     public function getAuthor()
@@ -87,6 +88,11 @@ class Post
     public function getComment()
     {
         return $this->comments;
+    }
+
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
     }
 
     public function setTitle($title)
@@ -102,5 +108,23 @@ class Post
     public function setAuthorUuid($authorUuid)
     {
         $this->authorUuid = $authorUuid;
+
     }
+
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setTimestamps() {
+        $this->updatedAt = new \DateTime('now');
+        if ($this->createdAt == null) {
+           $this->createdAt = new \DateTime('now');
+        }
+    }
+
 }
