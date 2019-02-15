@@ -3,6 +3,7 @@
 namespace Osds\Api\Infrastructure\Repositories;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use function Osds\Api\Utils\underscoreToCamelCase;
 
 class DoctrineRepository implements BaseRepository
@@ -22,7 +23,7 @@ class DoctrineRepository implements BaseRepository
     }
 
     /**
-     * @param $entity entity name
+     * @param string $entity entity name
      *
      * Sets the entity to use. If a strin is received, will create it
      */
@@ -71,60 +72,30 @@ class DoctrineRepository implements BaseRepository
     }
 
     /**
-     * DEPECRATED! We expect to receive the referenced entities we want
-     *
-     * @param $entity
-     * @return mixed
-     *
-     * Given an Entity, it will return the references with other entities
-     */
-    /*
-    public function getReferencesWithOtherEntities($entity)
-    {
-        return $this->entityManager->getClassMetadata(get_class($entity))->getAssociationMappings();
-    }
-    */
-
-    /**
-     * @param $entity                       name of the entity we want to retrieve items
+     * @param string     $entity            name of the entity we want to retrieve items
      * @param array|null $search_fields     fields we are going to filter by
      * @param array|null $query_filters     sorting, pagination
      * @return array
      */
-    public function search($entity, Array $search_fields = [], Array $query_filters = [])
-    {
+    public function search($entity, Array $search_fields = null, Array $query_filters = null) {
+
+        $joined_entities = [];
+
         $this->setEntity($entity);
-
-        #parse search fields
-        $fields_to_filter_by = $this->getFieldsToFilterBy($search_fields);
-
-        #parse sorting fields
-        $fields_to_sort_by = $this->getFieldsToSortBy($query_filters);
-
-        #parse pagination fields
-        list($items_limit, $items_offset) = $this->getPaginationLimits($query_filters);
 
         #get repository and query builder for the queries
         $repository = $this->entityManager->getRepository($this->getEntityFQName());
+        $query_builder = $repository->createQueryBuilder($entity);
 
-        #perform the query
-        $results = $repository->findBy(
-            #where
-            $fields_to_filter_by,
-            #sorting
-            $fields_to_sort_by,
-            #limit
-            $items_limit,
-            #offset
-            $items_offset
-        );
+        list($query_builder, $joined_entities) = $this->addFieldsToSearchBy($entity, $search_fields, $query_builder, $joined_entities);
+        list($query_builder, $joined_entities) = $this->addFieldsToFilterBy($entity, $query_filters, $query_builder, $joined_entities);
+        list($query_builder, $total_items) = $this->addFieldsToPaginateBy($entity, $query_filters, $query_builder);
 
-        #TODO: only get total items if required
-        $total_items = $repository->count($fields_to_filter_by);
+        $items = $query_builder->getQuery()->getResult(); #Query::HYDRATE_ARRAY
 
         return [
-            'total_items' => isset($total_items)?$total_items:count($results),
-            'items' => $results
+            'total_items' => !is_null($total_items)?$total_items:count($items),
+            'items' => $items
         ];
 
     }
@@ -218,6 +189,8 @@ class DoctrineRepository implements BaseRepository
      */
     public function getReferencedEntitiesContents(&$entity_items, $referenced_entities)
     {
+        $parsed_items = [];
+
         #if we want to retrieve referenced entities contents, get them
         foreach ($referenced_entities as $referenced_entity => $referenced_subentities) {
 
@@ -272,98 +245,164 @@ class DoctrineRepository implements BaseRepository
     }
 
     /************************/
-    /*** Helper Functions ***/
+    /*** Helper Functions **
+     * @param $entity
+     * @param $search_fields
+     * @param $query_builder
+     * @param $joined_entities
+     * @return array
+     */
     /************************/
 
-    /**
-     * @param $repository
-     * @param array $search_fields
-     * @return array
-     */
-    public function getFieldsToFilterBy(Array $search_fields): array
+    private function addFieldsToSearchBy($entity, $search_fields, $query_builder, $joined_entities)
     {
-        $fields_to_filter_by = [];
-
-
-
-        #TODO: allow filter by fields on referenced entities
-
-        if (!is_null($search_fields)) {
-            #we want to filter by some fields
+        if ($search_fields != null) {
             foreach ($search_fields as $field_name => $props) {
+                #model to use on the where clause
+                $filter_entity = $entity;
+                if (strstr($field_name, '.')) {
+                    #this field to filter by is from another entity, not the main one
+                    [$filter_entity, $field_name] = explode('.', $field_name);
+                    list($query_builder, $joined_entities) = $this->leftJoinQueryBuilder($entity, $filter_entity, $query_builder, $joined_entities, );
+                }
 
-                if (!is_array($props)) {
-                    #direct seaerch
-                    if (empty($props) && !is_numeric($props)) continue; # 0 is true for empty()
-                    $value = $props;
-
-                    $fields_to_filter_by[$field_name] = $value;
-                } else {
-
-                    #we have some specific filters
-                    if (empty($props['value']) && !is_numeric($props['value'])) continue; # 0 is true for empty()
-                    #value we are looking for
-
+                #looking for an exact match of anything else
+                if (is_array($props)) {
+                    if (empty($props['value']) && !is_numeric($props['value'])) continue;
                     $value = $props['value'];
-
-                    #if it's an array we are adding some filters. If we haven't any, by default use "LIKE"
-                    if (!isset($props['operand'])) {
-                        $props['operand'] = 'LIKE';
+                    if (isset($props['operand'])) {
+                        $operand = $props['operand'];
+                        switch ($operand) {
+                            case 'LIKE':
+                                $value = "'%{$value}%'";
+                                break;
+                            case 'IN':
+                                if (is_array($value)) {
+                                    $values = "";
+                                    $fields = function ($value) use (&$values) {
+                                        $is_string = false;
+                                        foreach ($value as $item) {
+                                            $is_string = (is_string($item));
+                                        }
+                                        if ($is_string) {
+                                            $values = '("' . implode('","', $value) . '")';
+                                        } else {
+                                            $values = '(' . implode(',', $value) . ')';
+                                        }
+                                    };
+                                    $fields($value);
+                                    $value = $values;
+                                }
+                        }
+                    } else {
+                        $operand = 'LIKE';
+                        $value = "'%{$value}%'";
                     }
-
-                    $operand = $props['operand'];
-                    switch ($operand) {
-                        #TODO: find the way to do this
-//                        case 'LIKE':
-//                            $value = "'%{$value}%'";
-//                            break;
-                        case 'IN':
-                            $fields_to_filter_by[$field_name] = $value;
-                    }
+                } else {
+                    if (empty($props) && !is_numeric($props)) continue;
+                    $value = (is_string($props)) ? "'{$props}'" : $props;
+                    $operand = '=';
                 }
+
+                $query_builder->andWhere("{$filter_entity}.{$field_name} {$operand} {$value}");
+
             }
         }
-        return $fields_to_filter_by;
+
+        return [$query_builder, $joined_entities];
     }
 
     /**
-     * @param array $query_filters
-     * @return array
+     * @param $model
+     * @param $field_name
+     * @param $joined_entities
+     * @param $query_builder
+     * @param $filter_entity
      */
-    public function getFieldsToSortBy(Array $query_filters): array
+    private function leftJoinQueryBuilder($parent_entity, $filter_entity, $query_builder, $joined_entities): array
     {
-        $fields_to_sort_by = [];
+        if(
+            #we don't want to merge ourselves
+            $parent_entity != $filter_entity
+            #we haven't merged this entity yet
+            && !in_array($filter_entity, $joined_entities)
+        ) {
 
-        if ($query_filters != null) {
-            if (isset($query_filters['sortby'])) {
-                for ($i = 0; $i < count($query_filters['sortby']); $i++) {
+            $related_model_class = '\App\Entity\\' . ucfirst($filter_entity);
+            $joined_entities[] = $filter_entity;
+
+            $related_model_class_helper = new \ReflectionClass($related_model_class);
+
+            #check in which way we have to make the join "ON"
+            $entity_field = strtolower($parent_entity) . "Uuid";
+            $remote_model_field = strtolower($filter_entity)."Uuid";
+            if($related_model_class_helper->hasProperty($entity_field))
+            {
+                $origin_model = $parent_entity;
+                $origin_field = 'uuid';
+                $joined_model = $filter_entity;
+                $joined_field = $entity_field;
+            } else {
+                $origin_model = $filter_entity;
+                $origin_field = 'uuid';
+                $joined_model = $parent_entity;
+                $joined_field = $remote_model_field;
+            }
+
+            $query_builder->leftJoin(
+                $related_model_class,
+                $filter_entity,
+                \Doctrine\ORM\Query\Expr\Join::WITH,
+                "{$origin_model}.{$origin_field} = {$joined_model}.{$joined_field}"
+            );
+        }
+
+        return [$query_builder, $joined_entities];
+    }
+
+    private function addFieldsToFilterBy($entity, $query_filters, $query_builder, $joined_entities)
+    {
+        if($query_filters != null) {
+            if(isset($query_filters['sortby']))
+            {
+                for ($i=0; $i<count($query_filters['sortby']); $i++) {
                     $field_name = $query_filters['sortby'][$i]['field'];
-                    $field_direction = $query_filters['sortby'][$i]['dir'];
-                    $fields_to_sort_by[$field_name] = $field_direction;
+                    $filter_entity = $entity;
+                    if (strstr($field_name, '.')) {
+                        #this field to filter by is from another entity, not the main one
+                        [$filter_entity, $field_name] = explode('.', $field_name);
+                        list($query_builder, $joined_entities) = $this->leftJoinQueryBuilder($entity, $filter_entity, $query_builder, $joined_entities);
+                    }
+
+                    $query_builder->addOrderBy($filter_entity . '.' . $field_name, $query_filters['sortby'][$i]['dir']);
                 }
             }
         }
-        return $fields_to_sort_by;
+        return [$query_builder, $joined_entities];
     }
 
-    /**
-     * @param array $query_filters
-     * @return array
-     */
-    public function getPaginationLimits(Array $query_filters): array
+    private function addFieldsToPaginateBy($entity, $query_filters, $query_builder)
     {
-        #do we really want in any case return more than 10 thousand items at a time? ¯\_(ツ)_/¯
-        $items_limit = 10000;
-        $items_offset = 0;
-        if (isset($query_filters['page_items'])) {
-            $items_limit = $query_filters['page_items'];
-            if (!isset($query_filters['page'])) {
+
+        $total_items = null;
+
+        if(isset($query_filters['page_items']))
+        {
+            if(!isset($query_filters['page']))
+            {
                 $query_filters['page'] = 1;
             }
 
-            $items_offset = ($query_filters['page'] - 1) * $query_filters['page_items'];
+            $start = ($query_filters['page'] - 1) * $query_filters['page_items'];
+
+            $query_builder_total = clone $query_builder;
+            $query_builder_total->select("count({$entity}.uuid)");
+            $total_items = (int) $query_builder_total->getQuery()->getSingleScalarResult();
+
+            $query_builder->setFirstResult($start)->setMaxResults($query_filters['page_items']);
+
         }
-        return array($items_limit, $items_offset);
+        return [$query_builder, $total_items];
     }
 
     /**

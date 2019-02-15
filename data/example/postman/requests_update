@@ -1,0 +1,24 @@
+{
+	"info": {
+		"_postman_id": "d738257f-f5e0-4e4c-af41-d0ca5babd536",
+		"name": "Update",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Post 1 title",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	]
+}
