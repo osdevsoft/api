@@ -34,8 +34,8 @@ class InsertEntityController extends BaseUIController
 
     /**
      * @Route(
-     *     "/insert",
-     *     methods={"GET"},
+     *     "",
+     *     methods={"POST"},
      * )
      *
      * Inserts an item

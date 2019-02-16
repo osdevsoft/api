@@ -95,6 +95,42 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Posts by comment user name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://api.myproject.sandbox/api/post/?search_fields[comment.user.name][value]=4&referenced_entities=comment.user",
+					"protocol": "http",
+					"host": [
+						"api",
+						"myproject",
+						"sandbox"
+					],
+					"path": [
+						"api",
+						"post",
+						""
+					],
+					"query": [
+						{
+							"key": "search_fields[comment.user.name][value]",
+							"value": "4"
+						},
+						{
+							"key": "referenced_entities",
+							"value": "comment.user"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

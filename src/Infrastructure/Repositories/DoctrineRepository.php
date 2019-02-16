@@ -78,12 +78,12 @@ class DoctrineRepository implements BaseRepository
      * @return array
      */
     public function search($entity, Array $search_fields = null, Array $query_filters = null) {
-
         $joined_entities = [];
 
         $this->setEntity($entity);
 
         #get repository and query builder for the queries
+
         $repository = $this->entityManager->getRepository($this->getEntityFQName());
         $query_builder = $repository->createQueryBuilder($entity);
 
@@ -109,29 +109,7 @@ class DoctrineRepository implements BaseRepository
         #treat fields before updating / inserting
         foreach($data as $field => $value)
         {
-            #if matches a yyyy-mm-dd, yyyy-mm-dd hh:ii, or yyyy-mm-dd hh:ii:ss
-            if(is_string($value) &&
-                preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2}(:[0-9]{2})?)?$/', $value))
-            {
-                #add seconds to allow this type of date (yyyy-mm-dd hh:ii)
-                if(preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}$/', $value))
-                {
-                    $value .= ':00';
-                }
-                $value = new \DateTime($value);
-            }
-
-            #if another entity uuid comes, search for it to reference it
-            if ($field != 'uuid' && strstr($field,'Uuid')) {
-                $entity_name = str_replace('Uuid', '', $field);
-                $entity_class_name = self::ENTITY_PATH . ucfirst($entity_name);
-                $original_value = $value;
-                $value = $this->entityManager->getRepository($entity_class_name)->find(['uuid' => $original_value]);
-                if (is_null($value)) {
-                   throw new \Exception("$entity_name with uuid '$original_value' not found");
-                }
-            }
-
+            $value = $this->treatValuePrePersist($field, $value);
             $repository->{"set" . ucfirst($field)}($value);
         }
 
@@ -148,16 +126,7 @@ class DoctrineRepository implements BaseRepository
         #treat fields before updating / inserting
         foreach($data as $field => $value)
         {
-            #if matches a yyyy-mm-dd, yyyy-mm-dd hh:ii, or yyyy-mm-dd hh:ii:ss
-            if(preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2}(:[0-9]{2})?)?$/', $value))
-            {
-                #add seconds to allow this type of date (yyyy-mm-dd hh:ii)
-                if(preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}$/', $value))
-                {
-                    $value .= ':00';
-                }
-                $value = new \DateTime($value);
-            }
+            $value = $this->treatValuePrePersist($field, $value);
             $repository->{"set" . ucfirst($field)}($value);
         }
 
@@ -246,7 +215,7 @@ class DoctrineRepository implements BaseRepository
 
     /************************/
     /*** Helper Functions **
-     * @param $entity
+     * @param $parent_entity
      * @param $search_fields
      * @param $query_builder
      * @param $joined_entities
@@ -254,16 +223,27 @@ class DoctrineRepository implements BaseRepository
      */
     /************************/
 
-    private function addFieldsToSearchBy($entity, $search_fields, $query_builder, $joined_entities)
+    private function addFieldsToSearchBy($parent_entity, $search_fields, $query_builder, $joined_entities)
     {
         if ($search_fields != null) {
             foreach ($search_fields as $field_name => $props) {
                 #model to use on the where clause
-                $filter_entity = $entity;
+                $filter_entity = $parent_entity;
                 if (strstr($field_name, '.')) {
                     #this field to filter by is from another entity, not the main one
-                    [$filter_entity, $field_name] = explode('.', $field_name);
-                    list($query_builder, $joined_entities) = $this->leftJoinQueryBuilder($entity, $filter_entity, $query_builder, $joined_entities, );
+                    $entities_and_field = explode('.', $field_name);
+                    $field_name = array_pop($entities_and_field);
+
+                    $joined_entity = $parent_entity;
+                    foreach($entities_and_field as $search_entity) {
+                        if (isset($current_entity)) {
+                            #first entity to join by => the other side is parent one
+                            $joined_entity = $current_entity;
+                        }
+                        list($query_builder, $joined_entities) = $this->addEntityToQueryBuilder($joined_entity, $search_entity, $query_builder, $joined_entities);
+                        $current_entity = $search_entity;
+                    }
+                    $filter_entity = $search_entity;
                 }
 
                 #looking for an exact match of anything else
@@ -319,7 +299,7 @@ class DoctrineRepository implements BaseRepository
      * @param $query_builder
      * @param $filter_entity
      */
-    private function leftJoinQueryBuilder($parent_entity, $filter_entity, $query_builder, $joined_entities): array
+    private function addEntityToQueryBuilder($parent_entity, $filter_entity, $query_builder, $joined_entities): array
     {
         if(
             #we don't want to merge ourselves
@@ -328,32 +308,32 @@ class DoctrineRepository implements BaseRepository
             && !in_array($filter_entity, $joined_entities)
         ) {
 
-            $related_model_class = '\App\Entity\\' . ucfirst($filter_entity);
+            $referenced_entity = '\App\Entity\\' . ucfirst($filter_entity);
             $joined_entities[] = $filter_entity;
 
-            $related_model_class_helper = new \ReflectionClass($related_model_class);
+            $referenced_entity_class_helper = new \ReflectionClass($referenced_entity);
 
             #check in which way we have to make the join "ON"
             $entity_field = strtolower($parent_entity) . "Uuid";
             $remote_model_field = strtolower($filter_entity)."Uuid";
-            if($related_model_class_helper->hasProperty($entity_field))
+            if($referenced_entity_class_helper->hasProperty($entity_field))
             {
-                $origin_model = $parent_entity;
+                $origin_entity = $parent_entity;
                 $origin_field = 'uuid';
-                $joined_model = $filter_entity;
+                $joined_entity = $filter_entity;
                 $joined_field = $entity_field;
             } else {
-                $origin_model = $filter_entity;
+                $origin_entity = $filter_entity;
                 $origin_field = 'uuid';
-                $joined_model = $parent_entity;
+                $joined_entity = $parent_entity;
                 $joined_field = $remote_model_field;
             }
 
             $query_builder->leftJoin(
-                $related_model_class,
+                $referenced_entity,
                 $filter_entity,
                 \Doctrine\ORM\Query\Expr\Join::WITH,
-                "{$origin_model}.{$origin_field} = {$joined_model}.{$joined_field}"
+                "{$origin_entity}.{$origin_field} = {$joined_entity}.{$joined_field}"
             );
         }
 
@@ -371,7 +351,7 @@ class DoctrineRepository implements BaseRepository
                     if (strstr($field_name, '.')) {
                         #this field to filter by is from another entity, not the main one
                         [$filter_entity, $field_name] = explode('.', $field_name);
-                        list($query_builder, $joined_entities) = $this->leftJoinQueryBuilder($entity, $filter_entity, $query_builder, $joined_entities);
+                        list($query_builder, $joined_entities) = $this->addEntityToQueryBuilder($entity, $filter_entity, $query_builder, $joined_entities);
                     }
 
                     $query_builder->addOrderBy($filter_entity . '.' . $field_name, $query_filters['sortby'][$i]['dir']);
@@ -403,6 +383,34 @@ class DoctrineRepository implements BaseRepository
 
         }
         return [$query_builder, $total_items];
+    }
+
+    private function treatValuePrePersist($field, $value)
+    {
+        #if matches a yyyy-mm-dd, yyyy-mm-dd hh:ii, or yyyy-mm-dd hh:ii:ss
+        if(is_string($value) &&
+            preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2}(:[0-9]{2})?)?$/', $value))
+        {
+            #add seconds to allow this type of date (yyyy-mm-dd hh:ii)
+            if(preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}$/', $value))
+            {
+                $value .= ':00';
+            }
+            $value = new \DateTime($value);
+        }
+
+        #if another entity uuid comes, search for it to reference it
+        if ($field != 'uuid' && strstr($field,'Uuid')) {
+            $entity_name = str_replace('Uuid', '', $field);
+            $entity_class_name = self::ENTITY_PATH . ucfirst($entity_name);
+            $original_value = $value;
+            $value = $this->entityManager->getRepository($entity_class_name)->find(['uuid' => $original_value]);
+            if (is_null($value)) {
+                throw new \Exception("$entity_name with uuid '$original_value' not found");
+            }
+        }
+
+        return $value;
     }
 
     /**
