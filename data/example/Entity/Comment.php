@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Comment
  *
- * @ORM\Table(name="comment", indexes={@ORM\Index(name="comment_user_idx", columns={"user_uuid"}), @ORM\Index(name="comment_post_idx", columns={"post_uuid"})})
+ * @ORM\Table(name="comment", indexes={@ORM\Index(name="comment_visitor_idx", columns={"visitor_uuid"}), @ORM\Index(name="comment_post_idx", columns={"post_uuid"})})
  * @ORM\Entity
  */
 class Comment
@@ -31,21 +31,21 @@ class Comment
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="created_at", type="datetime", nullable=true, options={"default"="current_timestamp()"})
+     * @ORM\Column(name="created_at", type="string", nullable=true, options={"default"="current_timestamp()"})
      */
     private $createdAt = 'current_timestamp()';
 
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true, options={"default"="current_timestamp()"})
+     * @ORM\Column(name="updated_at", type="string", nullable=true, options={"default"="current_timestamp()"})
      */
     private $updatedAt = 'current_timestamp()';
 
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="deleted_at", type="datetime", nullable=true, options={"default"="NULL"})
+     * @ORM\Column(name="deleted_at", type="string", nullable=true, options={"default"="NULL"})
      */
     private $deletedAt = 'NULL';
 
@@ -60,14 +60,28 @@ class Comment
     private $postUuid;
 
     /**
-     * @var \User
+     * @var \Visitor
      *
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="Visitor")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user_uuid", referencedColumnName="uuid")
+     *   @ORM\JoinColumn(name="visitor_uuid", referencedColumnName="uuid")
      * })
      */
-    private $userUuid;
+    private $visitorUuid;
 
 
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    public function getPost()
+    {
+        return $this->postUuid;
+    }
+
+    public function getVisitor()
+    {
+        return $this->visitorUuid;
+    }
 }

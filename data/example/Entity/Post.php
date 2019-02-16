@@ -76,8 +76,8 @@ class Post
 
     public function __construct() {
         $this->comments = new ArrayCollection();
-        //$this->createdAt = date('Y-m-d H:i:s');
-        //$this->updatedAt = date('Y-m-d H:i:s');
+        $this->createdAt = date('Y-m-d H:i:s');
+        $this->updatedAt = date('Y-m-d H:i:s');
     }
 
     public function getAuthor()
@@ -102,6 +102,7 @@ class Post
 
     public function setContent($content)
     {
+
         $this->content = $content;
     }
 

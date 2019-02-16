@@ -5,12 +5,12 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * User
+ * Visitor
  *
- * @ORM\Table(name="user")
+ * @ORM\Table(name="visitor")
  * @ORM\Entity
  */
-class User
+class Visitor
 {
     /**
      * @var string
@@ -45,23 +45,37 @@ class User
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="created_at", type="datetime", nullable=true, options={"default"="current_timestamp()"})
+     * @ORM\Column(name="created_at", type="string", nullable=true, options={"default"="current_timestamp()"})
      */
     private $createdAt = 'current_timestamp()';
 
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true, options={"default"="current_timestamp()"})
+     * @ORM\Column(name="updated_at", type="string", nullable=true, options={"default"="current_timestamp()"})
      */
     private $updatedAt = 'current_timestamp()';
 
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="deleted_at", type="datetime", nullable=true, options={"default"="NULL"})
+     * @ORM\Column(name="deleted_at", type="string", nullable=true, options={"default"="NULL"})
      */
     private $deletedAt = 'NULL';
 
+    /**
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="visitorUuid")
+     **/
+    private $comments;
 
+    public function __construct() {
+        $this->comments = new ArrayCollection();
+        $this->createdAt = date('Y-m-d H:i:s');
+        $this->updatedAt = date('Y-m-d H:i:s');
+    }
+
+    public function getComment()
+    {
+        return $this->comments;
+    }
 }
