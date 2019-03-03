@@ -227,6 +227,7 @@ class DoctrineRepository implements BaseRepository
     {
         if ($search_fields != null) {
             foreach ($search_fields as $field_name => $props) {
+                $current_entity = null;
                 #model to use on the where clause
                 $filter_entity = $parent_entity;
                 if (strstr($field_name, '.')) {
@@ -236,7 +237,7 @@ class DoctrineRepository implements BaseRepository
 
                     $joined_entity = $parent_entity;
                     foreach($entities_and_field as $search_entity) {
-                        if (isset($current_entity)) {
+                        if (!is_null($current_entity)) {
                             #first entity to join by => the other side is parent one
                             $joined_entity = $current_entity;
                         }

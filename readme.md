@@ -3,7 +3,13 @@ Basic API system to handle basic CRUD operations on a Laravel - Mysql Server
 
 ##Install on Symfony
 
-> composer require osds/api
+> composer create-project symfony/skeleton api
+
+> composer config repositories.repo-name vcs https://github.com/osdevsoft/api
+
+> composer config minimum-stability dev
+
+> composer require osds/api:master
 
 > ./vendor/osds/api/bin/post-install.sh
 

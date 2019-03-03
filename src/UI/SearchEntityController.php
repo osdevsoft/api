@@ -88,7 +88,6 @@ class SearchEntityController extends BaseUIController
 
     public function handle($entity, $uuid = null)
     {
-
         $this->build($this->request);
 
         $message_object = $this->getEntityMessageObject($entity, $this->request, $uuid);
