@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -17,7 +18,6 @@ class User
      *
      * @ORM\Column(name="uuid", type="string", length=255, nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $uuid;
 
@@ -47,20 +47,63 @@ class User
      *
      * @ORM\Column(name="created_at", type="string", nullable=true, options={"default"="current_timestamp()"})
      */
-    private $createdAt = 'current_timestamp()';
+    private $createdAt;
 
     /**
      * @var \DateTime|null
      *
      * @ORM\Column(name="updated_at", type="string", nullable=true, options={"default"="current_timestamp()"})
      */
-    private $updatedAt = 'current_timestamp()';
+    private $updatedAt;
 
     /**
      * @var \DateTime|null
      *
      * @ORM\Column(name="deleted_at", type="string", nullable=true, options={"default"="NULL"})
      */
-    private $deletedAt = 'NULL';
+    private $deletedAt;
+
+
+    public function __construct() {
+        $this->createdAt = date('Y-m-d H:i:s');
+        $this->updatedAt = date('Y-m-d H:i:s');
+    }
+
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
+    public function setAuthorUuid($authorUuid)
+    {
+        $this->authorUuid = $authorUuid;
+
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setTimestamps() {
+        $this->updatedAt = new \DateTime('now');
+        if ($this->createdAt == null) {
+            $this->createdAt = new \DateTime('now');
+        }
+    }
 
 }

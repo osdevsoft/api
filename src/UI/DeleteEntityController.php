@@ -4,7 +4,7 @@ namespace Osds\Api\UI;
 
 use Illuminate\Http\Request;
 use Osds\Api\Application\Delete\DeleteEntityCommand;
-use Osds\Api\Application\Delete\DeleteEntityCommandBus;
+use Osds\Api\Domain\Bus\Command\CommandBus;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
@@ -17,15 +17,15 @@ class DeleteEntityController extends BaseUIController
 {
 
     protected $request;
-    private $command_bus;
+    private $commandBus;
 
     public function __construct(
         Request $request,
-        DeleteEntityCommandBus $command_bus
+        CommandBus $commandBus
     )
     {
         $this->request = $request;
-        $this->command_bus = $command_bus;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -57,9 +57,9 @@ class DeleteEntityController extends BaseUIController
     {
         $this->build($this->request);
 
-        $message_object = $this->getEntityMessageObject($entity, $id);
+        $messageObject = $this->getEntityMessageObject($entity, $id);
 
-        $result = $this->command_bus->dispatch($message_object);
+        $result = $this->commandBus->dispatch($messageObject);
 
         return $this->generateResponse($result);
     }

@@ -5,8 +5,8 @@ namespace Osds\Api\UI;
 use Illuminate\Http\Request;
 
 use Osds\Api\Application\Update\UpdateEntityCommand;
-use Osds\Api\Application\Update\UpdateEntityCommandBus;
 
+use Osds\Api\Domain\Bus\Command\CommandBus;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
@@ -19,21 +19,21 @@ class UpdateEntityController extends BaseUIController
 {
 
     protected $request;
-    private $command_bus;
+    private $commandBus;
 
     public function __construct(
         Request $request,
-        UpdateEntityCommandBus $command_bus
+        CommandBus $commandBus
     )
     {
         $this->request = $request;
-        $this->command_bus = $command_bus;
+        $this->commandBus = $commandBus;
     }
 
     /**
      * @Route(
      *     "/{id}",
-     *     methods={"PUT"},
+     *     methods={"POST"},
      * )
      *
      * Updates an item
@@ -60,9 +60,9 @@ class UpdateEntityController extends BaseUIController
     {
         $this->build($this->request);
 
-        $message_object = $this->getEntityMessageObject($entity, $id, $this->request);
+        $messageObject = $this->getEntityMessageObject($entity, $id, $this->request);
 
-        $result = $this->command_bus->dispatch($message_object);
+        $result = $this->commandBus->dispatch($messageObject);
 
         return $this->generateResponse($result);
     }

@@ -84,4 +84,16 @@ class Author
         $this->uuid = $uuid;
     }
 
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
 }

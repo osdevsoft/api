@@ -397,7 +397,7 @@ class DoctrineRepository implements BaseRepository
             {
                 $value .= ':00';
             }
-            $value = new \DateTime($value);
+//            $value = new \DateTime($value);
         }
 
         #if another entity uuid comes, search for it to reference it

@@ -112,11 +112,6 @@ class Post
 
     }
 
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-    }
-
     /**
      * @ORM\PrePersist
      * @ORM\PreUpdate

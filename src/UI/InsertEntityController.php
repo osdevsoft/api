@@ -6,8 +6,8 @@ use App\Entity\Author;
 use Illuminate\Http\Request;
 
 use Osds\Api\Application\Insert\InsertEntityCommand;
-use Osds\Api\Application\Insert\InsertEntityCommandBus;
 
+use Osds\Api\Domain\Bus\Command\CommandBus;
 use Osds\Api\Domain\ValueObject\Uuid;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -21,15 +21,15 @@ class InsertEntityController extends BaseUIController
 {
 
     protected $request;
-    private $command_bus;
+    private $commandBus;
 
     public function __construct(
         Request $request,
-        InsertEntityCommandBus $command_bus
+        CommandBus $commandBus
     )
     {
         $this->request = $request;
-        $this->command_bus = $command_bus;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -62,9 +62,9 @@ class InsertEntityController extends BaseUIController
     {
         $this->build($this->request);
 
-        $message_object = $this->getEntityMessageObject($entity, $this->request);
+        $messageObject = $this->getEntityMessageObject($entity, $this->request);
 
-        $result = $this->command_bus->dispatch($message_object);
+        $result = $this->commandBus->dispatch($messageObject);
 
         return $this->generateResponse($result);
     }

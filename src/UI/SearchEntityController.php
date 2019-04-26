@@ -5,8 +5,8 @@ namespace Osds\Api\UI;
 use Illuminate\Http\Request;
 
 use Osds\Api\Application\Search\SearchEntityQuery;
-use Osds\Api\Application\Search\SearchEntityQueryBus;
 
+use Osds\Api\Domain\Bus\Query\QueryBus;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
@@ -19,16 +19,16 @@ class SearchEntityController extends BaseUIController
 {
 
     protected $request;
-    private $query_bus;
+    private $queryBus;
 
     public function __construct(
         Request $request,
-        SearchEntityQueryBus $query_bus
+        QueryBus $queryBus
 
     )
     {
         $this->request = $request;
-        $this->query_bus = $query_bus;
+        $this->queryBus = $queryBus;
     }
 
     /**
@@ -88,13 +88,17 @@ class SearchEntityController extends BaseUIController
 
     public function handle($entity, $uuid = null)
     {
-        $this->build($this->request);
+        try {
 
-        $message_object = $this->getEntityMessageObject($entity, $this->request, $uuid);
+            $this->build($this->request);
 
-        $result = $this->query_bus->ask($message_object);
+            $messageObject = $this->getEntityMessageObject($entity, $this->request, $uuid);
 
-        return $this->generateResponse($result, 'search');
+            $result = $this->queryBus->ask($messageObject);
+
+            return $this->generateResponse($result);
+
+        } catch(\Exception $e) {}
     }
 
     public function getEntityMessageObject($entity, $request, $uuid = null)

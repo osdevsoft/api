@@ -84,4 +84,26 @@ class Comment
     {
         return $this->visitorUuid;
     }
+
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+    }
+
+    public function setContent($content)
+    {
+
+        $this->content = $content;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setTimestamps() {
+        $this->updatedAt = new \DateTime('now');
+        if ($this->createdAt == null) {
+            $this->createdAt = new \DateTime('now');
+        }
+    }
 }

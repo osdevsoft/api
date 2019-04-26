@@ -4,6 +4,10 @@ namespace Osds\Api\UI;
 
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use Swagger\Annotations as SWG;
 
 /**
  * @property array services
@@ -21,25 +25,25 @@ class BaseUIController
         $api_token = @$request->header('X-Auth-Token');
 
         $this->request = new \stdClass();
-        $this->request->parameters = (isset($_REQUEST))?$_REQUEST:null;
+        $postdata = file_get_contents("php://input");
+        if(!empty($postdata)) {
+            $this->request->parameters = json_decode($postdata, true);
+        }
+        else {
+            $this->request->parameters = $_REQUEST;
+        }
+
 
         if (!empty($_FILES)) {
             $this->request->files = $_FILES;
         }
     }
 
-    public function generateResponse($data, $action = null)
+    public function generateResponse($data)
     {
 
-        #assigned to have it on the destruct()
-        $this->response = $data;
-        // All actions except 'get' do not return 'items schema' => Generate it!!
+        return new JsonResponse($data, 200);
 
-        if($action != 'search'){
-            return JsonResponse::fromJsonString(json_encode($this->prepareResponseByItems($data)));
-        } else {
-            return JsonResponse::fromJsonString(json_encode($data));
-        }
     }
 
     public function prepareResponseByItems($data)
@@ -51,6 +55,19 @@ class BaseUIController
             'total_items' => $num_items,
             'items' => $items
         ];
+    }
+
+    /**
+     * @Route(
+     *     "/{id?}",
+     *     methods={"OPTIONS"}
+     * )
+     *
+     */
+    public function allowOptionsHeader()
+    {
+        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+        return $this->generateResponse(true);
     }
 
 }
