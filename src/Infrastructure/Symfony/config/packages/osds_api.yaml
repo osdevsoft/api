@@ -1,13 +1,34 @@
 services:
+
+    SymfonyContainer:
+        class: Osds\Api\Infrastructure\Bus\SymfonyContainer
+        autowire: true
+
+    RabbitMQ:
+      class: Osds\Api\Infrastructure\AMQP\RabbitMQ
+      autowire: true
+
+
     Illuminate\Http\Request:
         autowire: true
 
+    Osds\Api\Domain\Bus\Query\QueryBus:
+        autowire: true
+#        arguments: [ "@SymfonyContainer" ]
 
-    Osds\Api\Application\Insert\InsertEntityCommandBus:
+    Osds\Api\Domain\Bus\Command\CommandBus:
         autowire: true
+#        arguments:
+#            - "@SymfonyContainer"
+
+    #### Insert Entity
     Osds\Api\Application\Insert\InsertEntityCommandHandler:
-        autowire: true
-    Osds\Api\Application\Insert\InsertEntityUseCase:
+        public: true
+        arguments:
+            - "@InsertEntityUseCase"
+            - "@RabbitMQ"
+    InsertEntityUseCase:
+        class: Osds\Api\Application\Insert\InsertEntityUseCase
         autowire: true
     Osds\Api\Application\Insert\InsertEntityRepository:
         autowire: true
@@ -15,9 +36,11 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
 
-    Osds\Api\Application\Search\SearchEntityQueryBus:
-        autowire: true
+    #### Search Entity
+#    Osds\Api\Application\Search\SearchEntityQueryBus:
+#        autowire: true
     Osds\Api\Application\Search\SearchEntityQueryHandler:
+        public: true
         autowire: true
     Osds\Api\Application\Search\SearchEntityUseCase:
         autowire: true
@@ -28,9 +51,11 @@ services:
         tags: ['controller.service_arguments']
 
 
-    Osds\Api\Application\Update\UpdateEntityCommandBus:
-        autowire: true
+    #### Update Entity
+#    Osds\Api\Application\Update\UpdateEntityCommandBus:
+#        autowire: true
     Osds\Api\Application\Update\UpdateEntityCommandHandler:
+        public: true
         autowire: true
     Osds\Api\Application\Update\UpdateEntityUseCase:
         autowire: true
@@ -40,9 +65,11 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
 
-    Osds\Api\Application\Delete\DeleteEntityCommandBus:
-        autowire: true
+    #### Delete Entity
+#    Osds\Api\Application\Delete\DeleteEntityCommandBus:
+#        autowire: true
     Osds\Api\Application\Delete\DeleteEntityCommandHandler:
+        public: true
         autowire: true
     Osds\Api\Application\Delete\DeleteEntityUseCase:
         autowire: true

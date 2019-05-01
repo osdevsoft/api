@@ -5,7 +5,7 @@ namespace Osds\Api\Application\Insert;
 use Osds\Api\Domain\Bus\Command\Command;
 use Osds\Api\Domain\Bus\Command\CommandBus;
 
-class InsertEntityCommandBus implements CommandBus
+class InsertEntityCommandBus
 {
 
     private $command_handler;

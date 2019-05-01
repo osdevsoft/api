@@ -1,10 +1,11 @@
 <?php
 
-namespace Osds\Api\Infrastructure\Bus\Query;
+namespace Osds\Api\Infrastructure\Bus;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Osds\Api\Infrastructure\Bus\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface as SymfonyContainerInterface;
 
-class SymfonyContainer implements ContainerInterface {
+class SymfonyContainer implements SymfonyContainerInterface, ContainerInterface {
 
     public function set($id, $service) {}
 
