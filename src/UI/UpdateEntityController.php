@@ -61,6 +61,7 @@ class UpdateEntityController extends BaseUIController
         $this->build($this->request);
 
         $messageObject = $this->getEntityMessageObject($entity, $id, $this->request);
+        $messageObject->setQueue('update_queue');
 
         $result = $this->commandBus->dispatch($messageObject);
 

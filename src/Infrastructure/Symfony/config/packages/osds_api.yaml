@@ -10,14 +10,20 @@ old_sound_rabbit_mq:
             connection: default
             queue_options: { name: 'insert_queue'}
             callback: InsertEntityConsumer
-
+        update_queue:
+          connection: default
+          queue_options: { name: 'update_queue'}
+          callback: UpdateEntityConsumer
+        delete_queue:
+          connection: default
+          queue_options: { name: 'delete_queue'}
+          callback: DeleteEntityConsumer
 
 services:
 
     SymfonyContainer:
         class: Osds\Api\Infrastructure\Bus\SymfonyContainer
         autowire: true
-
     RabbitMQ:
         class: Osds\Api\Infrastructure\AMQP\RabbitMQ
         arguments:
@@ -25,19 +31,17 @@ services:
             - 5672
             - rabbitmq
             - rabbitmq
-
-
-    Illuminate\Http\Request:
-        autowire: true
-
     Osds\Api\Domain\Bus\Query\QueryBus:
         autowire: true
 #        arguments: [ "@SymfonyContainer" ]
-
     Osds\Api\Domain\Bus\Command\CommandBus:
         autowire: true
 #        arguments:
 #            - "@SymfonyContainer"
+
+    Illuminate\Http\Request:
+        autowire: true
+
 
     #### Insert Entity
     Osds\Api\UI\InsertEntityController:
@@ -59,8 +63,9 @@ services:
 
 
     #### Search Entity
-#    Osds\Api\Application\Search\SearchEntityQueryBus:
-#        autowire: true
+    Osds\Api\UI\SearchEntityController:
+        autowire: true
+        tags: ['controller.service_arguments']
     Osds\Api\Application\Search\SearchEntityQueryHandler:
         public: true
         autowire: true
@@ -68,12 +73,12 @@ services:
         autowire: true
     Osds\Api\Application\Search\SearchEntityRepository:
         autowire: true
-    Osds\Api\UI\SearchEntityController:
-        autowire: true
-        tags: ['controller.service_arguments']
 
 
     #### Update Entity
+    Osds\Api\UI\UpdateEntityController:
+        autowire: true
+        tags: ['controller.service_arguments']
     Osds\Api\Application\Update\UpdateEntityCommandHandler:
         public: true
         arguments:
@@ -84,11 +89,15 @@ services:
         autowire: true
     Osds\Api\Application\Update\UpdateEntityRepository:
         autowire: true
-    Osds\Api\UI\UpdateEntityController:
-        autowire: true
-        tags: ['controller.service_arguments']
+    UpdateEntityConsumer:
+      class: Osds\Api\Application\Update\UpdateEntityConsumer
+      autowire: true
+
 
     #### Delete Entity
+    Osds\Api\UI\DeleteEntityController:
+        autowire: true
+        tags: ['controller.service_arguments']
     Osds\Api\Application\Delete\DeleteEntityCommandHandler:
         public: true
         arguments:
@@ -99,6 +108,6 @@ services:
         autowire: true
     Osds\Api\Application\Delete\DeleteEntityRepository:
         autowire: true
-    Osds\Api\UI\DeleteEntityController:
-        autowire: true
-        tags: ['controller.service_arguments']
+    DeleteEntityConsumer:
+      class: Osds\Api\Application\Delete\DeleteEntityConsumer
+      autowire: true

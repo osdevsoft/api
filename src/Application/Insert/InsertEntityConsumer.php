@@ -8,8 +8,7 @@ class InsertEntityConsumer
     private $command;
 
     public function __construct(
-        InsertEntityCommandHandler $commandHandler,
-        LoggerInterface $logger
+        InsertEntityCommandHandler $commandHandler
     )
     {
         $this->command = $commandHandler;

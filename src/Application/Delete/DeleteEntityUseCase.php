@@ -12,9 +12,9 @@ final class DeleteEntityUseCase
         $this->repository = $repository;
     }
 
-    public function execute($entity, $id)
+    public function execute($entity, $uuid)
     {
         $this->repository->setEntity($entity);
-        return $this->repository->delete($id);
+        return $this->repository->delete($uuid);
     }
 }

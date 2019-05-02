@@ -63,7 +63,7 @@ class InsertEntityController extends BaseUIController
         $this->build($this->request);
 
         $messageObject = $this->getEntityMessageObject($entity, $this->request);
-        $messageObject->setQueue('insert_queue');
+//        $messageObject->setQueue('insert_queue');
 
         $result = $this->commandBus->dispatch($messageObject);
 

@@ -19,12 +19,15 @@ final class UpdateEntityCommandHandler implements CommandHandler
         $this->amqp = $amqp;
     }
 
-    public function handle(UpdateEntityCommand $command)
+    public function handle(UpdateEntityCommand $command, $forceExecution = false)
     {
         try {
-            if( ($queue = $command->getQueue() ) !== null) {
+            if(
+                !$forceExecution
+                && (($queue = $command->getQueue() ) !== null)
+            ) {
 
-                 $this->amqp->publish($queue, $command->getPayload());
+                 $this->amqp->publish($queue, serialize($command));
 
             } else {
 

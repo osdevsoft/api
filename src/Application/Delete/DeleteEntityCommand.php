@@ -10,15 +10,15 @@ final class DeleteEntityCommand implements Command
 
     private $entity;
 
-    private $id;
+    private $uuid;
 
     public function __construct(
         string $entity,
-        string $id
+        string $uuid
     )
     {
         $this->entity = $entity;
-        $this->id = $id;
+        $this->uuid = $uuid;
     }
 
     public function entity(): string
@@ -26,9 +26,9 @@ final class DeleteEntityCommand implements Command
         return $this->entity;
     }
 
-    public function id(): string
+    public function uuid(): string
     {
-        return $this->id;
+        return $this->uuid;
     }
 
     public function getPayload(): string
@@ -36,8 +36,7 @@ final class DeleteEntityCommand implements Command
         return json_encode(
             [
                 'entity' => $this->entity,
-                'uuid' => $this->uuid,
-                'data' => $this->data
+                'uuid' => $this->uuid
             ]
         );
     }

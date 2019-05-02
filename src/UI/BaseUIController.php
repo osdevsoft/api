@@ -59,7 +59,7 @@ class BaseUIController
 
     /**
      * @Route(
-     *     "/{id?}",
+     *     "/{id}",
      *     methods={"OPTIONS"}
      * )
      *

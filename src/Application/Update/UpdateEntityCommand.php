@@ -9,16 +9,16 @@ final class UpdateEntityCommand implements Command
 
     private $entity;
 
-    private $id;
+    private $uuid;
 
     public function __construct(
         string $entity,
-        string $id,
+        string $uuid,
         array $data
     )
     {
         $this->entity = $entity;
-        $this->id = $id;
+        $this->uuid = $uuid;
         $this->data = $data;
     }
 
@@ -27,9 +27,9 @@ final class UpdateEntityCommand implements Command
         return $this->entity;
     }
 
-    public function id(): string
+    public function uuid(): string
     {
-        return $this->id;
+        return $this->uuid;
     }
 
     public function data(): array
