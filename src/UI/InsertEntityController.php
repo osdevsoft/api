@@ -2,7 +2,6 @@
 
 namespace Osds\Api\UI;
 
-use App\Entity\Author;
 use Illuminate\Http\Request;
 
 use Osds\Api\Application\Insert\InsertEntityCommand;
@@ -60,9 +59,11 @@ class InsertEntityController extends BaseUIController
 
     public function handle($entity)
     {
+
         $this->build($this->request);
 
         $messageObject = $this->getEntityMessageObject($entity, $this->request);
+        $messageObject->setQueue('insert_queue');
 
         $result = $this->commandBus->dispatch($messageObject);
 

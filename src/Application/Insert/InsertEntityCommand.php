@@ -13,6 +13,8 @@ final class InsertEntityCommand implements Command
 
     private $data;
 
+    private $queue = null;
+
     public function __construct(
         string $entity,
         string $uuid,
@@ -48,6 +50,16 @@ final class InsertEntityCommand implements Command
                 'data' => $this->data
             ]
         );
+    }
+
+    public function setQueue($queue)
+    {
+        $this->queue = $queue;
+    }
+
+    public function getQueue()
+    {
+        return $this->queue;
     }
 
 

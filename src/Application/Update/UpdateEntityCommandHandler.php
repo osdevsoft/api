@@ -3,22 +3,41 @@
 namespace Osds\Api\Application\Update;
 
 use Osds\Api\Domain\Bus\Command\CommandHandler;
+use Osds\Api\Infrastructure\AMQP\AMQPInterface;
 
 final class UpdateEntityCommandHandler implements CommandHandler
 {
-    private $use_case;
+    private $useCase;
+    private $amqp;
 
-    public function __construct(UpdateEntityUseCase $use_case)
+    public function __construct(
+        UpdateEntityUseCase $useCase,
+        AMQPInterface $amqp
+    )
     {
-        $this->use_case = $use_case;
+        $this->useCase = $useCase;
+        $this->amqp = $amqp;
     }
 
     public function handle(UpdateEntityCommand $command)
     {
-        return $this->use_case->execute(
-            $command->entity(),
-            $command->id(),
-            $command->data()
-            );
+        try {
+            if( ($queue = $command->getQueue() ) !== null) {
+
+                 $this->amqp->publish($queue, $command->getPayload());
+
+            } else {
+
+                $this->useCase->execute(
+                    $command->entity(),
+                    $command->uuid(),
+                    $command->data()
+                );
+            }
+        } catch(\Exception $e) {
+            dd($e->getMessage());
+        }
+
+         return $command->uuid();
     }
 }

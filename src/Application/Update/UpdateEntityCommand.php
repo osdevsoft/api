@@ -37,5 +37,26 @@ final class UpdateEntityCommand implements Command
         return $this->data;
     }
 
+    public function getPayload(): string
+    {
+        return json_encode(
+            [
+                'entity' => $this->entity,
+                'uuid' => $this->uuid,
+                'data' => $this->data
+            ]
+        );
+    }
+
+    public function setQueue($queue)
+    {
+        $this->queue = $queue;
+    }
+
+    public function getQueue()
+    {
+        return $this->queue;
+    }
+
 
 }

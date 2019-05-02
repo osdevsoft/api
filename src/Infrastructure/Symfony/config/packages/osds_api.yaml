@@ -1,3 +1,17 @@
+old_sound_rabbit_mq:
+    connections:
+        default:
+            host: rabbitmq
+            user: rabbitmq
+            password: rabbitmq
+
+    consumers:
+        insert_queue:
+            connection: default
+            queue_options: { name: 'insert_queue'}
+            callback: InsertEntityConsumer
+
+
 services:
 
     SymfonyContainer:
@@ -5,8 +19,12 @@ services:
         autowire: true
 
     RabbitMQ:
-      class: Osds\Api\Infrastructure\AMQP\RabbitMQ
-      autowire: true
+        class: Osds\Api\Infrastructure\AMQP\RabbitMQ
+        arguments:
+            - rabbitmq
+            - 5672
+            - rabbitmq
+            - rabbitmq
 
 
     Illuminate\Http\Request:
@@ -22,6 +40,9 @@ services:
 #            - "@SymfonyContainer"
 
     #### Insert Entity
+    Osds\Api\UI\InsertEntityController:
+        autowire: true
+        tags: ['controller.service_arguments']
     Osds\Api\Application\Insert\InsertEntityCommandHandler:
         public: true
         arguments:
@@ -32,9 +53,10 @@ services:
         autowire: true
     Osds\Api\Application\Insert\InsertEntityRepository:
         autowire: true
-    Osds\Api\UI\InsertEntityController:
+    InsertEntityConsumer:
+        class: Osds\Api\Application\Insert\InsertEntityConsumer
         autowire: true
-        tags: ['controller.service_arguments']
+
 
     #### Search Entity
 #    Osds\Api\Application\Search\SearchEntityQueryBus:
@@ -52,12 +74,13 @@ services:
 
 
     #### Update Entity
-#    Osds\Api\Application\Update\UpdateEntityCommandBus:
-#        autowire: true
     Osds\Api\Application\Update\UpdateEntityCommandHandler:
         public: true
-        autowire: true
-    Osds\Api\Application\Update\UpdateEntityUseCase:
+        arguments:
+            - "@UpdateEntityUseCase"
+            - "@RabbitMQ"
+    UpdateEntityUseCase:
+        class: Osds\Api\Application\Update\UpdateEntityUseCase
         autowire: true
     Osds\Api\Application\Update\UpdateEntityRepository:
         autowire: true
@@ -66,12 +89,13 @@ services:
         tags: ['controller.service_arguments']
 
     #### Delete Entity
-#    Osds\Api\Application\Delete\DeleteEntityCommandBus:
-#        autowire: true
     Osds\Api\Application\Delete\DeleteEntityCommandHandler:
         public: true
-        autowire: true
-    Osds\Api\Application\Delete\DeleteEntityUseCase:
+        arguments:
+            - "@DeleteEntityUseCase"
+            - "@RabbitMQ"
+    DeleteEntityUseCase:
+        class: Osds\Api\Application\Delete\DeleteEntityUseCase
         autowire: true
     Osds\Api\Application\Delete\DeleteEntityRepository:
         autowire: true
