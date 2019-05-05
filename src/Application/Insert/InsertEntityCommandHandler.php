@@ -22,12 +22,15 @@ final class InsertEntityCommandHandler implements CommandHandler
     public function handle(InsertEntityCommand $command, $forceExecution = false)
     {
         try {
+
+            $queue = $command->getQueue();
+
             if(
                 !$forceExecution
-                && (($queue = $command->getQueue() ) !== null)
+                && ($queue !== null)
             ) {
 
-                 $this->amqp->publish($queue, serialize($command));
+                 $this->amqp->publish($queue, $command->getPayload());
 
             } else {
 
@@ -36,7 +39,11 @@ final class InsertEntityCommandHandler implements CommandHandler
                     $command->uuid(),
                     $command->data()
                 );
+                $this->amqp->publish($queue . 'insert_entity_event_queue', $command->getPayload());
+
             }
+
+
         } catch(\Exception $e) {
             dd($e->getMessage());
         }

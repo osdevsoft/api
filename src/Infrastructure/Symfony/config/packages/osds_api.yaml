@@ -8,16 +8,33 @@ old_sound_rabbit_mq:
     consumers:
         insert_queue:
             connection: default
-            queue_options: { name: 'insert_queue'}
+            queue_options:
+                name: insert_queue
             callback: InsertEntityConsumer
         update_queue:
-          connection: default
-          queue_options: { name: 'update_queue'}
-          callback: UpdateEntityConsumer
+            connection: default
+            queue_options:
+                name: update_queue
+            callback: UpdateEntityConsumer
         delete_queue:
-          connection: default
-          queue_options: { name: 'delete_queue'}
-          callback: DeleteEntityConsumer
+            connection: default
+            queue_options:
+                name: delete_queue
+            callback: DeleteEntityConsumer
+
+    multiple_consumers:
+        insert_entity_event_queue:
+            connection: default
+            exchange_options:
+                name: insert_entity_event_queue
+                type: fanout
+            queues:
+                insert_entity_event_queue:
+                    name: insert_entity_event_queue
+                    callback: ReplicateForQueryConsumer
+
+
+
 
 services:
 
@@ -111,3 +128,8 @@ services:
     DeleteEntityConsumer:
       class: Osds\Api\Application\Delete\DeleteEntityConsumer
       autowire: true
+
+
+    ReplicateForQueryConsumer:
+        class: Osds\Api\Application\Replicate\ReplicateForQueryConsumer
+        autowire: true

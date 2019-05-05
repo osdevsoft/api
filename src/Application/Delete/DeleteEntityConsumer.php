@@ -1,14 +1,14 @@
 <?php
 
-namespace Osds\Api\Application\Insert;
+namespace Osds\Api\Application\Delete;
 
-class InsertEntityConsumer
+class DeleteEntityConsumer
 {
 
     private $command;
 
     public function __construct(
-        InsertEntityCommandHandler $commandHandler
+        DeleteEntityCommandHandler $commandHandler
     )
     {
         $this->command = $commandHandler;
@@ -16,11 +16,8 @@ class InsertEntityConsumer
 
     public function execute($message)
     {
-        echo "insert consumer";
         $command = unserialize($message->getBody());
         $uuid = $this->command->handle($command, true);
-
-
 
     }
 

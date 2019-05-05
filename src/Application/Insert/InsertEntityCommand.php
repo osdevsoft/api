@@ -43,13 +43,7 @@ final class InsertEntityCommand implements Command
 
     public function getPayload(): string
     {
-        return json_encode(
-            [
-                'entity' => $this->entity,
-                'uuid' => $this->uuid,
-                'data' => $this->data
-            ]
-        );
+        return serialize($this);
     }
 
     public function setQueue($queue)
