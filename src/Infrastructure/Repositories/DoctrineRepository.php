@@ -3,7 +3,7 @@
 namespace Osds\Api\Infrastructure\Repositories;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query;
+//use Doctrine\ORM\Query;
 use function Osds\Api\Utils\underscoreToCamelCase;
 
 class DoctrineRepository implements BaseRepository

@@ -58,7 +58,8 @@ services:
 
     Illuminate\Http\Request:
         autowire: true
-
+    Elasticsearch\ClientBuilder:
+        autowire: true
 
     #### Insert Entity
     Osds\Api\UI\InsertEntityController:
@@ -76,6 +77,21 @@ services:
         autowire: true
     InsertEntityConsumer:
         class: Osds\Api\Application\Insert\InsertEntityConsumer
+        autowire: true
+
+
+    #### Replicate
+    Osds\Api\Application\Replicate\ReplicateForQueryCommandHandler:
+        public: true
+        arguments:
+            - "@ReplicateForQueryUseCase"
+    ReplicateForQueryUseCase:
+        class: Osds\Api\Application\Replicate\ReplicateForQueryUseCase
+        autowire: true
+    Osds\Api\Application\Replicate\ReplicateForQueryRepository:
+        autowire: true
+    ReplicateForQueryConsumer:
+        class: Osds\Api\Application\Replicate\ReplicateForQueryConsumer
         autowire: true
 
 
@@ -129,7 +145,3 @@ services:
       class: Osds\Api\Application\Delete\DeleteEntityConsumer
       autowire: true
 
-
-    ReplicateForQueryConsumer:
-        class: Osds\Api\Application\Replicate\ReplicateForQueryConsumer
-        autowire: true

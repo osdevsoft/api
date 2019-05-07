@@ -8,17 +8,23 @@ class ReplicateForQueryConsumer
 //    private $command;
 
     public function __construct(
-//        ReplicateEntityForQueryCommandHandler $commandHandler
+        ReplicateForQueryCommandHandler $commandHandler
     )
     {
-//        $this->command = $commandHandler;
+        $this->command = $commandHandler;
     }
 
     public function execute($message)
     {
-//        $command = unserialize($message->getBody());
-//        $uuid = $this->command->handle($command, true);
-        file_put_contents('/tmp/Replicate', $message->getBody());
+        $originCommand = unserialize($message->getBody());
+        $command = new ReplicateForQueryCommand(
+            $originCommand->entity(),
+            $originCommand->uuid(),
+            $originCommand->data()
+        );
+
+        $uuid = $this->command->handle($command, true);
+//        file_put_contents('/tmp/Replicate', $message->getBody());
     }
 
 }
