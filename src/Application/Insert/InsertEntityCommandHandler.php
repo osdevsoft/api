@@ -39,7 +39,7 @@ final class InsertEntityCommandHandler implements CommandHandler
                     $command->uuid(),
                     $command->data()
                 );
-                $this->amqp->publish($queue . 'insert_entity_event_queue', $command->getPayload());
+                $this->amqp->publish( 'insert_completed', $command->getPayload());
 
             }
 

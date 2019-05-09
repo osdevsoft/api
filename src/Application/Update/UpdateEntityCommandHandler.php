@@ -36,6 +36,8 @@ final class UpdateEntityCommandHandler implements CommandHandler
                     $command->uuid(),
                     $command->data()
                 );
+                $this->amqp->publish('update_completed', $command->getPayload());
+
             }
         } catch(\Exception $e) {
             dd($e->getMessage());

@@ -3,7 +3,6 @@
 namespace Osds\Api\Application\Replicate;
 
 use Osds\Api\Domain\Bus\Command\CommandHandler;
-use Osds\Api\Infrastructure\AMQP\AMQPInterface;
 
 final class ReplicateForQueryCommandHandler implements CommandHandler
 {

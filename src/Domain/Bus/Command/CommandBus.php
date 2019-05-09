@@ -9,10 +9,9 @@ class CommandBus implements CommandBusInterface
     private $container;
 
     public function __construct(
-        \Symfony\Component\DependencyInjection\ContainerInterface $container
-//        ContainerInterface $container
+        ContainerInterface $container
     ) {
-        $this->container = $container;
+        $this->container = $container->handler();
     }
 
     public function dispatch(Command $messageObject) {

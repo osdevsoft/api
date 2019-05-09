@@ -6,41 +6,70 @@ old_sound_rabbit_mq:
             password: rabbitmq
 
     consumers:
-        insert_queue:
+        insert:
             connection: default
             queue_options:
-                name: insert_queue
+                name: insert
             callback: InsertEntityConsumer
-        update_queue:
+        update:
             connection: default
             queue_options:
-                name: update_queue
+                name: update
             callback: UpdateEntityConsumer
-        delete_queue:
+        delete:
             connection: default
             queue_options:
-                name: delete_queue
+                name: delete
             callback: DeleteEntityConsumer
 
     multiple_consumers:
-        insert_entity_event_queue:
+        insert_completed:
             connection: default
             exchange_options:
-                name: insert_entity_event_queue
+                name: insert_completed
                 type: fanout
             queues:
-                insert_entity_event_queue:
-                    name: insert_entity_event_queue
+                insert_completed_replicate:
+                    name: insert_completed
                     callback: ReplicateForQueryConsumer
-
-
+                insert_completed_log:
+                    name: insert_completed
+                    callback: LogConsumer
+        update_completed:
+            connection: default
+            exchange_options:
+                name: update_completed
+                type: fanout
+            queues:
+                update_completed:
+                    name: update_completed
+                    callback: ReplicateForQueryConsumer
+        delete_completed:
+            connection: default
+            exchange_options:
+                name: delete_completed
+                type: fanout
+            queues:
+                delete_completed:
+                    name: delete_completed
+                    callback: ReplicateForQueryConsumer
 
 
 services:
 
+    ###############
+    ### Vendors ###
+    ###############
+    Illuminate\Http\Request:
+        autowire: true
+    Elasticsearch\ClientBuilder:
+        autowire: true
+
+    ### Container for creating handlers on Bus
     SymfonyContainer:
         class: Osds\Api\Infrastructure\Bus\SymfonyContainer
         autowire: true
+
     RabbitMQ:
         class: Osds\Api\Infrastructure\AMQP\RabbitMQ
         arguments:
@@ -48,19 +77,28 @@ services:
             - 5672
             - rabbitmq
             - rabbitmq
+
     Osds\Api\Domain\Bus\Query\QueryBus:
-        autowire: true
-#        arguments: [ "@SymfonyContainer" ]
+        arguments:
+            - "@SymfonyContainer"
     Osds\Api\Domain\Bus\Command\CommandBus:
-        autowire: true
-#        arguments:
-#            - "@SymfonyContainer"
+        arguments:
+            - "@SymfonyContainer"
 
-    Illuminate\Http\Request:
+
+    ####################
+    ### Repositories ###
+    ####################
+    DoctrineRepository:
+        class: Osds\Api\Infrastructure\Repositories\DoctrineRepository
         autowire: true
-    Elasticsearch\ClientBuilder:
+    ElasticCacheRepository:
+        class: Osds\Api\Infrastructure\Repositories\ElasticCacheRepository
         autowire: true
 
+    ##########
+    ### UI ###
+    ##########
     #### Insert Entity
     Osds\Api\UI\InsertEntityController:
         autowire: true
@@ -74,7 +112,9 @@ services:
         class: Osds\Api\Application\Insert\InsertEntityUseCase
         autowire: true
     Osds\Api\Application\Insert\InsertEntityRepository:
-        autowire: true
+        public: true
+        arguments:
+            - "@DoctrineRepository"
     InsertEntityConsumer:
         class: Osds\Api\Application\Insert\InsertEntityConsumer
         autowire: true
@@ -92,6 +132,10 @@ services:
         autowire: true
     ReplicateForQueryConsumer:
         class: Osds\Api\Application\Replicate\ReplicateForQueryConsumer
+        autowire: true
+
+    LogConsumer:
+        class: Osds\Api\Application\Replicate\LogConsumer
         autowire: true
 
 
@@ -144,4 +188,3 @@ services:
     DeleteEntityConsumer:
       class: Osds\Api\Application\Delete\DeleteEntityConsumer
       autowire: true
-

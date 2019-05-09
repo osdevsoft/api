@@ -5,13 +5,14 @@ namespace Osds\Api\Application\Replicate;
 class ReplicateForQueryConsumer
 {
 
-//    private $command;
+    private $command;
 
     public function __construct(
         ReplicateForQueryCommandHandler $commandHandler
     )
     {
         $this->command = $commandHandler;
+        echo "create";
     }
 
     public function execute($message)
@@ -22,9 +23,8 @@ class ReplicateForQueryConsumer
             $originCommand->uuid(),
             $originCommand->data()
         );
-
+        echo "cosume";
         $uuid = $this->command->handle($command, true);
-//        file_put_contents('/tmp/Replicate', $message->getBody());
     }
 
 }

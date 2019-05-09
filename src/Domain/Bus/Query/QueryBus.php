@@ -2,17 +2,16 @@
 
 namespace Osds\Api\Domain\Bus\Query;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Osds\Api\Infrastructure\Bus\ContainerInterface;
 
 class QueryBus implements QueryBusInterface
 {
     private $container;
 
     public function __construct(
-        ContainerInterface
-        $container
+        ContainerInterface $container
     ) {
-        $this->container = $container;
+        $this->container = $container->handler();
     }
 
     public function ask(Query $messageObject) {

@@ -47,12 +47,12 @@ class ElasticCacheRepository implements BaseRepository
     public function search($entity, Array $search_fields, Array $query_filters)
     {
         $params = [
-            'index' => 'my_index',
-            'type' => 'entity_name',
+            'index' => $entity,
+            'type' => 'data',
             'body' => [
                 'query' => [
                     'match' => [
-                        'bar' => 'foo'
+                        $search_fields
                     ]
                 ]
             ]
@@ -64,16 +64,15 @@ class ElasticCacheRepository implements BaseRepository
 
     public function update($entity_uuid, $data)
     {
-        $this->delete($entity_uuid);
         $this->insert($entity_uuid, $data);
     }
 
     public function delete($entity_uuid)
     {
         $params = [
-            'index' => 'my_index',
-            'type' => 'entity_name',
-            'id' => 1234
+            'index' => $this->entity,
+            'type' => 'data',
+            'id' => $entity_uuid
         ];
 
         $response = $this->client->delete($params);

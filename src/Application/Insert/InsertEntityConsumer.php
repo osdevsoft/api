@@ -2,7 +2,9 @@
 
 namespace Osds\Api\Application\Insert;
 
-class InsertEntityConsumer
+use Osds\Api\Application\BaseConsumer;
+
+class InsertEntityConsumer extends BaseConsumer
 {
 
     private $command;
@@ -16,11 +18,10 @@ class InsertEntityConsumer
 
     public function execute($message)
     {
-        echo "insert consumer";
         $command = unserialize($message->getBody());
         $uuid = $this->command->handle($command, true);
 
-
+        $this->log('inserting ' . $uuid);
 
     }
 

@@ -140,7 +140,6 @@ class DoctrineRepository implements BaseRepository
     public function delete($entity_id) {
 
         $object = $this->entityManager->getRepository($this->getEntityFQName())->find($entity_id);
-
         // tell Doctrine you want to (eventually) save the Product (no queries yet)
         $this->entityManager->remove($object);
 

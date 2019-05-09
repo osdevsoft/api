@@ -35,6 +35,8 @@ final class DeleteEntityCommandHandler implements CommandHandler
                     $command->entity(),
                     $command->uuid()
                 );
+                $this->amqp->publish('delete_completed', $command->getPayload());
+
             }
         } catch(\Exception $e) {
             dd($e->getMessage());
