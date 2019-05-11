@@ -2,7 +2,6 @@
 
 namespace Osds\Api\Application\Insert;
 
-
 use Osds\Api\Infrastructure\Repositories\BaseRepository;
 
 class InsertEntityRepository

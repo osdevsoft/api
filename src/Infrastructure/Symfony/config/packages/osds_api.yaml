@@ -32,9 +32,9 @@ old_sound_rabbit_mq:
                 insert_completed_replicate:
                     name: insert_completed
                     callback: ReplicateForQueryConsumer
-                insert_completed_log:
-                    name: insert_completed
-                    callback: LogConsumer
+#                insert_completed_log:
+#                    name: insert_completed
+#                    callback: LogConsumer
         update_completed:
             connection: default
             exchange_options:
@@ -96,6 +96,7 @@ services:
         class: Osds\Api\Infrastructure\Repositories\ElasticCacheRepository
         autowire: true
 
+
     ##########
     ### UI ###
     ##########
@@ -120,25 +121,6 @@ services:
         autowire: true
 
 
-    #### Replicate
-    Osds\Api\Application\Replicate\ReplicateForQueryCommandHandler:
-        public: true
-        arguments:
-            - "@ReplicateForQueryUseCase"
-    ReplicateForQueryUseCase:
-        class: Osds\Api\Application\Replicate\ReplicateForQueryUseCase
-        autowire: true
-    Osds\Api\Application\Replicate\ReplicateForQueryRepository:
-        autowire: true
-    ReplicateForQueryConsumer:
-        class: Osds\Api\Application\Replicate\ReplicateForQueryConsumer
-        autowire: true
-
-    LogConsumer:
-        class: Osds\Api\Application\Replicate\LogConsumer
-        autowire: true
-
-
     #### Search Entity
     Osds\Api\UI\SearchEntityController:
         autowire: true
@@ -149,7 +131,10 @@ services:
     Osds\Api\Application\Search\SearchEntityUseCase:
         autowire: true
     Osds\Api\Application\Search\SearchEntityRepository:
-        autowire: true
+        public: true
+        arguments:
+            - "@ElasticCacheRepository"
+#            - "@DoctrineRepository"
 
 
     #### Update Entity
@@ -165,7 +150,9 @@ services:
         class: Osds\Api\Application\Update\UpdateEntityUseCase
         autowire: true
     Osds\Api\Application\Update\UpdateEntityRepository:
-        autowire: true
+        public: true
+        arguments:
+            - "@DoctrineRepository"
     UpdateEntityConsumer:
       class: Osds\Api\Application\Update\UpdateEntityConsumer
       autowire: true
@@ -184,7 +171,25 @@ services:
         class: Osds\Api\Application\Delete\DeleteEntityUseCase
         autowire: true
     Osds\Api\Application\Delete\DeleteEntityRepository:
-        autowire: true
+        public: true
+        arguments:
+            - "@DoctrineRepository"
     DeleteEntityConsumer:
       class: Osds\Api\Application\Delete\DeleteEntityConsumer
       autowire: true
+
+
+    #### Replicate
+    ReplicateForQueryConsumer:
+        class: Osds\Api\Application\Replicate\ReplicateForQueryConsumer
+        autowire: true
+    Osds\Api\Application\Replicate\ReplicateForQueryCommandHandler:
+        public: true
+        autowire: true
+    Osds\Api\Application\Replicate\ReplicateForQueryUseCaseFactory:
+        public: true
+        arguments:
+            - "@ElasticCacheRepository"
+    LogConsumer:
+        class: Osds\Api\Application\Replicate\LogConsumer
+        autowire: true

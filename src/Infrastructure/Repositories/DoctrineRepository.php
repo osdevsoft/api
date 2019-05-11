@@ -3,7 +3,7 @@
 namespace Osds\Api\Infrastructure\Repositories;
 
 use Doctrine\ORM\EntityManagerInterface;
-//use Doctrine\ORM\Query;
+use Doctrine\ORM\Query;
 use function Osds\Api\Utils\underscoreToCamelCase;
 
 class DoctrineRepository implements BaseRepository
@@ -91,7 +91,7 @@ class DoctrineRepository implements BaseRepository
         list($query_builder, $joined_entities) = $this->addFieldsToFilterBy($entity, $query_filters, $query_builder, $joined_entities);
         list($query_builder, $total_items) = $this->addFieldsToPaginateBy($entity, $query_filters, $query_builder);
 
-        $items = $query_builder->getQuery()->getResult(); #Query::HYDRATE_ARRAY
+        $items = $query_builder->getQuery()->getResult(Query::HYDRATE_ARRAY); #Query::HYDRATE_ARRAY
 
         return [
             'total_items' => !is_null($total_items)?$total_items:count($items),
@@ -366,22 +366,25 @@ class DoctrineRepository implements BaseRepository
 
         $total_items = null;
 
-        if(isset($query_filters['page_items']))
-        {
-            if(!isset($query_filters['page']))
-            {
-                $query_filters['page'] = 1;
-            }
-
-            $start = ($query_filters['page'] - 1) * $query_filters['page_items'];
-
-            $query_builder_total = clone $query_builder;
-            $query_builder_total->select("count({$entity}.uuid)");
-            $total_items = (int) $query_builder_total->getQuery()->getSingleScalarResult();
-
-            $query_builder->setFirstResult($start)->setMaxResults($query_filters['page_items']);
-
+        if (isset($query_filters['page_items'])) {
+            $page_items = $query_filters['page_items'];
+        } else {
+            $page_items = 999;
         }
+
+        if(!isset($query_filters['page']))
+        {
+            $query_filters['page'] = 1;
+        }
+
+        $start = ($query_filters['page'] - 1) * $page_items;
+
+        $query_builder_total = clone $query_builder;
+        $query_builder_total->select("count({$entity}.uuid)");
+        $total_items = (int) $query_builder_total->getQuery()->getSingleScalarResult();
+
+        $query_builder->setFirstResult($start)->setMaxResults($page_items);
+
         return [$query_builder, $total_items];
     }
 

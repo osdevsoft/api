@@ -14,15 +14,16 @@ class CommandBus implements CommandBusInterface
         $this->container = $container->handler();
     }
 
-    public function dispatch(Command $messageObject) {
+    public function dispatch(Command $messageObject, $forceExecution = false)
+    {
 
         $queryHandler = $this->getCommandHandler($messageObject);
-        return $queryHandler->handle($messageObject);
+        return $queryHandler->handle($messageObject, $forceExecution);
 
     }
 
-    private function getCommandHandler($messageObject) {
-
+    private function getCommandHandler($messageObject)
+    {
         try {
             $queryHandlerClass = get_class($messageObject) . 'Handler';
             return $this->container->get($queryHandlerClass);

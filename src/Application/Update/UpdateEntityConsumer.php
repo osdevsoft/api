@@ -2,7 +2,9 @@
 
 namespace Osds\Api\Application\Update;
 
-class UpdateEntityConsumer
+use Osds\Api\Application\BaseConsumer;
+
+class UpdateEntityConsumer extends BaseConsumer
 {
 
     private $command;
@@ -16,8 +18,17 @@ class UpdateEntityConsumer
 
     public function execute($message)
     {
-        $command = unserialize($message->getBody());
-        $uuid = $this->command->handle($command, true);
+        try {
+
+            $originCommand = unserialize($message->getBody());
+            $this->log('updating ' . $originCommand->uuid());
+
+            $command = unserialize($message->getBody());
+            $this->command->handle($originCommand, true);
+
+        } catch(\Exception $e) {
+            $this->log('there was an error during the update: ' . $message->getBody());
+        }
 
     }
 

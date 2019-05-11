@@ -42,8 +42,6 @@ final class InsertEntityCommandHandler implements CommandHandler
                 $this->amqp->publish( 'insert_completed', $command->getPayload());
 
             }
-
-
         } catch(\Exception $e) {
             dd($e->getMessage());
         }

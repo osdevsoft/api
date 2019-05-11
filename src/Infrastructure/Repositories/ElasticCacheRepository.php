@@ -12,13 +12,17 @@ class ElasticCacheRepository implements BaseRepository
     public function __construct(
         ClientBuilder $client
     ) {
-        $this->client = $client::create()->setHosts(['elk'])
-        ->build();
+        $this->client = $client::create()->setHosts(['elk'])->build();
     }
 
     public function setEntity($entity) {
 
         $this->entity = $entity;
+    }
+
+    public function getEntity()
+    {
+        return $this->entity;
     }
 
     public function insert($entity_uuid, $data)
@@ -33,7 +37,7 @@ class ElasticCacheRepository implements BaseRepository
 //            ]
 //        ];
 //
-//        $this->client->indices()->create($params);echo 'insert';
+//        $this->client->indices()->create($params);
         $params = [
             'index' => $this->entity,
             'type' => 'data',
@@ -44,22 +48,74 @@ class ElasticCacheRepository implements BaseRepository
         return $response;
     }
 
-    public function search($entity, Array $search_fields, Array $query_filters)
+    public function search($entity, Array $searchFields, Array $queryFilters)
     {
-        $params = [
-            'index' => $entity,
-            'type' => 'data',
-            'body' => [
-                'query' => [
-                    'match' => [
-                        $search_fields
-                    ]
-                ]
-            ]
-        ];
+        try {
+            $params = [
+                'index' => $entity,
+                'type' => 'data',
+            ];
 
-        $response = $this->client->search($params);
-        return $response;
+            if (count($searchFields) > 0) {
+                $params['body'] = [
+                                    'query' => [
+                                        'match' => $searchFields
+                                    ]
+                                ];
+            }
+
+            if (count($queryFilters) > 0) {
+
+                #TODO: add mappings to index
+//                if(isset($queryFilters['sortby'])) {
+//                    foreach ($queryFilters['sortby'] as $key => $sortField) {
+//                        $params['mappings']['properties'][$queryFilters['sortby'][$key]['field']] = ['type' => 'keyword'];
+//                        $params['sort'][$queryFilters['sortby'][$key]['field']] = $queryFilters['sortby'][$key]['dir'];
+//                    }
+//                }
+
+                if (isset($queryFilters['page_items'])) {
+                    $pageItems = $queryFilters['page_items'];
+                } else {
+                    $pageItems = 999;
+                }
+
+
+                if(isset($queryFilters['page']))
+                {
+                    $pageNumber = $queryFilters['page'];
+                } else {
+                    $pageNumber = 1;
+                }
+
+                $start = ($pageNumber - 1) * $pageItems;
+
+                $params['from'] = $start;
+                $params['size'] = $pageItems;
+
+            }
+
+            $response = $this->client->search($params);
+
+            $totalItems = @$response['hits']['total']['value'];
+            $items = [];
+            if ($totalItems > 0) {
+               foreach($response['hits']['hits'] as $hit) {
+                   $item = $hit['_source'];
+                   $item['uuid'] = $hit['_id'];
+                   $items[] = $item;
+               }
+            }
+
+            return [
+                'total_items' => $totalItems,
+                'items' => $items
+            ];
+
+        } catch(\Exception $e)
+        {
+            dd($e);
+        }
     }
 
     public function update($entity_uuid, $data)
@@ -77,5 +133,24 @@ class ElasticCacheRepository implements BaseRepository
 
         $response = $this->client->delete($params);
         return $response;
+    }
+
+    public function getEntityFields($entity)
+    {
+        return ['name', 'email'];
+
+        $params = [
+            'index' => 'EntityMetadata',
+            'type' => 'data',
+            'body' => [
+                'query' => [
+                    'match' => [
+                        '_id' => $entity
+                    ]
+                ]
+            ]
+        ];
+        $response = $this->client->search($params);
+
     }
 }

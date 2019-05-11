@@ -2,8 +2,23 @@
 
 namespace Osds\Api\Application\Search;
 
-use Osds\Api\Infrastructure\Repositories\DoctrineRepository;
+use Osds\Api\Infrastructure\Repositories\BaseRepository;
 
-class SearchEntityRepository extends DoctrineRepository
+class SearchEntityRepository
 {
+
+    private $repository;
+
+    public function __construct(
+        BaseRepository $repository
+    )
+    {
+        $this->repository = $repository;
+    }
+
+    public function handler()
+    {
+        return $this->repository;
+    }
+
 }

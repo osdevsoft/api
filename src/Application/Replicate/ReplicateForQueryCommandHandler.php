@@ -6,20 +6,22 @@ use Osds\Api\Domain\Bus\Command\CommandHandler;
 
 final class ReplicateForQueryCommandHandler implements CommandHandler
 {
-    private $useCase;
+    private $useCaseFactory;
 
     public function __construct(
-        ReplicateforQueryUseCase $useCase
+        ReplicateForQueryUseCaseFactory $useCaseFactory
     )
     {
-        $this->useCase = $useCase;
+        $this->useCaseFactory = $useCaseFactory;
     }
 
-    public function handle(ReplicateForQueryCommand $command, $forceExecution = false)
+    public function handle($command)
     {
         try {
 
-            $this->useCase->execute(
+            $useCase = $this->useCaseFactory->build($command);
+
+            $useCase->execute(
                 $command->entity(),
                 $command->uuid(),
                 $command->data()

@@ -58,7 +58,7 @@ class DeleteEntityController extends BaseUIController
         $this->build($this->request);
 
         $messageObject = $this->getEntityMessageObject($entity, $id);
-        $messageObject->setQueue('delete');
+//        $messageObject->setQueue('delete');
 
         $result = $this->commandBus->dispatch($messageObject);
 

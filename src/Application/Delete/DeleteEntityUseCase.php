@@ -9,7 +9,7 @@ final class DeleteEntityUseCase
 
     public function __construct(DeleteEntityRepository $repository)
     {
-        $this->repository = $repository;
+        $this->repository = $repository->handler();
     }
 
     public function execute($entity, $uuid)

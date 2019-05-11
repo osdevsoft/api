@@ -8,7 +8,7 @@ final class UpdateEntityUseCase
 
     public function __construct(UpdateEntityRepository $repository)
     {
-        $this->repository = $repository;
+        $this->repository = $repository->handler();
     }
 
     public function execute($entity, $id, $data)

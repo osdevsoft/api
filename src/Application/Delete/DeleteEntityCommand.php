@@ -12,6 +12,10 @@ final class DeleteEntityCommand implements Command
 
     private $uuid;
 
+    private $data;
+
+    private $queue = null;
+
     public function __construct(
         string $entity,
         string $uuid
@@ -31,14 +35,14 @@ final class DeleteEntityCommand implements Command
         return $this->uuid;
     }
 
+    public function data(): array
+    {
+        return $this->data;
+    }
+
     public function getPayload(): string
     {
-        return json_encode(
-            [
-                'entity' => $this->entity,
-                'uuid' => $this->uuid
-            ]
-        );
+        return serialize($this);
     }
 
     public function setQueue($queue)
@@ -46,7 +50,7 @@ final class DeleteEntityCommand implements Command
         $this->queue = $queue;
     }
 
-    public function getQueue()
+    public function getQueue(): string
     {
         return $this->queue;
     }

@@ -1,29 +1,31 @@
 <?php
-
 namespace Osds\Api\Application\Replicate;
 
 use Osds\Api\Domain\Bus\Command\Command;
 
 final class ReplicateForQueryCommand implements Command
 {
-
     private $entity;
 
     private $uuid;
 
     private $data;
 
+    private $originCommand;
+
     private $queue = null;
 
     public function __construct(
         string $entity,
         string $uuid,
-        array $data
+        array $data,
+        string $originCommand
     )
     {
         $this->entity = $entity;
         $this->uuid = $uuid;
         $this->data = $data;
+        $this->originCommand = $originCommand;
     }
 
     public function entity(): string
@@ -41,6 +43,11 @@ final class ReplicateForQueryCommand implements Command
         return $this->data;
     }
 
+    public function originCommand(): string
+    {
+        return $this->originCommand;
+    }
+
     public function getPayload(): string
     {
         return serialize($this);
@@ -55,6 +62,4 @@ final class ReplicateForQueryCommand implements Command
     {
         return $this->queue;
     }
-
-
 }

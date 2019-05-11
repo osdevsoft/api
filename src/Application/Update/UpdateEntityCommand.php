@@ -11,6 +11,10 @@ final class UpdateEntityCommand implements Command
 
     private $uuid;
 
+    private $data;
+
+    private $queue = null;
+
     public function __construct(
         string $entity,
         string $uuid,
@@ -39,13 +43,7 @@ final class UpdateEntityCommand implements Command
 
     public function getPayload(): string
     {
-        return json_encode(
-            [
-                'entity' => $this->entity,
-                'uuid' => $this->uuid,
-                'data' => $this->data
-            ]
-        );
+        return serialize($this);
     }
 
     public function setQueue($queue)

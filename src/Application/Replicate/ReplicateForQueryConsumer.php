@@ -2,29 +2,37 @@
 
 namespace Osds\Api\Application\Replicate;
 
-class ReplicateForQueryConsumer
+use Osds\Api\Application\BaseConsumer;
+use Osds\Api\Domain\Bus\Command\CommandBus;
+
+class ReplicateForQueryConsumer extends BaseConsumer
 {
 
-    private $command;
+    private $commandBus;
 
     public function __construct(
-        ReplicateForQueryCommandHandler $commandHandler
+        CommandBus $commandBus
     )
     {
-        $this->command = $commandHandler;
-        echo "create";
+        $this->commandBus = $commandBus;
     }
 
     public function execute($message)
     {
-        $originCommand = unserialize($message->getBody());
-        $command = new ReplicateForQueryCommand(
-            $originCommand->entity(),
-            $originCommand->uuid(),
-            $originCommand->data()
-        );
-        echo "cosume";
-        $uuid = $this->command->handle($command, true);
+        try {
+            $originCommand = unserialize($message->getBody());
+            $this->log('replicating ' . $originCommand->uuid());
+
+            $command = new ReplicateForQueryCommand(
+                $originCommand->entity(),
+                $originCommand->uuid(),
+                $originCommand->data(),
+                get_class($originCommand)
+            );
+            $this->commandBus->dispatch($command, true);
+            $this->log($e->getMessage());
+        } catch(\Exception $e) {
+        }
     }
 
 }

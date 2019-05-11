@@ -9,12 +9,12 @@ final class InsertEntityUseCase
 
     public function __construct(InsertEntityRepository $repository)
     {
-        $this->repository = $repository;
+        $this->repository = $repository->handler();
     }
 
     public function execute($entity, $uuid, $data)
     {
-        $this->repository->handler()->setEntity($entity);
-        return $this->repository->handler()->insert($uuid, $data);
+        $this->repository->setEntity($entity);
+        return $this->repository->insert($uuid, $data);
     }
 }
