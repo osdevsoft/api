@@ -17,9 +17,9 @@ final class SearchEntityQuery implements Query
 
     public function __construct(
         string $entity,
-        Array $search_fields,
-        Array $query_filters,
-        Array $additional_requests
+        Array $search_fields = [],
+        Array $query_filters = [],
+        Array $additional_requests = []
     )
     {
         $this->entity = $entity;

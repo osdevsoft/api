@@ -19,9 +19,9 @@ class InsertEntityConsumer extends BaseConsumer
     public function execute($message)
     {
         try {
-            $this->log('inserting ' . $command->uuid());
 
             $command = unserialize($message->getBody());
+            $this->log('inserting ' . $command->uuid());
             $this->command->handle($command, true);
 
         } catch(\Exception $e) {

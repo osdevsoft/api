@@ -183,13 +183,36 @@ services:
     ReplicateForQueryConsumer:
         class: Osds\Api\Application\Replicate\ReplicateForQueryConsumer
         autowire: true
-    Osds\Api\Application\Replicate\ReplicateForQueryCommandHandler:
-        public: true
+    ReplicateForQueryCommandHandler:
+        class: Osds\Api\Application\Replicate\ReplicateForQueryCommandHandler
         autowire: true
     Osds\Api\Application\Replicate\ReplicateForQueryUseCaseFactory:
         public: true
         arguments:
             - "@ElasticCacheRepository"
+
     LogConsumer:
         class: Osds\Api\Application\Replicate\LogConsumer
         autowire: true
+
+    ReloadEntityContentOnQueryRepository:
+        tags:
+            name: 'console.command'
+            command: 'osds:reload_entity_content'
+        class: Osds\Api\UI\Command\ReloadEntityContentOnQueryRepositoryCommand
+        arguments:
+            - "@ReloadEntityContentOnQueryRepositoryQueryHandler"
+            - "@ReplicateForQueryCommandHandler"
+    ReloadEntityContentOnQueryRepositoryQueryHandler:
+        class: Osds\Api\Application\Search\SearchEntityQueryHandler
+        arguments:
+            - "@ReloadEntityContentOnQueryRepositoryUseCase"
+    ReloadEntityContentOnQueryRepositoryUseCase:
+        class: Osds\Api\Application\Search\SearchEntityUseCase
+        arguments:
+            - "@ReloadEntityContentOnQueryRepositoryReadRepository"
+    ReloadEntityContentOnQueryRepositoryReadRepository:
+        class: Osds\Api\Application\Search\SearchEntityRepository
+        arguments:
+            - "@DoctrineRepository"
+
