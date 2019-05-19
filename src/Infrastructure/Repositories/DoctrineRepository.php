@@ -4,6 +4,7 @@ namespace Osds\Api\Infrastructure\Repositories;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
+
 use function Osds\Api\Utils\underscoreToCamelCase;
 
 class DoctrineRepository implements BaseRepository
@@ -16,16 +17,16 @@ class DoctrineRepository implements BaseRepository
     const ENTITY_PATH = '\App\Entity\\';
 
     public function __construct(
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $client
     )
     {
-        $this->entityManager = $entityManager;
+        $this->entityManager = $client;
     }
 
     /**
      * @param string $entity entity name
      *
-     * Sets the entity to use. If a strin is received, will create it
+     * Sets the entity to use. If a string is received, will create it
      */
     public function setEntity($entity)
     {

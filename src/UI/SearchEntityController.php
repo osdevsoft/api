@@ -98,7 +98,9 @@ class SearchEntityController extends BaseUIController
 
             return $this->generateResponse($result);
 
-        } catch(\Exception $e) {}
+        } catch(\Exception $e) {
+            dd($e->getMessage());
+        }
     }
 
     public function getEntityMessageObject($entity, $request, $uuid = null)

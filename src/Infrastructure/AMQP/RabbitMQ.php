@@ -12,13 +12,15 @@ class RabbitMQ implements AMQPInterface {
 
 
     public function __construct(
-        $server,
-        $port,
-        $user,
-        $password
+        Array $configuration
     )
     {
-        $this->connect($server, $port, $user, $password);
+        $this->connect(
+            $configuration['server'],
+            $configuration['port'],
+            $configuration['user'],
+            $configuration['password']
+        );
     }
 
 

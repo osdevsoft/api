@@ -87,6 +87,10 @@ final class SearchEntityUseCase
             }
         }
 
+        if($this->repository->getEntity() == null)
+        {
+            $this->repository->setEntity($entity);
+        }
         $result_data['schema'] = [
             'fields' => $this->repository->getEntityFields($this->repository->getEntity())
         ];

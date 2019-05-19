@@ -2,16 +2,15 @@
 
 namespace Osds\Api\UI\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 use Osds\Api\Domain\Bus\Query\QueryHandler;
 use Osds\Api\Application\Search\SearchEntityQuery;
 use Osds\Api\Domain\Bus\Command\CommandHandler;
-use Symfony\Component\Console\Command\Command;
 use Osds\Api\Application\Replicate\ReplicateForQueryCommand;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ReloadEntityContentOnQueryRepositoryCommand extends Command
 {
@@ -53,20 +52,24 @@ class ReloadEntityContentOnQueryRepositoryCommand extends Command
         $io->confirm('Sure to proceed?', true);
 
         $io->section('Truncating data...');
-        #TODO: refactor this trashiny
+        #TODO: untrashiny
         exec('curl -XDELETE http://elk:9200/' . $entity);
 
         $io->newLine();
         $io->newLine();
-        $io->section('Starting replication');
-        $io->text('Nice progress bar 8====D');
 
         $page = 1;
 
-        while ($response = $this->getItems($page))
+        while ($response = $this->getItems($entity, $page))
         {
             if ($page == 1) {
-//                $this->recreateStructure($response['schema']);
+                $io->section('Schema replication');
+                $this->recreateStructure($entity, $response['schema']['fields']);
+                $io->newLine();
+                $io->newLine();
+
+                $io->section('Starting Data replication');
+                $io->text('Nice progress bar 8====D');
                 $totalItems = $response['total_items'];
                 $io->progressStart($totalItems);
             }
@@ -91,13 +94,25 @@ class ReloadEntityContentOnQueryRepositoryCommand extends Command
         $io->error('There was an error while reloading data.');
     }
 
-    private function getItems($page)
+    private function getItems($entity, $page)
     {
         $queryMessageObject = new SearchEntityQuery(
-            'user',
+            $entity,
             [],
             ['page' => $page]
         );
         return $this->queryHandler->handle($queryMessageObject);
+    }
+
+    private function recreateStructure($entity, $schema)
+    {
+        #TODO: untrashiny (ES hardcoded)
+        $mapping = [];
+        $mapping['properties'] = [];
+        foreach ($schema as $field) {
+            $mapping['properties'][$field] = 'keyword';
+        }
+        $cmd = "curl -X PUT http://elk:9200/{$entity}/_mapping -d '" . json_encode($mapping) . "'";
+        exec($cmd);
     }
 }

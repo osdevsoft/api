@@ -2,17 +2,16 @@
 
 namespace Osds\Api\Infrastructure\Repositories;
 
-use Elasticsearch\ClientBuilder;
-
 class ElasticCacheRepository implements BaseRepository
 {
     private $client;
     private $entity;
 
     public function __construct(
-        ClientBuilder $client
+        $client,
+        array $configuration
     ) {
-        $this->client = $client::create()->setHosts(['elk'])->build();
+        $this->client = $client::create()->setHosts([$configuration['server']])->build();
     }
 
     public function setEntity($entity) {
@@ -38,6 +37,9 @@ class ElasticCacheRepository implements BaseRepository
 //        ];
 //
 //        $this->client->indices()->create($params);
+
+        #TODO: if item has referenced entities => recover them
+
         $params = [
             'index' => $this->entity,
             'type' => 'data',
@@ -67,12 +69,12 @@ class ElasticCacheRepository implements BaseRepository
             if (count($queryFilters) > 0) {
 
                 #TODO: add mappings to index
-//                if(isset($queryFilters['sortby'])) {
-//                    foreach ($queryFilters['sortby'] as $key => $sortField) {
-//                        $params['mappings']['properties'][$queryFilters['sortby'][$key]['field']] = ['type' => 'keyword'];
-//                        $params['sort'][$queryFilters['sortby'][$key]['field']] = $queryFilters['sortby'][$key]['dir'];
+                if(isset($queryFilters['sortby'])) {
+//                    $params['sort'] = $queryFilters['sortby'];
+//                    foreach ($queryFilters['sortby'] as $field => $direction) {
+//                        $params['sort'][$field] = $direction;
 //                    }
-//                }
+                }
 
                 if (isset($queryFilters['page_items'])) {
                     $pageItems = $queryFilters['page_items'];
@@ -106,7 +108,6 @@ class ElasticCacheRepository implements BaseRepository
                    $items[] = $item;
                }
             }
-
             return [
                 'total_items' => $totalItems,
                 'items' => $items
@@ -137,20 +138,8 @@ class ElasticCacheRepository implements BaseRepository
 
     public function getEntityFields($entity)
     {
-        return ['name', 'email'];
-
-        $params = [
-            'index' => 'EntityMetadata',
-            'type' => 'data',
-            'body' => [
-                'query' => [
-                    'match' => [
-                        '_id' => $entity
-                    ]
-                ]
-            ]
-        ];
-        $response = $this->client->search($params);
-
+        $params = ['index' => $entity];
+        $response = $this->client->indices()->getMapping($params);
+        return array_keys($response[$entity]['mappings']['properties']);
     }
 }
