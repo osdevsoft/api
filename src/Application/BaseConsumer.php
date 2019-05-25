@@ -8,7 +8,7 @@ class BaseConsumer
     public function log($message)
     {
         $caller = $this->getCallerClass($this);
-        echo $caller . ' :: ' . $message . PHP_EOL . PHP_EOL;
+        echo PHP_EOL . PHP_EOL . date('[Y-m-d H:i:s] ') . $caller . ' :: ' . $message . PHP_EOL;
     }
 
     protected function getCallerClass($class)

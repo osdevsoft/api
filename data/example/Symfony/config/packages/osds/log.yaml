@@ -1,0 +1,6 @@
+services:
+
+    PSRLogger:
+        class: Osds\Api\Infrastructure\Log\PSRLogger
+        arguments:
+            - "@Psr\\Log\\LoggerInterface"

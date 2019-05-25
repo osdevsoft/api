@@ -1,0 +1,6 @@
+services:
+
+    BaseException:
+        class: Osds\Api\Domain\Exception\BaseException
+        arguments:
+            - "@PSRLogger"

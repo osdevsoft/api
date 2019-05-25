@@ -18,7 +18,7 @@ final class ReplicateForQueryCommand implements Command
     public function __construct(
         string $entity,
         string $uuid,
-        array $data,
+        $data,
         string $originCommand
     )
     {
@@ -38,7 +38,7 @@ final class ReplicateForQueryCommand implements Command
         return $this->uuid;
     }
 
-    public function data(): array
+    public function data()
     {
         return $this->data;
     }

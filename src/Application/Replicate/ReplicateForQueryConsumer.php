@@ -30,8 +30,8 @@ class ReplicateForQueryConsumer extends BaseConsumer
                 get_class($originCommand)
             );
             $this->commandBus->dispatch($command, true);
-            $this->log($e->getMessage());
         } catch(\Exception $e) {
+            $this->log($e->getFile() . '::' . $e->getLine() . ' : ' . $e->getMessage());
         }
     }
 

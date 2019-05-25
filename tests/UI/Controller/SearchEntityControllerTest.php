@@ -9,9 +9,9 @@ class SearchEntityControllerTest extends WebTestCase
     public function testGetOne()
     {
         $client = static::createClient();
+        $client->request('GET', 'http://api.myproject.sandbox/api/user/');
+        $response = $client->getResponse();
 
-        $client->request('GET', '/api/post/post-1');
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }

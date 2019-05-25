@@ -1,0 +1,8 @@
+services:
+
+  Osds\Api\Domain\Bus\Query\QueryBus:
+    arguments:
+      - "@SymfonyContainer"
+  Osds\Api\Domain\Bus\Command\CommandBus:
+    arguments:
+      - "@SymfonyContainer"

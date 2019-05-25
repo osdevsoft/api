@@ -1,0 +1,19 @@
+services:
+
+    ###############
+    ### Vendors ###
+    ###############
+    Illuminate\Http\Request:
+        autowire: true
+    Elasticsearch\ClientBuilder:
+        autowire: true
+
+    ### Container for creating handlers on Bus
+    SymfonyContainer:
+        class: Osds\Api\Infrastructure\Bus\SymfonyContainer
+        autowire: true
+
+    RabbitMQ:
+        class: Osds\Api\Infrastructure\AMQP\RabbitMQ
+        arguments:
+            - '%rabbitmq_configuration%'

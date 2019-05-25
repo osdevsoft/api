@@ -1,0 +1,11 @@
+JWT
+Aggregates
+Proyecciones (Event sourcing en Elastic Search)
+mover yamls al vendor (Infra/Symfony)
++ UT + FT
++ Exceptions
+
+BO
+--------------
+Roles
+DDD Angular

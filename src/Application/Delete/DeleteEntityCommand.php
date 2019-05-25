@@ -35,7 +35,7 @@ final class DeleteEntityCommand implements Command
         return $this->uuid;
     }
 
-    public function data(): array
+    public function data()
     {
         return $this->data;
     }

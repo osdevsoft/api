@@ -28,7 +28,7 @@ class CommandBus implements CommandBusInterface
             $queryHandlerClass = get_class($messageObject) . 'Handler';
             return $this->container->get($queryHandlerClass);
         } catch(\Exception $e) {
-            dd($e->getMessage());
+            dd($e->getFile() . '::' . $e->getLine() . ' : ' . $e->getMessage());
         }
 
     }

@@ -1,0 +1,18 @@
+parameters:
+
+    elk_configuration:
+        server: elk
+
+
+services:
+    DoctrineRepository:
+        class: Osds\Api\Infrastructure\Repositories\DoctrineRepository
+        arguments:
+            - "@Doctrine\\ORM\\EntityManagerInterface"
+    ElasticCacheRepository:
+        class: Osds\Api\Infrastructure\Repositories\ElasticCacheRepository
+        arguments:
+            - "@Elasticsearch\\ClientBuilder"
+            - '%elk_configuration%'
+    InMemoryRepository:
+        class: Osds\Api\Infrastructure\Repositories\InMemoryRepository
