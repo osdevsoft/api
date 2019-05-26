@@ -3,7 +3,7 @@
 #osds config
 cp ./vendor/osds/api/src/Infrastructure/Symfony/config/packages/osds_api.yaml ./config/packages/osds_api.yaml
 mkdir ./vendor/osds/api/src/Infrastructure/Symfony/config/packages/osds/
-cp ./vendor/osds/api/src/Infrastructure/Symfony/config/packages/osds/* ./config/packages/
+cp ./vendor/osds/api/src/Infrastructure/Symfony/config/packages/osds/* ./config/packages/osds/
 cat ./vendor/osds/api/src/Infrastructure/Symfony/config/routes/osds_api.yaml >> ./config/routes/routes.yaml
 
 cat ./vendor/osds/api/src/Infrastructure/Symfony/.env >> .env
