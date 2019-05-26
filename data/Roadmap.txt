@@ -1,11 +1,11 @@
 JWT
-Aggregates
-Proyecciones (Event sourcing en Elastic Search)
+Aggregates?
+Referenced entities + Proyecciones (Elastic Search + Event sourcing)
 mover yamls al vendor (Infra/Symfony)
-+ UT + FT
-+ Exceptions
+mas UT y FT
+mas Exceptions
 
 BO
 --------------
 Roles
-DDD Angular
+DDD
