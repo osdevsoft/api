@@ -13,7 +13,7 @@ final class SearchEntityUseCase
 
     /**
      *
-     * we allow parameteres in rder to be able to be called from the same API itself
+     * we allow parameteres in order to be able to be called from the same API itself
      *
      * @param string $entity :         entity we will search in
      * @param array $search_fields

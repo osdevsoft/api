@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * User
@@ -11,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="user")
  * @ORM\Entity
  */
-class User
+class User implements UserInterface
 {
     /**
      * @var string
@@ -104,6 +105,40 @@ class User
         if ($this->createdAt == null) {
             $this->createdAt = new \DateTime('now');
         }
+    }
+
+    #################
+    ### JWT STUFF ###
+    #################
+    public function setUsername($email)
+    {
+        $this->email = $email;
+    }
+
+    public function getUsername()
+    {
+        return $this->email;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    #TODO
+    public function getRoles()
+    {
+        return [];
+    }
+
+    #TODO
+    public function getSalt()
+    {
+        return 'S4lT';
+    }
+
+    public function eraseCredentials()
+    {
     }
 
 }

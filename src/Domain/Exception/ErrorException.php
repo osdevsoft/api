@@ -9,9 +9,7 @@ class ErrorException extends BaseException
 
     public function setMessage($message, $error)
     {
-        $logMessage = '[' . $error->getFile() . '::' . $error->getLine() . '] - ' . $error->getMessage();
-
-        $this->logger->error($logMessage, [$error->getFile(), $error->getLine()]);
+        $this->logger->error($error->getMessage(), [$error->getFile(), $error->getLine()]);
         parent::setMessageAndCode($message, Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 

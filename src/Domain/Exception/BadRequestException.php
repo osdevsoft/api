@@ -1,15 +1,18 @@
-<?php namespace Osds\Api\Domain\Exception;
+<?php
 
-use Exception;
+namespace Osds\Api\Domain\Exception;
+
 use Symfony\Component\HttpFoundation\Response;
 
-class BadRequestException extends Exception implements ApiExceptionInterface
+class BadRequestException extends BaseException
 {
-    public function __construct(
-        array $message = [],
-        $code = Response::HTTP_BAD_REQUEST,
-        Exception $previous = null
-    ) {
-        parent::__construct(json_encode($message), $code, $previous);
+
+    public function setMessage($message, $error)
+    {
+        $this->logger->error($message, [$error->getFile(), $error->getLine()]);
+        parent::setMessageAndCode($message, Response::HTTP_BAD_REQUEST);
     }
+
 }
+
+
