@@ -1,0 +1,9 @@
+services:
+
+    ###############
+    ### Vendors ###
+    ###############
+    Illuminate\Http\Request:
+        autowire: true
+    Elasticsearch\ClientBuilder:
+        autowire: true

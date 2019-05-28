@@ -18,7 +18,6 @@ class Visitor
      *
      * @ORM\Column(name="uuid", type="string", length=255, nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $uuid;
 
@@ -69,10 +68,31 @@ class Visitor
      **/
     private $comments;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->comments = new ArrayCollection();
         $this->createdAt = date('Y-m-d H:i:s');
         $this->updatedAt = date('Y-m-d H:i:s');
+    }
+
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
     }
 
     public function getComment()

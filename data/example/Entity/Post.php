@@ -80,6 +80,11 @@ class Post
         $this->updatedAt = date('Y-m-d H:i:s');
     }
 
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
     public function getAuthor()
     {
         return $this->authorUuid;

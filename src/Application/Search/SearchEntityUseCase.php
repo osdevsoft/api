@@ -59,16 +59,16 @@ final class SearchEntityUseCase
                 $referenced_entities = [$referenced_entities];
             }
 
-            #TODO: unhardcode note retrieval, request entity from BO
-            //$referenced_entities[] = 'note';
             $result_data['items'] = $this->repository->getReferencedEntitiesContents($result_data['items'], $referenced_entities);
         } else {
             #TODO: refactor, in SearchReferencedEntitiesContents does the same
-            #Let's see Xavi... WTH was this for? added Query::HYDRATE_ARRAY on DoctrineRepository
-//            foreach($result_data['items'] as &$item)
-//            {
-//                $item = $this->repository->convertToArray($item);
-//            }
+            #we do not do Query::HYDRATE_ARRAY on DoctrineRepository because we want it as Entity Object to handle it more easily when handling referenced entities
+            foreach($result_data['items'] as &$item)
+            {
+                if(!is_array($item)) {
+                    $item = $this->repository->convertToArray($item);
+                }
+            }
         }
 
         if(isset($additionalRequests['referenced_entities_contents'])) {

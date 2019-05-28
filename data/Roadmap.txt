@@ -1,11 +1,17 @@
-JWT
-Aggregates?
+API
+-------------
+Aggregates con invariantes
 Referenced entities + Proyecciones (Elastic Search + Event sourcing)
-mover yamls al vendor (Infra/Symfony)
+
+BO
+--------------
+DDD
+
+[improve]
+API
+JWT: get data from token and renew on expire
 mas UT y FT
 mas Exceptions
 
 BO
---------------
 Roles
-DDD

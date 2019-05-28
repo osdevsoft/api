@@ -9,19 +9,13 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Swagger\Annotations as SWG;
 
-/**
- * @property array services
- * @property \stdClass request
- */
+
 class BaseUIController
 {
     public function build(
         Request $request
     )
     {
-        $this->services = [];
-        $_SESSION['services'] = $this->services;
-
         $api_token = @$request->header('X-Auth-Token');
 
         $this->request = new \stdClass();
@@ -32,7 +26,6 @@ class BaseUIController
         else {
             $this->request->parameters = $_REQUEST;
         }
-
 
         if (!empty($_FILES)) {
             $this->request->files = $_FILES;
@@ -55,19 +48,6 @@ class BaseUIController
             'total_items' => $num_items,
             'items' => $items
         ];
-    }
-
-    /**
-     * @Route(
-     *     "/{id?}",
-     *     methods={"OPTIONS"}
-     * )
-     *
-     */
-    public function allowOptionsHeader()
-    {
-        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
-        return $this->generateResponse(true);
     }
 
 }

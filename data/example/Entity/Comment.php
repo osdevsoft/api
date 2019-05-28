@@ -17,7 +17,6 @@ class Comment
      *
      * @ORM\Column(name="uuid", type="string", length=255, nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $uuid;
 
@@ -33,21 +32,21 @@ class Comment
      *
      * @ORM\Column(name="created_at", type="string", nullable=true, options={"default"="current_timestamp()"})
      */
-    private $createdAt = 'current_timestamp()';
+    private $createdAt;
 
     /**
      * @var \DateTime|null
      *
      * @ORM\Column(name="updated_at", type="string", nullable=true, options={"default"="current_timestamp()"})
      */
-    private $updatedAt = 'current_timestamp()';
+    private $updatedAt;
 
     /**
      * @var \DateTime|null
      *
      * @ORM\Column(name="deleted_at", type="string", nullable=true, options={"default"="NULL"})
      */
-    private $deletedAt = 'NULL';
+    private $deletedAt;
 
     /**
      * @var \Post
@@ -69,6 +68,11 @@ class Comment
      */
     private $visitorUuid;
 
+
+    public function __construct() {
+        $this->createdAt = date('Y-m-d H:i:s');
+        $this->updatedAt = date('Y-m-d H:i:s');
+    }
 
     public function getUuid()
     {

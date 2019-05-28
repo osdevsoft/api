@@ -70,6 +70,11 @@ class User implements UserInterface
         $this->updatedAt = date('Y-m-d H:i:s');
     }
 
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
     public function setUuid($uuid)
     {
         $this->uuid = $uuid;

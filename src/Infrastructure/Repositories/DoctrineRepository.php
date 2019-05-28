@@ -91,7 +91,7 @@ class DoctrineRepository implements BaseRepository
         list($query_builder, $joined_entities) = $this->addFieldsToFilterBy($entity, $query_filters, $query_builder, $joined_entities);
         list($query_builder, $total_items) = $this->addFieldsToPaginateBy($entity, $query_filters, $query_builder);
 
-        $items = $query_builder->getQuery()->getResult(Query::HYDRATE_ARRAY); #Query::HYDRATE_ARRAY
+        $items = $query_builder->getQuery()->getResult(); #Query::HYDRATE_ARRAY
 
         return [
             'total_items' => !is_null($total_items)?$total_items:count($items),
@@ -175,7 +175,7 @@ class DoctrineRepository implements BaseRepository
                 $subitems = [];
 
                 if (!isset($parsed_items[$ei_key])) {
-                    $parsed_items[$ei_key] = $this->convertToArray($entity_item);
+                    $parsed_items[$ei_key] = self::convertToArray($entity_item);
                 }
 
                 #call the method that recovers the subentity for this entity_item (from a post, get its user entity)
@@ -200,7 +200,7 @@ class DoctrineRepository implements BaseRepository
                     #no subentities => convert this subitems to array
                     foreach($subitems as $si)
                     {
-                        $subitems_new[] = $this->convertToArray($si);
+                        $subitems_new[] = self::convertToArray($si);
                     }
                     $subitems = $subitems_new;
                 }
@@ -422,8 +422,9 @@ class DoctrineRepository implements BaseRepository
      * @param $entity_item
      * @return array
      */
-    public function convertToArray($entity_item)
+    public static function convertToArray($entity_item)
     {
+
         $entity_fqn = get_class($entity_item);
         $entity_fqn = str_replace('Proxies\__CG__\\', '', $entity_fqn);
         $array_entity_item = (array) $entity_item;

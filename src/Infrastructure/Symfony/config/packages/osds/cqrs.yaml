@@ -1,0 +1,14 @@
+services:
+
+  Osds\Api\Domain\Bus\Query\QueryBus:
+    arguments:
+      - "@SymfonyContainer"
+  Osds\Api\Domain\Bus\Command\CommandBus:
+    arguments:
+      - "@SymfonyContainer"
+
+
+  ### Container for creating handlers on Bus
+  SymfonyContainer:
+    class: Osds\Api\Infrastructure\Bus\SymfonyContainer
+    autowire: true

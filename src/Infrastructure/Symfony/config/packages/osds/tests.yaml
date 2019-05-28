@@ -1,0 +1,10 @@
+services:
+
+    SearchEntityUseCaseTest:
+        class: Osds\Api\Application\Search\SearchEntityUseCaseTest
+        arguments:
+          - "@SearchEntityRespositoryTest"
+    SearchEntityRepositoryTest:
+        class: Osds\Api\Infrastructure\Repositories\SearchEntityRepository
+        arguments:
+          - "@InMemoryRepository"

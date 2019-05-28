@@ -1,0 +1,158 @@
+services:
+
+  ##########
+  ### UI ###
+  ##########
+
+  ### Shared actions
+  Osds\Api\UI\Controller\CheckStatusController:
+    autowire: true
+    tags: ['controller.service_arguments']
+
+
+  ### AUTH ###
+  ### LoginUser
+  Osds\Api\UI\Controller\Auth\LoginUserController:
+    autowire: true
+    arguments:
+      - "@Illuminate\\Http\\Request"
+      - "@Osds\\Api\\Domain\\Bus\\Query\\QueryBus"
+      - "@PSRLogger"
+      - "@JWTAuth"
+      - "@SymfonyUser"
+    tags: ['controller.service_arguments']
+  Osds\Api\Application\Auth\LoginUserQueryHandler:
+    public: true
+    autowire: true
+    arguments:
+      - "@LoginUserUseCase"
+  LoginUserUseCase:
+    class: Osds\Api\Application\Auth\LoginUserUseCase
+    autowire: true
+
+  #### Insert Entity
+  Osds\Api\UI\Controller\InsertEntityController:
+    autowire: true
+    tags: ['controller.service_arguments']
+  Osds\Api\Application\Insert\InsertEntityCommandHandler:
+    public: true
+    arguments:
+      - "@InsertEntityUseCase"
+      - "@RabbitMQ"
+  InsertEntityUseCase:
+    class: Osds\Api\Application\Insert\InsertEntityUseCase
+    autowire: true
+  Osds\Api\Application\Insert\InsertEntityRepository:
+    public: true
+    arguments:
+      - "@DoctrineRepository"
+  InsertEntityConsumer:
+    class: Osds\Api\Application\Insert\InsertEntityConsumer
+    autowire: true
+
+
+  #### Search Entity
+  Osds\Api\UI\Controller\SearchEntityController:
+    autowire: true
+    arguments:
+      - "@Illuminate\\Http\\Request"
+      - "@Osds\\Api\\Domain\\Bus\\Query\\QueryBus"
+      - "@PSRLogger"
+    tags: ['controller.service_arguments']
+  Osds\Api\Application\Search\SearchEntityQueryHandler:
+    public: true
+    autowire: true
+  Osds\Api\Application\Search\SearchEntityUseCase:
+    autowire: true
+  Osds\Api\Application\Search\SearchEntityRepository:
+    public: true
+    arguments:
+      - "@ElasticCacheRepository"
+#      - "@DoctrineRepository"
+
+
+  #### Update Entity
+  Osds\Api\UI\Controller\UpdateEntityController:
+    autowire: true
+    tags: ['controller.service_arguments']
+  Osds\Api\Application\Update\UpdateEntityCommandHandler:
+    public: true
+    arguments:
+      - "@UpdateEntityUseCase"
+      - "@RabbitMQ"
+  UpdateEntityUseCase:
+    class: Osds\Api\Application\Update\UpdateEntityUseCase
+    autowire: true
+  Osds\Api\Application\Update\UpdateEntityRepository:
+    public: true
+    arguments:
+      - "@DoctrineRepository"
+  UpdateEntityConsumer:
+    class: Osds\Api\Application\Update\UpdateEntityConsumer
+    autowire: true
+
+
+  #### Delete Entity
+  Osds\Api\UI\Controller\DeleteEntityController:
+    autowire: true
+    tags: ['controller.service_arguments']
+  Osds\Api\Application\Delete\DeleteEntityCommandHandler:
+    public: true
+    arguments:
+      - "@DeleteEntityUseCase"
+      - "@RabbitMQ"
+  DeleteEntityUseCase:
+    class: Osds\Api\Application\Delete\DeleteEntityUseCase
+    autowire: true
+  Osds\Api\Application\Delete\DeleteEntityRepository:
+    public: true
+    arguments:
+      - "@DoctrineRepository"
+  DeleteEntityConsumer:
+    class: Osds\Api\Application\Delete\DeleteEntityConsumer
+    autowire: true
+
+
+  #### Replicate
+  ReplicateForQueryConsumer:
+    class: Osds\Api\Application\Replicate\ReplicateForQueryConsumer
+    autowire: true
+  Osds\Api\Application\Replicate\ReplicateForQueryCommandHandler:
+    public: true
+    autowire: true
+  Osds\Api\Application\Replicate\ReplicateForQueryUseCaseFactory:
+    public: true
+    arguments:
+      - "@ElasticCacheRepository"
+
+
+  ################
+  ### COMMANDS ###
+  ################
+
+  ### Command for reloading the ES
+  ReloadEntityContentOnQueryRepository:
+    tags:
+      name: 'console.command'
+      command: 'osds:reload_entity_content'
+    class: Osds\Api\UI\Command\ReloadEntityContentOnQueryRepositoryCommand
+    arguments:
+      - "@ReloadEntityContentOnQueryRepositoryQueryHandler"
+      - "@Osds\\Api\\Application\\Replicate\\ReplicateForQueryCommandHandler"
+  ReloadEntityContentOnQueryRepositoryQueryHandler:
+    class: Osds\Api\Application\Search\SearchEntityQueryHandler
+    arguments:
+      - "@ReloadEntityContentOnQueryRepositoryUseCase"
+  ReloadEntityContentOnQueryRepositoryUseCase:
+    class: Osds\Api\Application\Search\SearchEntityUseCase
+    arguments:
+      - "@ReloadEntityContentOnQueryRepositoryReadRepository"
+  ReloadEntityContentOnQueryRepositoryReadRepository:
+    class: Osds\Api\Application\Search\SearchEntityRepository
+    arguments:
+      - "@DoctrineRepository"
+
+
+  LogConsumer:
+    class: Osds\Api\Application\Replicate\LogConsumer
+    autowire: true

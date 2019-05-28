@@ -1,2 +1,2 @@
 imports:
-  - /var/www/osds/api/vendor/src/Infrastructure/Symfony/config/packages/osds/*
+  - /var/www/osds/api/vendor/osds/api/src/Infrastructure/Symfony/config/packages/osds/*
