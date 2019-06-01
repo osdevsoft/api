@@ -12,18 +12,18 @@ use Swagger\Annotations as SWG;
 
 class BaseUIController
 {
+    protected $request;
+
     public function build(
         Request $request
-    )
-    {
+    ) {
         $api_token = @$request->header('X-Auth-Token');
 
         $this->request = new \stdClass();
-        $postdata = file_get_contents("php://input");
-        if(!empty($postdata)) {
-            $this->request->parameters = json_decode($postdata, true);
-        }
-        else {
+        $postData = file_get_contents("php://input");
+        if (!empty($postData)) {
+            $this->request->parameters = json_decode($postData, true);
+        } else {
             $this->request->parameters = $_REQUEST;
         }
 
@@ -34,9 +34,7 @@ class BaseUIController
 
     public function generateResponse($data)
     {
-
         return new JsonResponse($data, 200);
-
     }
 
     public function prepareResponseByItems($data)
@@ -49,5 +47,4 @@ class BaseUIController
             'items' => $items
         ];
     }
-
 }

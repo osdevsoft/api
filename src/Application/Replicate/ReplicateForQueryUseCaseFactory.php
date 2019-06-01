@@ -10,8 +10,7 @@ class ReplicateForQueryUseCaseFactory
 
     public function __construct(
         BaseRepository $repository
-    )
-    {
+    ) {
         $this->repository = $repository;
     }
 
@@ -22,7 +21,5 @@ class ReplicateForQueryUseCaseFactory
         $useCaseClass = str_replace('Command', 'UseCase', $command->originCommand());
         $useCase = new $useCaseClass($repository);
         return $useCase;
-
     }
-
 }

@@ -1,6 +1,7 @@
 API
 -------------
 Aggregates con invariantes
+Call vendor from outside
 Referenced entities + Proyecciones (Elastic Search + Event sourcing)
 
 BO

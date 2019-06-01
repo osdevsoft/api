@@ -17,8 +17,7 @@ class DoctrineRepository implements BaseRepository
 
     public function __construct(
         $client
-    )
-    {
+    ) {
         $this->entityManager = $client;
     }
 
@@ -31,12 +30,11 @@ class DoctrineRepository implements BaseRepository
     {
         if (is_string($entity)) {
             $entity = underscoreToCamelCase($entity);
-            $entity_path = self::ENTITY_PATH . $entity;
-            $this->entity = new $entity_path;
+            $entityPath = self::ENTITY_PATH . $entity;
+            $this->entity = new $entityPath;
         } else {
             $this->entity = $entity;
         }
-
     }
 
     /**
@@ -54,7 +52,8 @@ class DoctrineRepository implements BaseRepository
     }
     */
 
-    public function getEntityFQName() {
+    public function getEntityFQName()
+    {
         return get_class($this->entity);
     }
 
@@ -73,31 +72,33 @@ class DoctrineRepository implements BaseRepository
 
     /**
      * @param string     $entity            name of the entity we want to retrieve items
-     * @param array|null $search_fields     fields we are going to filter by
-     * @param array|null $query_filters     sorting, pagination
+     * @param array|null $searchFields     fields we are going to filter by
+     * @param array|null $queryFilters     sorting, pagination
      * @return array
      */
-    public function search($entity, Array $search_fields = null, Array $query_filters = null) {
-        $joined_entities = [];
+    public function search($entity, Array $searchFields = null, Array $queryFilters = null)
+    {
+        $joinedEntities = [];
 
         $this->setEntity($entity);
 
         #get repository and query builder for the queries
 
         $repository = $this->entityManager->getRepository($this->getEntityFQName());
-        $query_builder = $repository->createQueryBuilder($entity);
+        $queryBuilder = $repository->createQueryBuilder($entity);
 
-        list($query_builder, $joined_entities) = $this->addFieldsToSearchBy($entity, $search_fields, $query_builder, $joined_entities);
-        list($query_builder, $joined_entities) = $this->addFieldsToFilterBy($entity, $query_filters, $query_builder, $joined_entities);
-        list($query_builder, $total_items) = $this->addFieldsToPaginateBy($entity, $query_filters, $query_builder);
+        list($queryBuilder, $joinedEntities) =
+            $this->addFieldsToSearchBy($entity, $searchFields, $queryBuilder, $joinedEntities);
+        list($queryBuilder, $joinedEntities) =
+            $this->addFieldsToFilterBy($entity, $queryFilters, $queryBuilder, $joinedEntities);
+        list($queryBuilder, $total_items) = $this->addFieldsToPaginateBy($entity, $queryFilters, $queryBuilder);
 
-        $items = $query_builder->getQuery()->getResult(); #Query::HYDRATE_ARRAY
+        $items = $queryBuilder->getQuery()->getResult(); #Query::HYDRATE_ARRAY
 
         return [
             'total_items' => !is_null($total_items)?$total_items:count($items),
             'items' => $items
         ];
-
     }
 
     public function insert($entity_uuid, $data): string
@@ -107,8 +108,7 @@ class DoctrineRepository implements BaseRepository
         $repository = new $entity();
 
         #treat fields before updating / inserting
-        foreach($data as $field => $value)
-        {
+        foreach ($data as $field => $value) {
             $value = $this->treatValuePrePersist($field, $value);
             $repository->{"set" . ucfirst($field)}($value);
         }
@@ -118,35 +118,34 @@ class DoctrineRepository implements BaseRepository
         return $entity_uuid;
     }
 
-    public function update($entity_id, $data): string
+    public function update($entityId, $data): string
     {
 
-        $repository = $this->entityManager->getRepository($this->getEntityFQName())->find(['uuid' => $entity_id]);
+        $repository = $this->entityManager->getRepository($this->getEntityFQName())->find(['uuid' => $entityId]);
 
         #treat fields before updating / inserting
-        foreach($data as $field => $value)
-        {
+        foreach ($data as $field => $value) {
             $value = $this->treatValuePrePersist($field, $value);
             $repository->{"set" . ucfirst($field)}($value);
         }
 
         $this->entityManager->merge($repository);
         $result = $this->entityManager->flush();
-        return $entity_id;
-
+        return $entityId;
     }
 
 
-    public function delete($entity_id) {
+    public function delete($entityId)
+    {
 
-        $object = $this->entityManager->getRepository($this->getEntityFQName())->find($entity_id);
+        $object = $this->entityManager->getRepository($this->getEntityFQName())->find($entityId);
         // tell Doctrine you want to (eventually) save the Product (no queries yet)
         $this->entityManager->remove($object);
 
         // actually executes the queries (i.e. the INSERT query)
         $this->entityManager->flush();
 
-        return $entity_id;
+        return $entityId;
     }
 
     /**
@@ -154,57 +153,57 @@ class DoctrineRepository implements BaseRepository
      *    post => in a json structure, "post" is the key of the array
      *        comments => we will treat it recursively
      *    author => in a json structure, "0" is the key of the array
+     * @param $entityItems
+     * @param $referencedEntities
+     * @return array
      */
-    public function getReferencedEntitiesContents(&$entity_items, $referenced_entities)
+    public function getReferencedEntitiesContents(&$entityItems, $referencedEntities)
     {
         $parsed_items = [];
 
         #if we want to retrieve referenced entities contents, get them
-        foreach ($referenced_entities as $referenced_entity => $referenced_subentities) {
-
-            if (!is_integer($referenced_entity)) {
+        foreach ($referencedEntities as $referencedEntity => $referencedSubentities) {
+            if (!is_integer($referencedEntity)) {
                 #this entity has subentities to parse
-                $entity_to_gather = $referenced_entity;
+                $entityToGather = $referencedEntity;
             } else {
                 #this array element has an integer key, it means
-                $entity_to_gather = $referenced_subentities;
+                $entityToGather = $referencedSubentities;
             }
 
-            foreach ($entity_items as $ei_key => $entity_item) {
-
-                $subitems = [];
+            foreach ($entityItems as $ei_key => $entityItem) {
+                $subItems = [];
 
                 if (!isset($parsed_items[$ei_key])) {
-                    $parsed_items[$ei_key] = self::convertToArray($entity_item);
+                    $parsed_items[$ei_key] = self::convertToArray($entityItem);
                 }
 
                 #call the method that recovers the subentity for this entity_item (from a post, get its user entity)
-                $function = "get" . underscoreToCamelCase($entity_to_gather);
-                $subentity = $entity_item->{$function}();
+                $function = "get" . underscoreToCamelCase($entityToGather);
+                $subentity = $entityItem->{$function}();
                 if (strstr(get_class($subentity), 'PersistentCollection')) {
                     #it's a One to Many relation type. Get all the items for this subentity
                     $subentity->initialize();
-                    $subitems = $subentity->getSnapshot();
+                    $subItems = $subentity->getSnapshot();
 
                 } else {
                     #Many to One
                     $subentity->__load();
-                    $subitems[] = $subentity;
+                    $subItems[] = $subentity;
                 }
 
                 #we have subitems for this entity and more referenced entities to parse
-                if (!is_integer($referenced_entity)) {
-                    $subitems = self::getReferencedEntitiesContents($subitems, $referenced_subentities);
+                if (!is_integer($referencedEntity)) {
+                    $subItems = self::getReferencedEntitiesContents($subItems, $referencedSubentities);
                 } else {
-                    $subitems_new = [];
+                    $subItemsNew = [];
                     #no subentities => convert this subitems to array
-                    foreach($subitems as $si)
-                    {
-                        $subitems_new[] = self::convertToArray($si);
+                    foreach ($subItems as $si) {
+                        $subItemsNew[] = self::convertToArray($si);
                     }
-                    $subitems = $subitems_new;
+                    $subItems = $subItemsNew;
                 }
-                $parsed_items[$ei_key]['references'][$entity_to_gather] = $subitems;
+                $parsed_items[$ei_key]['references'][$entityToGather] = $subItems;
 
             }
         }
@@ -214,41 +213,45 @@ class DoctrineRepository implements BaseRepository
 
     /************************/
     /*** Helper Functions **
-     * @param $parent_entity
-     * @param $search_fields
-     * @param $query_builder
-     * @param $joined_entities
+     * @param $parentEntity
+     * @param $searchFields
+     * @param $queryBuilder
+     * @param $joinedEntities
      * @return array
      */
     /************************/
 
-    private function addFieldsToSearchBy($parent_entity, $search_fields, $query_builder, $joined_entities)
+    private function addFieldsToSearchBy($parentEntity, $searchFields, $queryBuilder, $joinedEntities)
     {
-        if ($search_fields != null) {
-            foreach ($search_fields as $field_name => $props) {
-                $current_entity = null;
+        $searchEntity = '';
+        if ($searchFields != null) {
+            foreach ($searchFields as $field_name => $props) {
+                $currentEntity = null;
                 #model to use on the where clause
-                $filter_entity = $parent_entity;
+                $filter_entity = $parentEntity;
                 if (strstr($field_name, '.')) {
                     #this field to filter by is from another entity, not the main one
                     $entities_and_field = explode('.', $field_name);
                     $field_name = array_pop($entities_and_field);
 
-                    $joined_entity = $parent_entity;
-                    foreach($entities_and_field as $search_entity) {
-                        if (!is_null($current_entity)) {
+                    $joined_entity = $parentEntity;
+                    foreach ($entities_and_field as $searchEntity) {
+                        if (!is_null($currentEntity)) {
                             #first entity to join by => the other side is parent one
-                            $joined_entity = $current_entity;
+                            $joined_entity = $currentEntity;
                         }
-                        list($query_builder, $joined_entities) = $this->addEntityToQueryBuilder($joined_entity, $search_entity, $query_builder, $joined_entities);
-                        $current_entity = $search_entity;
+                        list($queryBuilder, $joinedEntities) =
+                            $this->addEntityToQueryBuilder($joined_entity, $searchEntity, $queryBuilder, $joinedEntities);
+                        $currentEntity = $searchEntity;
                     }
-                    $filter_entity = $search_entity;
+                    $filter_entity = $searchEntity;
                 }
 
                 #looking for an exact match of anything else
                 if (is_array($props)) {
-                    if (empty($props['value']) && !is_numeric($props['value'])) continue;
+                    if (empty($props['value']) && !is_numeric($props['value'])) {
+                        continue;
+                    }
                     $value = $props['value'];
                     if (isset($props['operand'])) {
                         $operand = $props['operand'];
@@ -279,35 +282,36 @@ class DoctrineRepository implements BaseRepository
                         $value = "'%{$value}%'";
                     }
                 } else {
-                    if (empty($props) && !is_numeric($props)) continue;
+                    if (empty($props) && !is_numeric($props)) {
+                        continue;
+                    }
                     $value = (is_string($props)) ? "'{$props}'" : $props;
                     $operand = '=';
                 }
 
-                $query_builder->andWhere("{$filter_entity}.{$field_name} {$operand} {$value}");
+                $queryBuilder->andWhere("{$filter_entity}.{$field_name} {$operand} {$value}");
 
             }
         }
 
-        return [$query_builder, $joined_entities];
+        return [$queryBuilder, $joinedEntities];
     }
 
     /**
-     * @param $model
-     * @param $field_name
-     * @param $joined_entities
-     * @param $query_builder
+     * @param $parent_entity
      * @param $filter_entity
+     * @param $query_builder
+     * @param $joined_entities
+     * @return array
+     * @throws \ReflectionException
      */
     private function addEntityToQueryBuilder($parent_entity, $filter_entity, $query_builder, $joined_entities): array
     {
-        if(
-            #we don't want to merge ourselves
+        if (#we don't want to merge ourselves
             $parent_entity != $filter_entity
             #we haven't merged this entity yet
             && !in_array($filter_entity, $joined_entities)
         ) {
-
             $referenced_entity = '\App\Entity\\' . ucfirst($filter_entity);
             $joined_entities[] = $filter_entity;
 
@@ -316,8 +320,7 @@ class DoctrineRepository implements BaseRepository
             #check in which way we have to make the join "ON"
             $entity_field = strtolower($parent_entity) . "Uuid";
             $remote_model_field = strtolower($filter_entity)."Uuid";
-            if($referenced_entity_class_helper->hasProperty($entity_field))
-            {
+            if ($referenced_entity_class_helper->hasProperty($entity_field)) {
                 $origin_entity = $parent_entity;
                 $origin_field = 'uuid';
                 $joined_entity = $filter_entity;
@@ -340,25 +343,25 @@ class DoctrineRepository implements BaseRepository
         return [$query_builder, $joined_entities];
     }
 
-    private function addFieldsToFilterBy($entity, $query_filters, $query_builder, $joined_entities)
+    private function addFieldsToFilterBy($entity, $query_filters, $queryBuilder, $joinedEntities)
     {
-        if($query_filters != null) {
-            if(isset($query_filters['sortby']))
-            {
+        if ($query_filters != null) {
+            if (isset($query_filters['sortby'])) {
                 for ($i=0; $i<count($query_filters['sortby']); $i++) {
                     $field_name = $query_filters['sortby'][$i]['field'];
                     $filter_entity = $entity;
                     if (strstr($field_name, '.')) {
                         #this field to filter by is from another entity, not the main one
                         [$filter_entity, $field_name] = explode('.', $field_name);
-                        list($query_builder, $joined_entities) = $this->addEntityToQueryBuilder($entity, $filter_entity, $query_builder, $joined_entities);
+                        list($queryBuilder, $joinedEntities) =
+                            $this->addEntityToQueryBuilder($entity, $filter_entity, $queryBuilder, $joinedEntities);
                     }
 
-                    $query_builder->addOrderBy($filter_entity . '.' . $field_name, $query_filters['sortby'][$i]['dir']);
+                    $queryBuilder->addOrderBy($filter_entity . '.' . $field_name, $query_filters['sortby'][$i]['dir']);
                 }
             }
         }
-        return [$query_builder, $joined_entities];
+        return [$queryBuilder, $joinedEntities];
     }
 
     private function addFieldsToPaginateBy($entity, $query_filters, $query_builder)
@@ -372,8 +375,7 @@ class DoctrineRepository implements BaseRepository
             $page_items = 999;
         }
 
-        if(!isset($query_filters['page']))
-        {
+        if (!isset($query_filters['page'])) {
             $query_filters['page'] = 1;
         }
 
@@ -391,19 +393,17 @@ class DoctrineRepository implements BaseRepository
     private function treatValuePrePersist($field, $value)
     {
         #if matches a yyyy-mm-dd, yyyy-mm-dd hh:ii, or yyyy-mm-dd hh:ii:ss
-        if(is_string($value) &&
-            preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2}(:[0-9]{2})?)?$/', $value))
-        {
+        if (is_string($value) &&
+            preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}( [0-9]{2}:[0-9]{2}(:[0-9]{2})?)?$/', $value)) {
             #add seconds to allow this type of date (yyyy-mm-dd hh:ii)
-            if(preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}$/', $value))
-            {
+            if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}$/', $value)) {
                 $value .= ':00';
             }
 //            $value = new \DateTime($value);
         }
 
         #if another entity uuid comes, search for it to reference it
-        if ($field != 'uuid' && strstr($field,'Uuid')) {
+        if ($field != 'uuid' && strstr($field, 'Uuid')) {
             $entity_name = str_replace('Uuid', '', $field);
             $entity_class_name = self::ENTITY_PATH . ucfirst($entity_name);
             $original_value = $value;
@@ -430,8 +430,7 @@ class DoctrineRepository implements BaseRepository
         $array_entity_item = (array) $entity_item;
         foreach ($array_entity_item as $aei_key => $aei_prop) {
             unset($array_entity_item[$aei_key]);
-            if(!is_object($aei_prop) && !strstr($aei_key, '__')
-            ) {
+            if (!is_object($aei_prop) && !strstr($aei_key, '__')) {
                 #remove null characters when doing the conversion
                 $aei_key = str_replace("\0", "", $aei_key);
                 $aei_key = str_replace($entity_fqn, '', $aei_key);
@@ -441,5 +440,4 @@ class DoctrineRepository implements BaseRepository
 
         return $array_entity_item;
     }
-
 }

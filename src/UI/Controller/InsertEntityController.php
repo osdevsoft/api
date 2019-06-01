@@ -25,8 +25,7 @@ class InsertEntityController extends BaseUIController
     public function __construct(
         Request $request,
         CommandBus $commandBus
-    )
-    {
+    ) {
         $this->request = $request;
         $this->commandBus = $commandBus;
     }
@@ -55,6 +54,9 @@ class InsertEntityController extends BaseUIController
      * )
      * @SWG\Tag(name="insert")
      * @Security(name="Bearer")
+     *
+     * @param $entity
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
 
     public function handle($entity)
@@ -82,6 +84,5 @@ class InsertEntityController extends BaseUIController
             $uuid,
             $data
         );
-
     }
 }

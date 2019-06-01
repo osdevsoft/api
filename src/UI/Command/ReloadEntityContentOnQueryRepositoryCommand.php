@@ -23,8 +23,7 @@ class ReloadEntityContentOnQueryRepositoryCommand extends Command
     public function __construct(
         QueryHandler $queryHandler,
         CommandHandler $commandHandler
-    )
-    {
+    ) {
         $this->queryHandler = $queryHandler;
         $this->commandHandler = $commandHandler;
 
@@ -60,8 +59,7 @@ class ReloadEntityContentOnQueryRepositoryCommand extends Command
 
         $page = 1;
 
-        while ($response = $this->getItems($entity, $page))
-        {
+        while ($response = $this->getItems($entity, $page)) {
             if ($page == 1) {
                 $io->section('Schema replication');
                 $this->recreateStructure($entity, $response['schema']['fields']);
@@ -73,7 +71,9 @@ class ReloadEntityContentOnQueryRepositoryCommand extends Command
                 $totalItems = $response['total_items'];
                 $io->progressStart($totalItems);
             }
-            if(count($response['items']) == 0) break;
+            if (count($response['items']) == 0) {
+                break;
+            }
 
             foreach ($response['items'] as $item) {
                 $commandMessageObject = new ReplicateForQueryCommand(

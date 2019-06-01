@@ -9,23 +9,22 @@ final class SearchEntityQuery implements Query
 
     private $entity;
 
-    private $search_fields;
+    private $searchFields;
 
-    private $query_filters;
+    private $queryFilters;
 
-    private $additional_requests;
+    private $additionalRequests;
 
     public function __construct(
         string $entity,
-        Array $search_fields = [],
-        Array $query_filters = [],
-        Array $additional_requests = []
-    )
-    {
+        Array $searchFields = [],
+        Array $queryFilters = [],
+        Array $additionalRequests = []
+    ) {
         $this->entity = $entity;
-        $this->search_fields = $search_fields;
-        $this->query_filters = $query_filters;
-        $this->additional_requests = $additional_requests;
+        $this->searchFields = $searchFields;
+        $this->queryFilters = $queryFilters;
+        $this->additionalRequests = $additionalRequests;
     }
 
     public function entity(): string
@@ -35,18 +34,16 @@ final class SearchEntityQuery implements Query
 
     public function searchFields(): array
     {
-        return $this->search_fields;
+        return $this->searchFields;
     }
 
     public function queryFilters(): array
     {
-        return $this->query_filters;
+        return $this->queryFilters;
     }
 
     public function additionalRequests(): array
     {
-        return $this->additional_requests;
+        return $this->additionalRequests;
     }
-
-
 }

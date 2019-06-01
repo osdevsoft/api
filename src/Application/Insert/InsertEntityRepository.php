@@ -10,8 +10,7 @@ class InsertEntityRepository
 
     public function __construct(
         BaseRepository $handler
-    )
-    {
+    ) {
         $this->handler = $handler;
     }
 

@@ -24,8 +24,7 @@ class UpdateEntityController extends BaseUIController
     public function __construct(
         Request $request,
         CommandBus $commandBus
-    )
-    {
+    ) {
         $this->request = $request;
         $this->commandBus = $commandBus;
     }
@@ -54,6 +53,10 @@ class UpdateEntityController extends BaseUIController
      * )
      * @SWG\Tag(name="update")
      * @Security(name="Bearer")
+     *
+     * @param $entity
+     * @param $uuid
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
 
     public function handle($entity, $uuid)
@@ -78,6 +81,5 @@ class UpdateEntityController extends BaseUIController
             $uuid,
             $data
         );
-
     }
 }

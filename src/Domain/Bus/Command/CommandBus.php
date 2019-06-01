@@ -16,10 +16,8 @@ class CommandBus implements CommandBusInterface
 
     public function dispatch(Command $messageObject, $forceExecution = false)
     {
-
         $queryHandler = $this->getCommandHandler($messageObject);
         return $queryHandler->handle($messageObject, $forceExecution);
-
     }
 
     private function getCommandHandler($messageObject)
@@ -27,9 +25,8 @@ class CommandBus implements CommandBusInterface
         try {
             $queryHandlerClass = get_class($messageObject) . 'Handler';
             return $this->container->get($queryHandlerClass);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             dd($e->getFile() . '::' . $e->getLine() . ' : ' . $e->getMessage());
         }
-
     }
 }

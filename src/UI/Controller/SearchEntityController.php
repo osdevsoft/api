@@ -31,8 +31,7 @@ class SearchEntityController extends BaseUIController
         QueryBus $queryBus,
         LoggerInterface $logger
 
-    )
-    {
+    ) {
         $this->request = $request;
         $this->queryBus = $queryBus;
         $this->logger = $logger;
@@ -91,6 +90,10 @@ class SearchEntityController extends BaseUIController
      * )
      * @SWG\Tag(name="search")
      * @Security(name="Bearer")
+     *
+     * @param $entity
+     * @param null $uuid
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
 
     public function handle($entity, $uuid = null)
@@ -98,29 +101,23 @@ class SearchEntityController extends BaseUIController
         $result = '';
 
         try {
+            $this->build($this->request);
 
-                $this->build($this->request);
+            $messageObject = $this->getEntityMessageObject($entity, $this->request, $uuid);
 
-                $messageObject = $this->getEntityMessageObject($entity, $this->request, $uuid);
+            $result = $this->queryBus->ask($messageObject);
 
-                $result = $this->queryBus->ask($messageObject);
-
-                if ($uuid != null && count($result['items']) == 0) {
-                    throw new ItemNotFoundException($this->logger);
-                }
+            if ($uuid != null && count($result['items']) == 0) {
+                throw new ItemNotFoundException($this->logger);
             }
-
-            catch(ItemNotFoundException $e) {
+        } catch (ItemNotFoundException $e) {
                 $e->setMessage($entity, $uuid);
                 $result = $e->getResponse();
-            }
-
-            catch(\Exception $e) {
-                $exception = new ErrorException($this->logger);
-                $exception->setMessage('Server Error', $e);
-                $result = $exception->getResponse();
-            }
-
+        } catch (\Exception $e) {
+            $exception = new ErrorException($this->logger);
+            $exception->setMessage('Server Error', $e);
+            $result = $exception->getResponse();
+        }
 
         return $this->generateResponse($result);
     }
@@ -130,17 +127,16 @@ class SearchEntityController extends BaseUIController
         if ($uuid != null) {
             $request->parameters['search_fields'] = ['uuid' => $uuid];
         }
-        $search_fields = $this->getSearchFields($request);
-        $query_filters = $this->getQueryFilters($request);
-        $additional_requests = $this->getAdditionalRequests($request);
+        $searchFields = $this->getSearchFields($request);
+        $queryFilters = $this->getQueryFilters($request);
+        $additionalRequests = $this->getAdditionalRequests($request);
 
         return new SearchEntityQuery(
             $entity,
-            $search_fields,
-            $query_filters,
-            $additional_requests
+            $searchFields,
+            $queryFilters,
+            $additionalRequests
         );
-
     }
 
     /**
@@ -149,15 +145,15 @@ class SearchEntityController extends BaseUIController
      */
     private function getSearchFields($request)
     {
-        $search_fields = [];
+        $searchFields = [];
 
         #we are filtering by something received from the external request
         if (isset($request->parameters['search_fields'])) {
-            $search_fields += $request->parameters['search_fields'];
+            $searchFields += $request->parameters['search_fields'];
             #we don't need them anymore
             unset($request->parameters['search_fields']);
         }
-        return $search_fields;
+        return $searchFields;
     }
 
     /**
@@ -166,29 +162,29 @@ class SearchEntityController extends BaseUIController
      */
     private function getQueryFilters($request)
     {
-        $query_filters = [];
+        $queryFilters = [];
 
         #we are filtering the result query
         if (isset($request->parameters['query_filters'])) {
-            $query_filters += $request->parameters['query_filters'];
+            $queryFilters += $request->parameters['query_filters'];
             #we don't need them anymore
             unset($request->parameters['query_filters']);
         }
-        return $query_filters;
+        return $queryFilters;
     }
 
     private function getAdditionalRequests($request)
     {
-        $possible_additional_requests_parameters = ['referenced_entities', 'referenced_entities_contents'];
-        $additional_requests = [];
+        $possibleAdditionalRequestsParameters = ['referenced_entities', 'referenced_entities_contents'];
+        $additionalRequests = [];
 
-        foreach ($possible_additional_requests_parameters as $additional_requests_parameter) {
-            if (isset($request->parameters[$additional_requests_parameter])) {
-                $additional_requests[$additional_requests_parameter] = $request->parameters[$additional_requests_parameter];
+        foreach ($possibleAdditionalRequestsParameters as $additionalRequestsParameter) {
+            if (isset($request->parameters[$additionalRequestsParameter])) {
+                $additionalRequests[$additionalRequestsParameter] = $request->parameters[$additionalRequestsParameter];
             }
         }
 
-        return $additional_requests;
+        return $additionalRequests;
     }
 
 }

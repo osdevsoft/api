@@ -20,6 +20,6 @@ final class SearchEntityQueryHandler implements QueryHandler
             $query->searchFields(),
             $query->queryFilters(),
             $query->additionalRequests()
-            );
+        );
     }
 }

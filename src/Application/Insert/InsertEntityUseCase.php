@@ -2,7 +2,6 @@
 
 namespace Osds\Api\Application\Insert;
 
-
 final class InsertEntityUseCase
 {
     private $repository;

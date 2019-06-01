@@ -11,8 +11,7 @@ class SearchEntityRepository
 
     public function __construct(
         BaseRepository $repository
-    )
-    {
+    ) {
         $this->repository = $repository;
     }
 
@@ -20,5 +19,4 @@ class SearchEntityRepository
     {
         return $this->repository;
     }
-
 }

@@ -7,7 +7,6 @@ class LogConsumer
 
     public function __construct()
     {
-
     }
 
     public function execute($message)

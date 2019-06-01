@@ -14,8 +14,7 @@ final class LoginUserQuery implements Query
     public function __construct(
         string $entity,
         string $email
-    )
-    {
+    ) {
         $this->entity = $entity;
         $this->email = $email;
     }
@@ -29,5 +28,4 @@ final class LoginUserQuery implements Query
     {
         return $this->email;
     }
-
 }

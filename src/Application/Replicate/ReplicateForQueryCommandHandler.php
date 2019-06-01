@@ -10,15 +10,13 @@ final class ReplicateForQueryCommandHandler implements CommandHandler
 
     public function __construct(
         ReplicateForQueryUseCaseFactory $useCaseFactory
-    )
-    {
+    ) {
         $this->useCaseFactory = $useCaseFactory;
     }
 
     public function handle($command)
     {
         try {
-
             $useCase = $this->useCaseFactory->build($command);
 
             $useCase->execute(
@@ -26,11 +24,10 @@ final class ReplicateForQueryCommandHandler implements CommandHandler
                 $command->uuid(),
                 $command->data()
             );
-
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             dd($e->getMessage());
         }
 
-         return $command->uuid();
+        return $command->uuid();
     }
 }

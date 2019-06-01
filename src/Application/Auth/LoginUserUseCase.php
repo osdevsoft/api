@@ -19,12 +19,11 @@ final class LoginUserUseCase
             'email' => $email
         ];
         #retrieve the data from the database, using the specified repository
-        $result_data = $this->searchEntityUseCase->execute(
+        $resultData = $this->searchEntityUseCase->execute(
             $entity,
             $searchFields
         );
 
-        return $result_data;
-
+        return $resultData;
     }
 }

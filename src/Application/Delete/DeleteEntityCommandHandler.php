@@ -13,8 +13,7 @@ final class DeleteEntityCommandHandler implements CommandHandler
     public function __construct(
         DeleteEntityUseCase $useCase,
         AMQPInterface $amqp
-    )
-    {
+    ) {
         $this->useCase = $useCase;
         $this->amqp = $amqp;
     }
@@ -22,15 +21,11 @@ final class DeleteEntityCommandHandler implements CommandHandler
     public function handle(DeleteEntityCommand $command, $forceExecution = false)
     {
         try {
-            if(
-                !$forceExecution
+            if (!$forceExecution
                 && (($queue = $command->getQueue() ) !== null)
             ) {
-
                  $this->amqp->publish($queue, serialize($command));
-
             } else {
-
                 $this->useCase->execute(
                     $command->entity(),
                     $command->uuid()
@@ -38,7 +33,7 @@ final class DeleteEntityCommandHandler implements CommandHandler
                 $this->amqp->publish('delete_completed', $command->getPayload());
 
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             dd($e->getMessage());
         }
 

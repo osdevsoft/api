@@ -16,5 +16,4 @@ class JWTAuth implements AuthInterface
     {
         return $this->manager;
     }
-
 }

@@ -9,8 +9,8 @@ interface BaseRepository
 
     public function search($entity, Array $search_fields, Array $query_filters);
 
-    public function update($entity_id, $data);
+    public function update($entityId, $data);
 
-    public function delete($entity_id);
+    public function delete($entityId);
 
 }

@@ -18,8 +18,7 @@ class CheckStatusController extends BaseUIController
 
     public function __construct(
         Request $request
-    )
-    {
+    ) {
         $this->request = $request;
     }
 
@@ -40,5 +39,4 @@ class CheckStatusController extends BaseUIController
     {
         return $this->generateResponse("Staying alive");
     }
-
 }

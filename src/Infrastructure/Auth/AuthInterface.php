@@ -2,4 +2,7 @@
 
 namespace Osds\Api\Infrastructure\Auth;
 
-interface AuthInterface {}
+interface AuthInterface
+{
+
+}

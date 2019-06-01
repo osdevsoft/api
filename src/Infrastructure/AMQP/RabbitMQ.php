@@ -5,7 +5,8 @@ namespace Osds\Api\Infrastructure\AMQP;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class RabbitMQ implements AMQPInterface {
+class RabbitMQ implements AMQPInterface
+{
 
     private $connection;
     private $channel;
@@ -13,8 +14,7 @@ class RabbitMQ implements AMQPInterface {
 
     public function __construct(
         Array $configuration
-    )
-    {
+    ) {
         $this->connect(
             $configuration['server'],
             $configuration['port'],
@@ -28,12 +28,10 @@ class RabbitMQ implements AMQPInterface {
     {
         $this->connection = new AMQPStreamConnection($server, $port, $user, $password);
         $this->channel = $this->connection->channel();
-
     }
 
     public function publish($queue, $message)
     {
-
         $this->channel->queue_declare($queue, false, true, false, false);
 
         $msg = new AMQPMessage($message);
@@ -42,5 +40,4 @@ class RabbitMQ implements AMQPInterface {
         $this->channel->close();
         $this->connection->close();
     }
-
 }

@@ -19,8 +19,7 @@ final class DeleteEntityCommand implements Command
     public function __construct(
         string $entity,
         string $uuid
-    )
-    {
+    ) {
         $this->entity = $entity;
         $this->uuid = $uuid;
     }
@@ -54,5 +53,4 @@ final class DeleteEntityCommand implements Command
     {
         return $this->queue;
     }
-
 }

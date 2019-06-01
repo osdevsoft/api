@@ -19,8 +19,7 @@ final class UpdateEntityCommand implements Command
         string $entity,
         string $uuid,
         array $data
-    )
-    {
+    ) {
         $this->entity = $entity;
         $this->uuid = $uuid;
         $this->data = $data;

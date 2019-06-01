@@ -9,10 +9,9 @@ class ElasticCacheRepositoryClient implements BaseRepositoryClientInterface
 
     private $client;
 
-    function __construct(
+    public function __construct(
         ClientBuilder $client
-    )
-    {
+    ) {
         $this->client = $client;
     }
 
@@ -20,5 +19,4 @@ class ElasticCacheRepositoryClient implements BaseRepositoryClientInterface
     {
         return $this->client;
     }
-
 }

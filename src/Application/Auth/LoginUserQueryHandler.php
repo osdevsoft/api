@@ -18,6 +18,6 @@ final class LoginUserQueryHandler implements QueryHandler
         return $this->useCase->execute(
             $query->entity(),
             $query->email()
-            );
+        );
     }
 }

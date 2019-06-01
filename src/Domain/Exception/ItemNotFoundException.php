@@ -11,7 +11,5 @@ class ItemNotFoundException extends BaseException
         $message = 'Item with uuid ' . $uuid . ' not found for entity ' . $entity;
         $this->logger->info($message);
         parent::setMessageAndCode($message, Response::HTTP_NOT_FOUND);
-
     }
-
 }

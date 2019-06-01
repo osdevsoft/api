@@ -2,6 +2,7 @@
 
 namespace Osds\Api\Infrastructure\Bus;
 
-interface ContainerInterface {
+interface ContainerInterface
+{
 
 }

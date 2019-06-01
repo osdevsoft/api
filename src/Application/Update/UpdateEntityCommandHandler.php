@@ -13,8 +13,7 @@ final class UpdateEntityCommandHandler implements CommandHandler
     public function __construct(
         UpdateEntityUseCase $useCase,
         AMQPInterface $amqp
-    )
-    {
+    ) {
         $this->useCase = $useCase;
         $this->amqp = $amqp;
     }
@@ -22,27 +21,21 @@ final class UpdateEntityCommandHandler implements CommandHandler
     public function handle(UpdateEntityCommand $command, $forceExecution = false)
     {
         try {
-
             $queue = $command->getQueue();
 
-            if(
-                !$forceExecution
+            if (!$forceExecution
                 && ($queue !== null)
             ) {
-
                  $this->amqp->publish($queue, $command->getPayload());
-
             } else {
-
                 $this->useCase->execute(
                     $command->entity(),
                     $command->uuid(),
                     $command->data()
                 );
                 $this->amqp->publish('update_completed', $command->getPayload());
-
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             dd($e->getMessage());
         }
 

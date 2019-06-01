@@ -17,17 +17,13 @@ class QueryBus implements QueryBusInterface
 
     public function ask(Query $messageObject)
     {
-
         $queryHandler = $this->getQueryHandler($messageObject);
         return $queryHandler->handle($messageObject);
-
     }
 
     private function getQueryHandler($messageObject)
     {
-
         $queryHandlerClass = get_class($messageObject) . 'Handler';
         return $this->container->get($queryHandlerClass);
-
     }
 }

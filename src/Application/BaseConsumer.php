@@ -15,5 +15,4 @@ class BaseConsumer
     {
         return preg_replace('/.*\\\/', '', get_class($class));
     }
-
 }

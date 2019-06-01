@@ -14,8 +14,8 @@ class ElasticCacheRepository implements BaseRepository
         $this->client = $client::create()->setHosts([$configuration['server']])->build();
     }
 
-    public function setEntity($entity) {
-
+    public function setEntity($entity)
+    {
         $this->entity = $entity;
     }
 
@@ -67,9 +67,8 @@ class ElasticCacheRepository implements BaseRepository
             }
 
             if (count($queryFilters) > 0) {
-
                 #TODO: add mappings to index
-                if(isset($queryFilters['sortby'])) {
+                if (isset($queryFilters['sortby'])) {
 //                    $params['sort'] = $queryFilters['sortby'];
 //                    foreach ($queryFilters['sortby'] as $field => $direction) {
 //                        $params['sort'][$field] = $direction;
@@ -82,9 +81,7 @@ class ElasticCacheRepository implements BaseRepository
                     $pageItems = 999;
                 }
 
-
-                if(isset($queryFilters['page']))
-                {
+                if (isset($queryFilters['page'])) {
                     $pageNumber = $queryFilters['page'];
                 } else {
                     $pageNumber = 1;
@@ -102,19 +99,18 @@ class ElasticCacheRepository implements BaseRepository
             $totalItems = @$response['hits']['total']['value'];
             $items = [];
             if ($totalItems > 0) {
-               foreach($response['hits']['hits'] as $hit) {
-                   $item = $hit['_source'];
-                   $item['uuid'] = $hit['_id'];
-                   $items[] = $item;
-               }
+                foreach ($response['hits']['hits'] as $hit) {
+                       $item = $hit['_source'];
+                       $item['uuid'] = $hit['_id'];
+                       $items[] = $item;
+                }
             }
             return [
                 'total_items' => $totalItems,
                 'items' => $items
             ];
 
-        } catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             dd($e);
         }
     }

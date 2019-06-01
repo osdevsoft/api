@@ -12,8 +12,7 @@ class ReplicateForQueryConsumer extends BaseConsumer
 
     public function __construct(
         CommandBus $commandBus
-    )
-    {
+    ) {
         $this->commandBus = $commandBus;
     }
 
@@ -30,9 +29,8 @@ class ReplicateForQueryConsumer extends BaseConsumer
                 get_class($originCommand)
             );
             $this->commandBus->dispatch($command, true);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->log($e->getFile() . '::' . $e->getLine() . ' : ' . $e->getMessage());
         }
     }
-
 }

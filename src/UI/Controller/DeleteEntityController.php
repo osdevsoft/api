@@ -22,8 +22,7 @@ class DeleteEntityController extends BaseUIController
     public function __construct(
         Request $request,
         CommandBus $commandBus
-    )
-    {
+    ) {
         $this->request = $request;
         $this->commandBus = $commandBus;
     }
@@ -51,6 +50,9 @@ class DeleteEntityController extends BaseUIController
      * )
      * @SWG\Tag(name="delete")
      * @Security(name="Bearer")
+     * @param $entity
+     * @param null $uuid
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
 
     public function handle($entity, $uuid = null)
@@ -71,6 +73,5 @@ class DeleteEntityController extends BaseUIController
             $entity,
             $uuid
         );
-
     }
 }

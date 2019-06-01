@@ -3,7 +3,6 @@
 namespace Osds\Api\Domain\Exception;
 
 use Exception;
-//use Osds\Api\Infrastructure\Log\LoggerInterface;
 
 abstract class BaseException extends Exception implements ApiExceptionInterface
 {

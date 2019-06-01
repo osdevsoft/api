@@ -16,14 +16,14 @@ final class SearchEntityUseCase
      * we allow parameteres in order to be able to be called from the same API itself
      *
      * @param string $entity :         entity we will search in
-     * @param array $search_fields
+     * @param array $searchFields
      *             $search_fields[$fieldname] = value_to_search (performs a strict search (=));
      *             $search_fields[$fieldname] = [
      *                                           'value' => value_to_search,
      *                                           'operand' => 'IN' (only one supported by now)
      *                                          ]
      *
-     * @param array $query_filters
+     * @param array $queryFilters
      *             No sorting by default
      *             $query_filters['sortby'][$i]['field'] = $field_to_sort_by
      *             $query_filters['sortby'][$i]['dir'] = 'ASC', 'DESC'
@@ -42,41 +42,46 @@ final class SearchEntityUseCase
      *                 items : items got
      *                 schema : schema (db fields) of the entity requested
      */
-    public function execute($entity = null, $search_fields = [], $query_filters = [], $additionalRequests = [])
+    public function execute($entity = null, $searchFields = [], $queryFilters = [], $additionalRequests = [])
     {
 
         #retrieve the data from the database, using the specified repository
-        $result_data = $this->repository->search(
+        $resultData = $this->repository->search(
             $entity,
-            $search_fields,
-            $query_filters
+            $searchFields,
+            $queryFilters
         );
 
         if (isset($additionalRequests['referenced_entities'])) {
-            $referenced_entities = explode(',', $additionalRequests['referenced_entities']);
-            $referenced_entities = $this->generateReferencedEntitiesArray($referenced_entities);
-            if (!is_array($referenced_entities)) {
-                $referenced_entities = [$referenced_entities];
+            $referencedEntities = explode(',', $additionalRequests['referenced_entities']);
+            $referencedEntities = $this->generateReferencedEntitiesArray($referencedEntities);
+            if (!is_array($referencedEntities)) {
+                $referencedEntities = [$referencedEntities];
             }
 
-            $result_data['items'] = $this->repository->getReferencedEntitiesContents($result_data['items'], $referenced_entities);
+            $resultData['items'] = $this->repository->getReferencedEntitiesContents(
+                $resultData['items'],
+                $referencedEntities
+            );
         } else {
             #TODO: refactor, in SearchReferencedEntitiesContents does the same
-            #we do not do Query::HYDRATE_ARRAY on DoctrineRepository because we want it as Entity Object to handle it more easily when handling referenced entities
-            foreach($result_data['items'] as &$item)
-            {
-                if(!is_array($item)) {
+            #we do not do Query::HYDRATE_ARRAY on DoctrineRepository
+            #because we want it as Entity Object to handle it more easily when handling referenced entities
+            foreach ($resultData['items'] as &$item) {
+                if (!is_array($item)) {
                     $item = $this->repository->convertToArray($item);
                 }
             }
         }
 
-        if(isset($additionalRequests['referenced_entities_contents'])) {
-            #we want to Search all the contents for this entities (for example, list of referenced contents on Backoffice detail)
+        if (isset($additionalRequests['referenced_entities_contents'])) {
+            #we want to Search all the contents for this entities
+            #(for example, list of referenced contents on Backoffice detail)
             $Search_entities_contents = explode(',', $additionalRequests['referenced_entities_contents']);
-            foreach($Search_entities_contents as $entity) {
+            foreach ($Search_entities_contents as $entity) {
                 $this->repository->setEntity($entity);
-                $result_data['required_entities_contents'][$entity] = $this->repository->retrieve($this->repository->SearchEntity());
+                $resultData['required_entities_contents'][$entity] =
+                    $this->repository->retrieve($this->repository->SearchEntity());
 //                if(count($result_data['required_entities_contents'][$entity]['items']) > 0) {
 //                    $items = [];
 //                    foreach($result_data['required_entities_contents'][$entity]['items'] as $item) {
@@ -87,31 +92,29 @@ final class SearchEntityUseCase
             }
         }
 
-        if($this->repository->getEntity() == null)
-        {
+        if ($this->repository->getEntity() == null) {
             $this->repository->setEntity($entity);
         }
-        $result_data['schema'] = [
+        $resultData['schema'] = [
             'fields' => $this->repository->getEntityFields($this->repository->getEntity())
         ];
 
-        return $result_data;
-
+        return $resultData;
     }
 
-
-    private function generateReferencedEntitiesArray($referenced_entities) {
-        $referenced_entities_array = [];
+    private function generateReferencedEntitiesArray($referencedEntities)
+    {
+        $referencedEntitiesArray = [];
         $fn = __FUNCTION__;
-        foreach ($referenced_entities as $referenced_entity) {
-            if(strstr($referenced_entity, '.')) {
+        foreach ($referencedEntities as $referencedEntity) {
+            if (strstr($referencedEntity, '.')) {
                 // multidimensional entities request
-                $referenced_entities_splited = explode('.', $referenced_entity);
-                $parent = array_shift($referenced_entities_splited);
-                $referenced_entities_array[$parent] = $this->{$fn}($referenced_entities_splited);
+                $referencedEntitiesSplited = explode('.', $referencedEntity);
+                $parent = array_shift($referencedEntitiesSplited);
+                $referencedEntitiesArray[$parent] = $this->{$fn}($referencedEntitiesSplited);
             } else {
                 //if (is_array($referenced_entities_array) && count($referenced_entities_array) > 0) {
-                    $referenced_entities_array[] = $referenced_entity;
+                    $referencedEntitiesArray[] = $referencedEntity;
                 //} else {
                 //    $referenced_entities_array = $referenced_entity;
                 //}
@@ -119,6 +122,6 @@ final class SearchEntityUseCase
 
         }
 
-        return $referenced_entities_array;
+        return $referencedEntitiesArray;
     }
 }

@@ -15,7 +15,4 @@ class UnauthorizedException extends BaseException
         $message = "User not authorized";
         parent::setMessageAndCode($message, Response::HTTP_UNAUTHORIZED);
     }
-
 }
-
-

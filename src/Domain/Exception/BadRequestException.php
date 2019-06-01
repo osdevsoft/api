@@ -12,7 +12,4 @@ class BadRequestException extends BaseException
         $this->logger->error($message, [$error->getFile(), $error->getLine()]);
         parent::setMessageAndCode($message, Response::HTTP_BAD_REQUEST);
     }
-
 }
-
-

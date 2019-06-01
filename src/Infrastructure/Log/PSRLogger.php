@@ -21,5 +21,4 @@ class PSRLogger implements LoggerInterface
     {
         $this->logger->error($message, $context);
     }
-
 }

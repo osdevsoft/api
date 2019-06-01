@@ -20,8 +20,7 @@ final class ReplicateForQueryCommand implements Command
         string $uuid,
         $data,
         string $originCommand
-    )
-    {
+    ) {
         $this->entity = $entity;
         $this->uuid = $uuid;
         $this->data = $data;

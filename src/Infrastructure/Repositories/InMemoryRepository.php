@@ -32,34 +32,33 @@ class InMemoryRepository implements BaseRepository
         $items = [];
         $totalItems = 0;
 
-        if(count($search_fields) > 0) {
-           if(isset($search_fields['uuid']) && $search_fields['uuid'] == '31415-926535-897932') {
-               $totalItems = 1;
-               $items[] = [
+        if (count($search_fields) > 0) {
+            if (isset($search_fields['uuid']) && $search_fields['uuid'] == '31415-926535-897932') {
+                $totalItems = 1;
+                $items[] = [
                    'uuid' => '31415-926535-897932',
                    'field' => 'value'
-               ];
-           }
+                ];
+            }
 
-           if(isset($search_fields['uuid']) && $search_fields['uuid'] == 'XXXXX-XXXXXX-XXXXXX') {
-               // do nothing (not found)
-           }
+            if (isset($search_fields['uuid']) && $search_fields['uuid'] == 'XXXXX-XXXXXX-XXXXXX') {
+                // do nothing (not found)
+            }
 
-           if(isset($search_fields['profile']) && $search_fields['profile'] == 'admin') {
-               $totalItems = 2;
-               $items[] = [
+            if (isset($search_fields['profile']) && $search_fields['profile'] == 'admin') {
+                $totalItems = 2;
+                $items[] = [
                    'uuid' => '31415-926535-897932',
                    'field' => 'value'
-               ];
-               $items[] = [
+                ];
+                $items[] = [
                    'uuid' => '31415-926535-897932',
                    'field' => 'value'
-               ];
-           }
+                ];
+            }
         }
 
-        if(count($query_filters) > 0) {
-
+        if (count($query_filters) > 0) {
             if (isset($query_filters['page']) && isset($query_filters['page_items'])) {
                 $totalItems = 100;
                 for ($i=0; $i<$query_filters['page_items']; $i++) {
@@ -73,15 +72,14 @@ class InMemoryRepository implements BaseRepository
             'total_items' => $totalItems,
             'items' => $items
         ];
-
     }
 
-    public function update($entity_id, $data)
+    public function update($entityId, $data)
     {
         // TODO: Implement update() method.
     }
 
-    public function delete($entity_id)
+    public function delete($entityId)
     {
         // TODO: Implement delete() method.
     }

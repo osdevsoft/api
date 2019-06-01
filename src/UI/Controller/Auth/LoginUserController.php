@@ -41,8 +41,7 @@ class LoginUserController extends BaseUIController
         LoggerInterface $logger,
         AuthInterface $authenticator,
         UserInterface $authUser
-    )
-    {
+    ) {
         $this->request = $request;
         $this->queryBus = $queryBus;
         $this->logger = $logger;
@@ -111,25 +110,16 @@ class LoginUserController extends BaseUIController
                     'name' => $user['name']
                 ]
             ];
-
-        }
-
-        catch(UnauthorizedException $e) {
+        } catch (UnauthorizedException $e) {
             $e->setMessage($this->request->parameters['username'], $e);
             $result = $e->getResponse();
-        }
-
-        catch(ItemNotFoundException $e) {
+        } catch (ItemNotFoundException $e) {
             $e->setMessage('user', $this->request->parameters['username']);
             $result = $e->getResponse();
-        }
-
-        catch(BadRequestException $e) {
+        } catch (BadRequestException $e) {
             $e->setMessage('Invalid parameters on the request', $e);
             $result = $e->getResponse();
-        }
-
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             $exception = new ErrorException($this->logger);
             $exception->setMessage('Server Error', $e);
             $result = $exception->getResponse();
@@ -141,8 +131,7 @@ class LoginUserController extends BaseUIController
 
     private function getQueryMessageObject($request)
     {
-        if(
-            !isset($request->parameters['username'])
+        if (!isset($request->parameters['username'])
             || !isset($request->parameters['password'])
         ) {
             throw new BadRequestException($this->logger);
@@ -152,7 +141,5 @@ class LoginUserController extends BaseUIController
             'user',
             $request->parameters['username']
         );
-
     }
-
 }

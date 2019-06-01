@@ -12,7 +12,4 @@ class ErrorException extends BaseException
         $this->logger->error($error->getMessage(), [$error->getFile(), $error->getLine()]);
         parent::setMessageAndCode($message, Response::HTTP_INTERNAL_SERVER_ERROR);
     }
-
 }
-
-

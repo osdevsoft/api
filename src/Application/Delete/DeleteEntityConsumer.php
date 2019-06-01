@@ -9,8 +9,7 @@ class DeleteEntityConsumer
 
     public function __construct(
         DeleteEntityCommandHandler $commandHandler
-    )
-    {
+    ) {
         $this->command = $commandHandler;
     }
 
@@ -18,7 +17,5 @@ class DeleteEntityConsumer
     {
         $command = unserialize($message->getBody());
         $uuid = $this->command->handle($command, true);
-
     }
-
 }
