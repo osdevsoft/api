@@ -6,8 +6,10 @@ Referenced entities + Proyecciones (Elastic Search + Event sourcing)
 
 BO
 --------------
+References inside detail
 DDD
 
+#########
 [improve]
 API
 JWT: get data from token and renew on expire

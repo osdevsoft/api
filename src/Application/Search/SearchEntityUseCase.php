@@ -98,6 +98,9 @@ final class SearchEntityUseCase
         $resultData['schema'] = [
             'fields' => $this->repository->getEntityFields($this->repository->getEntity())
         ];
+        if (isset($additionalRequests['get_referenced_entities'])) {
+            $resultData['referenced_entities'] = $this->repository->getReferencedEntities($this->repository->getEntity());
+        }
 
         return $resultData;
     }

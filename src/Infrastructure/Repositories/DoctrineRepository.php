@@ -5,6 +5,7 @@ namespace Osds\Api\Infrastructure\Repositories;
 use Doctrine\ORM\Query;
 
 use function Osds\Api\Utils\underscoreToCamelCase;
+use function Osds\Api\Utils\camelCaseToUnderscore;
 
 class DoctrineRepository implements BaseRepository
 {
@@ -45,12 +46,17 @@ class DoctrineRepository implements BaseRepository
         return $this->entity;
     }
 
-    /*
-    public function getEntityName()
+    public function getEntityName($entity = null)
     {
-        return str_replace('App\Entity\\', '', get_class($this->entity));
+        if ($entity == null) {
+            $entity = $this->entity;
+        }
+        if (is_object($entity)) {
+            $entity = get_class($entity);
+        }
+        $entity = str_replace('App\Entity\\', '', $entity);
+        return camelCaseToUnderscore($entity);
     }
-    */
 
     public function getEntityFQName()
     {
@@ -69,6 +75,36 @@ class DoctrineRepository implements BaseRepository
 
         return $fields;
     }
+
+    public function getReferencedEntities($entity)
+    {
+        $references = [];
+        $associations = $this->entityManager->getClassMetadata(get_class($entity))->getAssociationMappings();
+        if (count($associations) > 0) {
+            foreach ($associations as $association) {
+                $references[] = $this->getEntityName($association['targetEntity']);
+                /*
+                if (isset($association['mappedBy'])) {
+                    $relations['parent'][] = [
+                        'parent_field' => 'uuid',
+                        'child_entity' => $this->getEntityName($association['targetEntity']),
+                        'child_field' => $association['mappedBy']
+                    ];
+                } else {
+                    $relations['child'][] = [
+                        'parent_field' => 'uuid',
+                        'parent_entity' => $this->getEntityName($association['targetEntity']),
+                        'child_field' => $association['fieldName']
+                    ];
+                }
+                */
+            }
+        }
+
+        return $references;
+
+    }
+
 
     /**
      * @param string     $entity            name of the entity we want to retrieve items

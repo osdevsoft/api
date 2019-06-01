@@ -67,8 +67,8 @@ services:
   Osds\Api\Application\Search\SearchEntityRepository:
     public: true
     arguments:
-#      - "@ElasticCacheRepository"
-      - "@DoctrineRepository"
+      - "@ElasticCacheRepository"
+#      - "@DoctrineRepository"
 
 
   #### Update Entity
@@ -134,7 +134,7 @@ services:
   ReloadEntityContentOnQueryRepository:
     tags:
       name: 'console.command'
-      command: 'osds:reload_entity_content'
+      command: 'osds:reload-entity-content'
     class: Osds\Api\UI\Command\ReloadEntityContentOnQueryRepositoryCommand
     arguments:
       - "@ReloadEntityContentOnQueryRepositoryQueryHandler"

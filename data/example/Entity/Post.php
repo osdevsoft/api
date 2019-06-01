@@ -71,7 +71,7 @@ class Post
     /**
      * @ORM\OneToMany(targetEntity="Comment", mappedBy="postUuid")
      **/
-    private $comments;
+    private $comment;
 
 
     public function __construct() {

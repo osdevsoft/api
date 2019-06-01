@@ -15,7 +15,7 @@ use Osds\Api\Application\Replicate\ReplicateForQueryCommand;
 class ReloadEntityContentOnQueryRepositoryCommand extends Command
 {
 
-    protected static $defaultName = 'osds:reload_entity_content';
+    protected static $defaultName = 'osds:reload-entity-content';
 
     private $queryHandler;
     private $commandHandler;
@@ -34,12 +34,14 @@ class ReloadEntityContentOnQueryRepositoryCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('osds:reload_entity_content')
+            ->setName('osds:reload-entity-content')
             ->setDescription('Reloads an entity content on the Read repository from the Write Repository (usually DB to ES)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $appEntities = '';
+
         $io = new SymfonyStyle($input, $output);
         $io->caution('Be careful!!! This is going to reset all the content of the Read Repository');
         $io->note('Read Repo probably Elastic Search');
@@ -57,14 +59,21 @@ class ReloadEntityContentOnQueryRepositoryCommand extends Command
         $io->newLine();
         $io->newLine();
 
-        $page = 1;
+        $queryFilters = ['page' => 1];
+        $referencedEntities = $this->getItems(
+            $entity,
+            ['uuid' => 'null'],
+            [],
+            ['get_referenced_entities' => true]
+        );
+        $additionalFilters['referenced_entities'] = implode(',', $referencedEntities['referenced_entities']);
 
-        while ($response = $this->getItems($entity, $page)) {
-            if ($page == 1) {
+        while ($response = $this->getItems($entity, [], $queryFilters, $additionalFilters)) {
+            if ($queryFilters['page'] == 1) {
                 $io->section('Schema replication');
+                $io->newLine();
+                $io->newLine();
                 $this->recreateStructure($entity, $response['schema']['fields']);
-                $io->newLine();
-                $io->newLine();
 
                 $io->section('Starting Data replication');
                 $io->text('Nice progress bar 8====D');
@@ -87,19 +96,21 @@ class ReloadEntityContentOnQueryRepositoryCommand extends Command
                 $this->commandHandler->handle($commandMessageObject);
                 $io->progressAdvance(1);
             }
-            $page++;
+            $queryFilters['page']++;
         }
+
         $io->progressFinish();
         $io->success('Data for entity ' . strtoupper($entity) . ' reloaded properly.');
         $io->error('There was an error while reloading data.');
     }
 
-    private function getItems($entity, $page)
+    private function getItems($entity, $searchFields = [], $queryFilters = [], $additionalRequests = [])
     {
         $queryMessageObject = new SearchEntityQuery(
             $entity,
-            [],
-            ['page' => $page]
+            $searchFields,
+            $queryFilters,
+            $additionalRequests
         );
         return $this->queryHandler->handle($queryMessageObject);
     }
@@ -112,7 +123,7 @@ class ReloadEntityContentOnQueryRepositoryCommand extends Command
         foreach ($schema as $field) {
             $mapping['properties'][$field] = 'keyword';
         }
-        $cmd = "curl -X PUT http://elk:9200/{$entity}/_mapping -d '" . json_encode($mapping) . "'";
+        $cmd = "curl -X PUT http://elk:9200/{$entity}/_mapping -d '" . json_encode($mapping) . "' -H 'Content-Type: application/json'";
         exec($cmd);
     }
 }

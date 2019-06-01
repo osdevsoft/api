@@ -175,7 +175,11 @@ class SearchEntityController extends BaseUIController
 
     private function getAdditionalRequests($request)
     {
-        $possibleAdditionalRequestsParameters = ['referenced_entities', 'referenced_entities_contents'];
+        $possibleAdditionalRequestsParameters = [
+            'referenced_entities',
+            'referenced_entities_contents',
+            'get_referenced_entities'
+        ];
         $additionalRequests = [];
 
         foreach ($possibleAdditionalRequestsParameters as $additionalRequestsParameter) {

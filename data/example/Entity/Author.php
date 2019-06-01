@@ -65,7 +65,7 @@ class Author
 
 
     /**
-     * @ORM\OneToMany(targetEntity="Post", mappedBy="authorUuid")
+     * @ORM\OneToMany(targetEntity="Post", mappedBy="author_uuid")
      **/
     private $posts;
 

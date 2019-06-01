@@ -1,0 +1,70 @@
+parameters:
+  rabbitmq_configuration:
+    server: rabbitmq
+    port: 5672
+    user: rabbitmq
+    password: rabbitmq
+
+
+services:
+  RabbitMQ:
+    class: Osds\Api\Infrastructure\AMQP\RabbitMQ
+    arguments:
+      - '%rabbitmq_configuration%'
+
+
+old_sound_rabbit_mq:
+  connections:
+    default:
+      host: rabbitmq
+      user: rabbitmq
+      password: rabbitmq
+
+  consumers:
+    insert:
+      connection: default
+      queue_options:
+        name: insert
+      callback: InsertEntityConsumer
+    update:
+      connection: default
+      queue_options:
+        name: update
+      callback: UpdateEntityConsumer
+    delete:
+      connection: default
+      queue_options:
+        name: delete
+      callback: DeleteEntityConsumer
+
+  multiple_consumers:
+    insert_completed:
+      connection: default
+      exchange_options:
+        name: insert_completed
+        type: fanout
+      queues:
+        insert_completed_replicate:
+          name: insert_completed
+          callback: ReplicateForQueryConsumer
+    #                insert_completed_log:
+    #                    name: insert_completed
+    #                    callback: LogConsumer
+    update_completed:
+      connection: default
+      exchange_options:
+        name: update_completed
+        type: fanout
+      queues:
+        update_completed:
+          name: update_completed
+          callback: ReplicateForQueryConsumer
+    delete_completed:
+      connection: default
+      exchange_options:
+        name: delete_completed
+        type: fanout
+      queues:
+        delete_completed:
+          name: delete_completed
+          callback: ReplicateForQueryConsumer
