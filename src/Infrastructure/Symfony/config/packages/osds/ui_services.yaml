@@ -67,8 +67,8 @@ services:
   Osds\Api\Application\Search\SearchEntityRepository:
     public: true
     arguments:
-      - "@ElasticCacheRepository"
-#      - "@DoctrineRepository"
+#      - "@ElasticCacheRepository"
+      - "@DoctrineRepository"
 
 
   #### Update Entity

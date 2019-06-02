@@ -2,6 +2,8 @@
 
 namespace Osds\Api\Infrastructure\Repositories;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 
 use function Osds\Api\Utils\underscoreToCamelCase;
@@ -146,6 +148,16 @@ class DoctrineRepository implements BaseRepository
         #treat fields before updating / inserting
         foreach ($data as $field => $value) {
             $value = $this->treatValuePrePersist($field, $value);
+
+            #persisting a referenced entity field
+            if (strstr($field, '.')) {
+                $field = preg_replace('/\..*/', '', underscoreToCamelCase($field));
+                $this->setEntity($field);
+                $referencedEntity =
+                    $this->entityManager->getRepository($this->getEntityFQName())->find(['uuid' => $value]);
+                $referencedEntity->setUuid($value);
+                $value = $referencedEntity;
+            }
             $repository->{"set" . ucfirst($field)}($value);
         }
 
@@ -162,6 +174,16 @@ class DoctrineRepository implements BaseRepository
         #treat fields before updating / inserting
         foreach ($data as $field => $value) {
             $value = $this->treatValuePrePersist($field, $value);
+
+            #persisting a referenced entity field
+            if (strstr($field, '.')) {
+                $field = preg_replace('/\..*/', '', underscoreToCamelCase($field));
+                $this->setEntity($field);
+                $referencedEntity =
+                    $this->entityManager->getRepository($this->getEntityFQName())->find(['uuid' => $value]);
+                $referencedEntity->setUuid($value);
+                $value = $referencedEntity;
+            }
             $repository->{"set" . ucfirst($field)}($value);
         }
 
@@ -209,7 +231,6 @@ class DoctrineRepository implements BaseRepository
 
             foreach ($entityItems as $ei_key => $entityItem) {
                 $subItems = [];
-
                 if (!isset($parsed_items[$ei_key])) {
                     $parsed_items[$ei_key] = self::convertToArray($entityItem);
                 }
@@ -472,8 +493,12 @@ class DoctrineRepository implements BaseRepository
                 $aei_key = str_replace($entity_fqn, '', $aei_key);
                 $array_entity_item[$aei_key] = $aei_prop;
             }
+            if (is_object($aei_prop) && strstr($aei_key, 'uuid')) {
+                $aei_key = str_replace("\0", "", $aei_key);
+                $aei_key = str_replace($entity_fqn, '', $aei_key);
+                $array_entity_item[$aei_key] = $aei_prop->getUuid();
+            }
         }
-
         return $array_entity_item;
     }
 }

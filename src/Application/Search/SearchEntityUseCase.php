@@ -51,7 +51,6 @@ final class SearchEntityUseCase
             $searchFields,
             $queryFilters
         );
-
         if (isset($additionalRequests['referenced_entities'])) {
             $referencedEntities = explode(',', $additionalRequests['referenced_entities']);
             $referencedEntities = $this->generateReferencedEntitiesArray($referencedEntities);
@@ -80,15 +79,15 @@ final class SearchEntityUseCase
             $Search_entities_contents = explode(',', $additionalRequests['referenced_entities_contents']);
             foreach ($Search_entities_contents as $entity) {
                 $this->repository->setEntity($entity);
-                $resultData['required_entities_contents'][$entity] =
-                    $this->repository->retrieve($this->repository->SearchEntity());
-//                if(count($result_data['required_entities_contents'][$entity]['items']) > 0) {
-//                    $items = [];
-//                    foreach($result_data['required_entities_contents'][$entity]['items'] as $item) {
-//                        $items[] = $this->repository->convertToArray($item);
-//                    }
-//                    $result_data['required_entities_contents'][$entity] = $items;
-//                }
+                $resultData['referenced_entities_contents'][$entity] =
+                    $this->repository->search($entity);
+                if (count($resultData['referenced_entities_contents'][$entity]['items']) > 0) {
+                    $items = [];
+                    foreach ($resultData['referenced_entities_contents'][$entity]['items'] as $item) {
+                        $items[] = $this->repository->convertToArray($item);
+                    }
+                    $resultData['referenced_entities_contents'][$entity] = $items;
+                }
             }
         }
 

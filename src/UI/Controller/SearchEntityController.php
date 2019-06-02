@@ -107,7 +107,9 @@ class SearchEntityController extends BaseUIController
 
             $result = $this->queryBus->ask($messageObject);
 
-            if ($uuid != null && count($result['items']) == 0) {
+            if ($uuid != null
+                && count($result['items']) == 0
+                && !isset($this->request->parameters['referenced_entities_contents'])) {
                 throw new ItemNotFoundException($this->logger);
             }
         } catch (ItemNotFoundException $e) {

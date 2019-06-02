@@ -2,16 +2,17 @@ API
 -------------
 Aggregates con invariantes
 Call vendor from outside
-Referenced entities + Proyecciones (Elastic Search + Event sourcing)
+
 
 BO
 --------------
-References inside detail
+No se pueden insertar dos registros seguidos
 DDD
 
 #########
 [improve]
 API
+logstash lee de DB para meter en ELK
 JWT: get data from token and renew on expire
 mas UT y FT
 mas Exceptions
