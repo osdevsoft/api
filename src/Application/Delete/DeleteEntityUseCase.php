@@ -2,7 +2,6 @@
 
 namespace Osds\Api\Application\Delete;
 
-
 final class DeleteEntityUseCase
 {
     private $repository;

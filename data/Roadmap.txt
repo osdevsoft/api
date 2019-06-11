@@ -1,21 +1,26 @@
 API
 -------------
-Aggregates con invariantes
-Call vendor from outside
 
 
 BO
 --------------
-No se pueden insertar dos registros seguidos
-DDD
+
+
+DevOps
+--------------
+Jenkins (tests + deploys)
+
 
 #########
 [improve]
 API
+Aggregates con invariantes: rate.me
+Call vendor from outside
 logstash lee de DB para meter en ELK
 JWT: get data from token and renew on expire
 mas UT y FT
 mas Exceptions
 
 BO
+DDD
 Roles

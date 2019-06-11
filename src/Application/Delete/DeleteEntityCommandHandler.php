@@ -21,10 +21,11 @@ final class DeleteEntityCommandHandler implements CommandHandler
     public function handle(DeleteEntityCommand $command, $forceExecution = false)
     {
         try {
+            $queue = $command->getQueue();
             if (!$forceExecution
-                && (($queue = $command->getQueue() ) !== null)
+                && ($queue !== null)
             ) {
-                 $this->amqp->publish($queue, serialize($command));
+                 $this->amqp->publish($queue, $command->getPayload());
             } else {
                 $this->useCase->execute(
                     $command->entity(),

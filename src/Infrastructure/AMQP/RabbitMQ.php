@@ -37,7 +37,7 @@ class RabbitMQ implements AMQPInterface
         $msg = new AMQPMessage($message);
         $this->channel->basic_publish($msg, '', $queue);
 
-        $this->channel->close();
-        $this->connection->close();
+//        $this->channel->close();
+//        $this->connection->close();
     }
 }

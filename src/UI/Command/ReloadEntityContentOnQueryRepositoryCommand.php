@@ -40,7 +40,7 @@ class ReloadEntityContentOnQueryRepositoryCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $appEntities = '';
+        $additionalFilters = [];
 
         $io = new SymfonyStyle($input, $output);
         $io->caution('Be careful!!! This is going to reset all the content of the Read Repository');
@@ -66,7 +66,10 @@ class ReloadEntityContentOnQueryRepositoryCommand extends Command
             [],
             ['get_referenced_entities' => true]
         );
-        $additionalFilters['referenced_entities'] = implode(',', $referencedEntities['referenced_entities']);
+        if (isset($referencedEntities['referenced_entities'])
+            && count($referencedEntities['referenced_entities']) > 0) {
+            $additionalFilters['referenced_entities'] = implode(',', $referencedEntities['referenced_entities']);
+        }
 
         while ($response = $this->getItems($entity, [], $queryFilters, $additionalFilters)) {
             if ($queryFilters['page'] == 1) {

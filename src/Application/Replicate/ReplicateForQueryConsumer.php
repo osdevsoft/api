@@ -30,7 +30,7 @@ class ReplicateForQueryConsumer extends BaseConsumer
             );
             $this->commandBus->dispatch($command, true);
         } catch (\Exception $e) {
-            $this->log($e->getFile() . '::' . $e->getLine() . ' : ' . $e->getMessage());
+            $this->log($e->getFile() . '::' . $e->getLine() . ' : ' . $e->getMessage(), 'error');
         }
     }
 }

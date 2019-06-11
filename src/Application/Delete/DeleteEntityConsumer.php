@@ -2,7 +2,9 @@
 
 namespace Osds\Api\Application\Delete;
 
-class DeleteEntityConsumer
+use Osds\Api\Application\BaseConsumer;
+
+class DeleteEntityConsumer extends BaseConsumer
 {
 
     private $command;
@@ -15,7 +17,14 @@ class DeleteEntityConsumer
 
     public function execute($message)
     {
-        $command = unserialize($message->getBody());
-        $uuid = $this->command->handle($command, true);
+        try {
+            $originCommand = unserialize($message->getBody());
+            $this->log('deleting ' . $originCommand->uuid());
+
+            $this->command->handle($originCommand, true);
+
+        } catch (\Exception $e) {
+            $this->log('there was an error during the deletion: ' . $message->getBody());
+        }
     }
 }

@@ -25,7 +25,7 @@ final class ReplicateForQueryCommandHandler implements CommandHandler
                 $command->data()
             );
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            throw new \Exception($e);
         }
 
         return $command->uuid();
