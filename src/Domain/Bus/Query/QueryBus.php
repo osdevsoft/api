@@ -2,7 +2,6 @@
 
 namespace Osds\Api\Domain\Bus\Query;
 
-use Osds\Api\Domain\Exception\ErrorException;
 use Osds\Api\Infrastructure\Bus\ContainerInterface;
 
 class QueryBus implements QueryBusInterface
@@ -12,7 +11,7 @@ class QueryBus implements QueryBusInterface
     public function __construct(
         ContainerInterface $container
     ) {
-        $this->container = $container->handler();
+        $this->container = $container;
     }
 
     public function ask(Query $messageObject)

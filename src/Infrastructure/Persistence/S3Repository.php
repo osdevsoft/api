@@ -1,6 +1,6 @@
 <?php
 
-namespace Osds\Api\Infrastructure\Repositories;
+namespace Osds\Api\Infrastructure\Persistence;
 
 use App\Util\Aws\AwsS3Util;
 

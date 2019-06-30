@@ -3,16 +3,15 @@ parameters:
     elk_configuration:
         server: elk
 
-
 services:
-    DoctrineRepository:
-        class: Osds\Api\Infrastructure\Repositories\DoctrineRepository
+    EntityDoctrineRepository:
+        class: Osds\Api\Infrastructure\Persistence\Domain\Entity\EntityDoctrineRepository
         arguments:
             - "@Doctrine\\ORM\\EntityManagerInterface"
-    ElasticCacheRepository:
-        class: Osds\Api\Infrastructure\Repositories\ElasticCacheRepository
+    EntityElasticCacheRepository:
+        class: Osds\Api\Infrastructure\Persistence\Domain\Entity\EntityElasticCacheRepository
         arguments:
             - "@Elasticsearch\\ClientBuilder"
             - '%elk_configuration%'
-    InMemoryRepository:
-        class: Osds\Api\Infrastructure\Repositories\InMemoryRepository
+    EntityInMemoryRepository:
+        class: Osds\Api\Infrastructure\Persistence\Domain\Entity\InMemoryRepository

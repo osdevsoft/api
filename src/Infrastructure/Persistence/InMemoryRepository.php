@@ -1,8 +1,10 @@
 <?php
 
-namespace Osds\Api\Infrastructure\Repositories;
+namespace Osds\Api\Infrastructure\Persistence;
 
-class InMemoryRepository implements BaseRepository
+use Osds\Api\Domain\Entity\EntityRepositoryInterface;
+
+class InMemoryRepository implements EntityRepositoryInterface
 {
 
     private $entity;
@@ -27,13 +29,13 @@ class InMemoryRepository implements BaseRepository
         // TODO: Implement insert() method.
     }
 
-    public function search($entity, Array $search_fields, Array $query_filters)
+    public function search($entity, Array $searchFields = null, Array $queryFilters = null)
     {
         $items = [];
         $totalItems = 0;
 
-        if (count($search_fields) > 0) {
-            if (isset($search_fields['uuid']) && $search_fields['uuid'] == '31415-926535-897932') {
+        if (count($searchFields) > 0) {
+            if (isset($searchFields['uuid']) && $searchFields['uuid'] == '31415-926535-897932') {
                 $totalItems = 1;
                 $items[] = [
                    'uuid' => '31415-926535-897932',
@@ -41,11 +43,11 @@ class InMemoryRepository implements BaseRepository
                 ];
             }
 
-            if (isset($search_fields['uuid']) && $search_fields['uuid'] == 'XXXXX-XXXXXX-XXXXXX') {
+            if (isset($searchFields['uuid']) && $searchFields['uuid'] == 'XXXXX-XXXXXX-XXXXXX') {
                 // do nothing (not found)
             }
 
-            if (isset($search_fields['profile']) && $search_fields['profile'] == 'admin') {
+            if (isset($searchFields['profile']) && $searchFields['profile'] == 'admin') {
                 $totalItems = 2;
                 $items[] = [
                    'uuid' => '31415-926535-897932',
@@ -58,10 +60,10 @@ class InMemoryRepository implements BaseRepository
             }
         }
 
-        if (count($query_filters) > 0) {
-            if (isset($query_filters['page']) && isset($query_filters['page_items'])) {
+        if (count($queryFilters) > 0) {
+            if (isset($queryFilters['page']) && isset($queryFilters['page_items'])) {
                 $totalItems = 100;
-                for ($i=0; $i<$query_filters['page_items']; $i++) {
+                for ($i=0; $i<$queryFilters['page_items']; $i++) {
                     $items[] = [];
                 }
             }

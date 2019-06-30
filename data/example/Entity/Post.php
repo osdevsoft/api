@@ -65,17 +65,18 @@ class Post
      *   @ORM\JoinColumn(name="author_uuid", referencedColumnName="uuid")
      * })
      */
-    private $authorUuid;
+    private $author_uuid;
 
 
     /**
-     * @ORM\OneToMany(targetEntity="Comment", mappedBy="postUuid")
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="post_uuid")
      **/
     private $comment;
 
 
-    public function __construct() {
-        $this->comments = new ArrayCollection();
+    public function __construct()
+    {
+        $this->comment = new ArrayCollection();
         $this->createdAt = date('Y-m-d H:i:s');
         $this->updatedAt = date('Y-m-d H:i:s');
     }
@@ -87,12 +88,12 @@ class Post
 
     public function getAuthor()
     {
-        return $this->authorUuid;
+        return $this->author_uuid;
     }
 
     public function getComment()
     {
-        return $this->comments;
+        return $this->comment;
     }
 
     public function setUuid($uuid)
@@ -111,20 +112,20 @@ class Post
         $this->content = $content;
     }
 
-    public function setAuthorUuid($authorUuid)
+    public function setAuthor($author_uuid)
     {
-        $this->authorUuid = $authorUuid;
-
+        $this->author_uuid = $author_uuid;
     }
 
     /**
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function setTimestamps() {
+    public function setTimestamps()
+    {
         $this->updatedAt = new \DateTime('now');
         if ($this->createdAt == null) {
-           $this->createdAt = new \DateTime('now');
+            $this->createdAt = new \DateTime('now');
         }
     }
 

@@ -59,7 +59,7 @@ class LoginUserController extends BaseUIController
      * Tries to authenticate an user
      *
      * @SWG\Parameter(
-     *     name="user",
+     *     name="username",
      *     in="query",
      *     type="string",
      *     description="User to authenticate"
@@ -89,11 +89,9 @@ class LoginUserController extends BaseUIController
             $messageObject = $this->getQueryMessageObject($this->request);
 
             $result = $this->queryBus->ask($messageObject);
-
             if ($result['total_items'] != 1) {
                 throw new ItemNotFoundException($this->logger);
             }
-
             $user = $result['items'][0];
             if (!password_verify($this->request->parameters['password'], $user['password'])) {
                 throw new UnauthorizedException($this->logger);
@@ -101,7 +99,6 @@ class LoginUserController extends BaseUIController
 
             $this->authUser->setUsername($user['email']);
             $this->authUser->setPassword($user['password']);
-
             $authToken = $this->authenticator->create($this->authUser);
 
             $result = [

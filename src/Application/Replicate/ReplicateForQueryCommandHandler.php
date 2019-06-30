@@ -16,17 +16,13 @@ final class ReplicateForQueryCommandHandler implements CommandHandler
 
     public function handle($command)
     {
-        try {
-            $useCase = $this->useCaseFactory->build($command);
+        $useCase = $this->useCaseFactory->build($command);
 
-            $useCase->execute(
-                $command->entity(),
-                $command->uuid(),
-                $command->data()
-            );
-        } catch (\Exception $e) {
-            throw new \Exception($e);
-        }
+        $useCase->execute(
+            $command->entity(),
+            $command->uuid(),
+            $command->data()
+        );
 
         return $command->uuid();
     }

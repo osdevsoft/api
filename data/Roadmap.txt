@@ -9,6 +9,7 @@ BO
 DevOps
 --------------
 Jenkins (tests + deploys)
+git hooks
 
 
 #########
@@ -18,9 +19,27 @@ Aggregates con invariantes: rate.me
 Call vendor from outside
 logstash lee de DB para meter en ELK
 JWT: get data from token and renew on expire
-mas UT y FT
+mas UT y FT (add auth when required)
 mas Exceptions
 
 BO
 DDD
 Roles
+
+
+[X] en containerInterface, añadir mtodos required
+[X] symfonycontainer get
+[?] el modelo SearchRepository tiene que implementar Domain/Search/SearchEntityRepository.
+    ?Que tiene que tener SearchEntityRepositoryInterface? donde se inyecta Elastic
+en searchentityusecase, inyectar domain\search\searchentityrepositoryinterface (copia de baserepository), que tendra insert, search, etc.
+A esta interface, se le dira en el yml que sea del tipo de Persistence que queremos
+[X] en el loginusecase utilizar el querybus de search en lugar de su usecase
+[ ] el itemnotfoundexception meterlo en el repository. el log del error hacerlo en el controller, junto con el catch
+[X] insertentitytcommandhandler con dd()
+[X] en el insertentityconsumer usar el logger interface
+[X] logconsumer dentro de Replicate
+[X] replicateforquerycommandhandler exception
+exceptions dentro de su dominio service
+comandbus a interface, el resto a application
+tipar use cases
+php inspections ea extended

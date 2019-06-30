@@ -4,23 +4,27 @@ namespace Osds\Api\Application\Replicate;
 
 use Osds\Api\Application\BaseConsumer;
 use Osds\Api\Domain\Bus\Command\CommandBus;
+use Osds\Api\Infrastructure\Log\LoggerInterface;
 
 class ReplicateForQueryConsumer extends BaseConsumer
 {
 
     private $commandBus;
+    private $logger;
 
     public function __construct(
-        CommandBus $commandBus
+        CommandBus $commandBus,
+        LoggerInterface $logger
     ) {
         $this->commandBus = $commandBus;
+        $this->logger = $logger;
     }
 
     public function execute($message)
     {
         try {
             $originCommand = unserialize($message->getBody());
-            $this->log('replicating ' . $originCommand->uuid());
+            $this->logger->info('replicating ' . $originCommand->uuid());
 
             $command = new ReplicateForQueryCommand(
                 $originCommand->entity(),
@@ -30,7 +34,7 @@ class ReplicateForQueryConsumer extends BaseConsumer
             );
             $this->commandBus->dispatch($command, true);
         } catch (\Exception $e) {
-            $this->log($e->getFile() . '::' . $e->getLine() . ' : ' . $e->getMessage(), 'error');
+            $this->logger->error($e->getFile() . '::' . $e->getLine() . ' : ' . $e->getMessage());
         }
     }
 }

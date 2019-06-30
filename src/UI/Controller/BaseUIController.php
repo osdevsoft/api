@@ -17,10 +17,9 @@ class BaseUIController
     public function build(
         Request $request
     ) {
-        $api_token = @$request->header('X-Auth-Token');
-
         $this->request = new \stdClass();
         $postData = file_get_contents("php://input");
+
         if (!empty($postData)) {
             $this->request->parameters = json_decode($postData, true);
         } else {

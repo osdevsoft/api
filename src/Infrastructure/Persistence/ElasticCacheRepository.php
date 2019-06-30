@@ -1,8 +1,8 @@
 <?php
 
-namespace Osds\Api\Infrastructure\Repositories;
+namespace Osds\Api\Infrastructure\Persistence;
 
-class ElasticCacheRepository implements BaseRepository
+abstract class ElasticCacheRepository
 {
     private $client;
     private $entity;
@@ -50,7 +50,7 @@ class ElasticCacheRepository implements BaseRepository
         return $response;
     }
 
-    public function search($entity, Array $searchFields, Array $queryFilters)
+    public function search($entity, Array $searchFields = null, Array $queryFilters = null)
     {
         try {
             $params = [
@@ -111,7 +111,7 @@ class ElasticCacheRepository implements BaseRepository
             ];
 
         } catch (\Exception $e) {
-            dd($e);
+//            dd($e);
         }
     }
 

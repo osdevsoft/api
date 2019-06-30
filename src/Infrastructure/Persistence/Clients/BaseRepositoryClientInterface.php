@@ -1,6 +1,6 @@
 <?php
 
-namespace Osds\Api\Infrastructure\Repositories\Clients;
+namespace Osds\Api\Infrastructure\Persistence\Clients;
 
 interface BaseRepositoryClientInterface
 {

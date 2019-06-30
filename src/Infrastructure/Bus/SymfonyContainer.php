@@ -16,8 +16,8 @@ class SymfonyContainer implements ContainerInterface
         $this->handler = $handler;
     }
 
-    public function handler()
+    public function get($name)
     {
-        return $this->handler;
+        return $this->handler->get($name);
     }
 }

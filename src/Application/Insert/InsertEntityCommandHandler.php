@@ -20,22 +20,18 @@ final class InsertEntityCommandHandler implements CommandHandler
 
     public function handle(InsertEntityCommand $command, $forceExecution = false)
     {
-        try {
-            $queue = $command->getQueue();
-            if (!$forceExecution
-                && ($queue !== null)
-            ) {
-                 $this->amqp->publish($queue, $command->getPayload());
-            } else {
-                $this->useCase->execute(
-                    $command->entity(),
-                    $command->uuid(),
-                    $command->data()
-                );
-                $this->amqp->publish('insert_completed', $command->getPayload());
-            }
-        } catch (\Exception $e) {
-            dd($e->getMessage());
+        $queue = $command->getQueue();
+        if (!$forceExecution
+            && ($queue !== null)
+        ) {
+             $this->amqp->publish($queue, $command->getPayload());
+        } else {
+            $this->useCase->execute(
+                $command->entity(),
+                $command->uuid(),
+                $command->data()
+            );
+            $this->amqp->publish('insert_completed', $command->getPayload());
         }
 
          return $command->uuid();

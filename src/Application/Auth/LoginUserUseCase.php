@@ -2,28 +2,25 @@
 
 namespace Osds\Api\Application\Auth;
 
-use Osds\Api\Application\Search\SearchEntityUseCase;
+use Osds\Api\Application\Search\SearchEntityQuery;
+use Osds\Api\Domain\Bus\Query\QueryBus;
 
 final class LoginUserUseCase
 {
-    private $searchEntityUseCase;
+    private $queryBus;
 
-    public function __construct(SearchEntityUseCase $searchEntityUseCase)
+    public function __construct(QueryBus $queryBus)
     {
-        $this->searchEntityUseCase = $searchEntityUseCase;
+        $this->queryBus = $queryBus;
     }
 
     public function execute($entity, $email)
     {
-        $searchFields = [
-            'email' => $email
-        ];
-        #retrieve the data from the database, using the specified repository
-        $resultData = $this->searchEntityUseCase->execute(
+        $messageObject = new SearchEntityQuery(
             $entity,
-            $searchFields
+            ['email' => $email]
         );
 
-        return $resultData;
+        return $this->queryBus->ask($messageObject);
     }
 }

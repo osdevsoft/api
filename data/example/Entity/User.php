@@ -65,7 +65,8 @@ class User implements UserInterface
     private $deletedAt;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->createdAt = date('Y-m-d H:i:s');
         $this->updatedAt = date('Y-m-d H:i:s');
     }
@@ -98,14 +99,14 @@ class User implements UserInterface
     public function setAuthorUuid($authorUuid)
     {
         $this->authorUuid = $authorUuid;
-
     }
 
     /**
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function setTimestamps() {
+    public function setTimestamps()
+    {
         $this->updatedAt = new \DateTime('now');
         if ($this->createdAt == null) {
             $this->createdAt = new \DateTime('now');

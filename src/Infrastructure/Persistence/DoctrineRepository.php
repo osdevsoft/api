@@ -1,6 +1,6 @@
 <?php
 
-namespace Osds\Api\Infrastructure\Repositories;
+namespace Osds\Api\Infrastructure\Persistence;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
@@ -9,7 +9,7 @@ use Doctrine\ORM\Query;
 use function Osds\Api\Utils\underscoreToCamelCase;
 use function Osds\Api\Utils\camelCaseToUnderscore;
 
-class DoctrineRepository implements BaseRepository
+abstract class  DoctrineRepository
 {
 
     private $entity;

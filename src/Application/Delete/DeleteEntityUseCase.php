@@ -2,13 +2,15 @@
 
 namespace Osds\Api\Application\Delete;
 
+use Osds\Api\Domain\Entity\EntityRepositoryInterface;
+
 final class DeleteEntityUseCase
 {
     private $repository;
 
-    public function __construct(DeleteEntityRepository $repository)
+    public function __construct(EntityRepositoryInterface $repository)
     {
-        $this->repository = $repository->handler();
+        $this->repository = $repository;
     }
 
     public function execute($entity, $uuid)

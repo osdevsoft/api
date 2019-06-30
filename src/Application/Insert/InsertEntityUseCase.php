@@ -2,13 +2,15 @@
 
 namespace Osds\Api\Application\Insert;
 
+use Osds\Api\Domain\Entity\EntityRepositoryInterface;
+
 final class InsertEntityUseCase
 {
     private $repository;
 
-    public function __construct(InsertEntityRepository $repository)
+    public function __construct(EntityRepositoryInterface $repository)
     {
-        $this->repository = $repository->handler();
+        $this->repository = $repository;
     }
 
     public function execute($entity, $uuid, $data)

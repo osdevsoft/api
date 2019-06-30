@@ -56,7 +56,7 @@ class Comment
      *   @ORM\JoinColumn(name="post_uuid", referencedColumnName="uuid")
      * })
      */
-    private $postUuid;
+    private $post_uuid;
 
     /**
      * @var \Visitor
@@ -69,7 +69,8 @@ class Comment
     private $visitorUuid;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->createdAt = date('Y-m-d H:i:s');
         $this->updatedAt = date('Y-m-d H:i:s');
     }
@@ -81,7 +82,7 @@ class Comment
 
     public function getPost()
     {
-        return $this->postUuid;
+        return $this->post_uuid;
     }
 
     public function getVisitor()

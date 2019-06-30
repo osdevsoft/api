@@ -4,7 +4,7 @@ namespace Osds\Api\Application\Search;
 
 use PHPUnit\Framework\TestCase;
 
-use Osds\Api\Infrastructure\Repositories\InMemoryRepository;
+use Osds\Api\Infrastructure\Persistence\InMemoryRepository;
 
 final class SearchEntityUseCaseTest extends TestCase {
 
@@ -13,8 +13,7 @@ final class SearchEntityUseCaseTest extends TestCase {
     public function setUp(): void
     {
         $repository = new InMemoryRepository();
-        $useCaseRepository = new SearchEntityRepository($repository);
-        $this->useCase = new SearchEntityUseCase($useCaseRepository);
+        $this->useCase = new SearchEntityUseCase($repository);
     }
 
     public function testGetOne()

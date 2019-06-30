@@ -8,6 +8,7 @@ use Osds\Api\Application\Insert\InsertEntityCommand;
 
 use Osds\Api\Domain\Bus\Command\CommandBus;
 use Osds\Api\Domain\ValueObject\Uuid;
+use Osds\Api\Infrastructure\Log\LoggerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
@@ -21,13 +22,16 @@ class InsertEntityController extends BaseUIController
 
     protected $request;
     private $commandBus;
+    private $logger;
 
     public function __construct(
         Request $request,
-        CommandBus $commandBus
+        CommandBus $commandBus,
+        LoggerInterface $logger
     ) {
         $this->request = $request;
         $this->commandBus = $commandBus;
+        $this->logger = $logger;
     }
 
     /**
@@ -61,15 +65,21 @@ class InsertEntityController extends BaseUIController
 
     public function handle($entity)
     {
+        $messageObject = '';
+        try {
+            $this->build($this->request);
 
-        $this->build($this->request);
+            $messageObject = $this->getEntityMessageObject($entity, $this->request);
+            $messageObject->setQueue('insert');
 
-        $messageObject = $this->getEntityMessageObject($entity, $this->request);
-        $messageObject->setQueue('insert');
+            $result = $this->commandBus->dispatch($messageObject);
 
-        $result = $this->commandBus->dispatch($messageObject);
-
-        return $this->generateResponse($result);
+            return $this->generateResponse($result);
+        } catch (\Exception $e) {
+            $this->logger->error(
+                'Error during the insertion. Entity: ' . $entity.', data: '. $this->request
+            );
+        }
     }
 
     public function getEntityMessageObject($entity, $request)

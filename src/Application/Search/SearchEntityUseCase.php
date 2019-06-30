@@ -2,13 +2,15 @@
 
 namespace Osds\Api\Application\Search;
 
+use Osds\Api\Domain\Entity\EntityRepositoryInterface;
+
 final class SearchEntityUseCase
 {
     private $repository;
 
-    public function __construct(SearchEntityRepository $repository)
+    public function __construct(EntityRepositoryInterface $repository)
     {
-        $this->repository = $repository->handler();
+        $this->repository = $repository;
     }
 
     /**

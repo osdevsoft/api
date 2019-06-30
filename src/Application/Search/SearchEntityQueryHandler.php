@@ -8,8 +8,9 @@ final class SearchEntityQueryHandler implements QueryHandler
 {
     private $useCase;
 
-    public function __construct(SearchEntityUseCase $useCase)
-    {
+    public function __construct(
+        SearchEntityUseCase $useCase
+    ) {
         $this->useCase = $useCase;
     }
 

@@ -32,7 +32,10 @@ services:
 
   #### Insert Entity
   Osds\Api\UI\Controller\InsertEntityController:
-    autowire: true
+    arguments:
+      - "@Illuminate\\Http\\Request"
+      - "@Osds\\Api\\Domain\\Bus\\Command\\CommandBus"
+      - "@PSRLogger"
     tags: ['controller.service_arguments']
   Osds\Api\Application\Insert\InsertEntityCommandHandler:
     public: true
@@ -41,14 +44,14 @@ services:
       - "@RabbitMQ"
   InsertEntityUseCase:
     class: Osds\Api\Application\Insert\InsertEntityUseCase
-    autowire: true
-  Osds\Api\Application\Insert\InsertEntityRepository:
     public: true
     arguments:
-      - "@DoctrineRepository"
+      - "@EntityDoctrineRepository"
   InsertEntityConsumer:
     class: Osds\Api\Application\Insert\InsertEntityConsumer
-    autowire: true
+    arguments:
+      - "@Osds\\Api\\Application\\Insert\\InsertEntityCommandHandler"
+      - "@PSRLogger"
 
 
   #### Search Entity
@@ -61,19 +64,23 @@ services:
     tags: ['controller.service_arguments']
   Osds\Api\Application\Search\SearchEntityQueryHandler:
     public: true
-    autowire: true
-  Osds\Api\Application\Search\SearchEntityUseCase:
-    autowire: true
-  Osds\Api\Application\Search\SearchEntityRepository:
+    arguments:
+      - "@SearchEntityUseCase"
+  SearchEntityUseCase:
+    class: Osds\Api\Application\Search\SearchEntityUseCase
     public: true
     arguments:
-#      - "@ElasticCacheRepository"
-      - "@DoctrineRepository"
+      - "@EntityElasticCacheRepository"
+#      - "@EntityDoctrineRepository"
+
 
 
   #### Update Entity
   Osds\Api\UI\Controller\UpdateEntityController:
-    autowire: true
+    public: true
+    arguments:
+      - "@Illuminate\\Http\\Request"
+      - "@Osds\\Api\\Domain\\Bus\\Command\\CommandBus"
     tags: ['controller.service_arguments']
   Osds\Api\Application\Update\UpdateEntityCommandHandler:
     public: true
@@ -82,11 +89,9 @@ services:
       - "@RabbitMQ"
   UpdateEntityUseCase:
     class: Osds\Api\Application\Update\UpdateEntityUseCase
-    autowire: true
-  Osds\Api\Application\Update\UpdateEntityRepository:
     public: true
     arguments:
-      - "@DoctrineRepository"
+      - "@EntityDoctrineRepository"
   UpdateEntityConsumer:
     class: Osds\Api\Application\Update\UpdateEntityConsumer
     autowire: true
@@ -94,7 +99,10 @@ services:
 
   #### Delete Entity
   Osds\Api\UI\Controller\DeleteEntityController:
-    autowire: true
+    public: true
+    arguments:
+      - "@Illuminate\\Http\\Request"
+      - "@Osds\\Api\\Domain\\Bus\\Command\\CommandBus"
     tags: ['controller.service_arguments']
   Osds\Api\Application\Delete\DeleteEntityCommandHandler:
     public: true
@@ -103,11 +111,9 @@ services:
       - "@RabbitMQ"
   DeleteEntityUseCase:
     class: Osds\Api\Application\Delete\DeleteEntityUseCase
-    autowire: true
-  Osds\Api\Application\Delete\DeleteEntityRepository:
     public: true
     arguments:
-      - "@DoctrineRepository"
+      - "@EntityDoctrineRepository"
   DeleteEntityConsumer:
     class: Osds\Api\Application\Delete\DeleteEntityConsumer
     autowire: true
@@ -116,14 +122,16 @@ services:
   #### Replicate
   ReplicateForQueryConsumer:
     class: Osds\Api\Application\Replicate\ReplicateForQueryConsumer
-    autowire: true
+    arguments:
+      - "@Osds\\Api\\Domain\\Bus\\Command\\CommandBus"
+      - "@PSRLogger"
   Osds\Api\Application\Replicate\ReplicateForQueryCommandHandler:
     public: true
     autowire: true
   Osds\Api\Application\Replicate\ReplicateForQueryUseCaseFactory:
     public: true
     arguments:
-      - "@ElasticCacheRepository"
+      - "@EntityElasticCacheRepository"
 
 
   ################
@@ -145,12 +153,9 @@ services:
       - "@ReloadEntityContentOnQueryRepositoryUseCase"
   ReloadEntityContentOnQueryRepositoryUseCase:
     class: Osds\Api\Application\Search\SearchEntityUseCase
+    public: true
     arguments:
-      - "@ReloadEntityContentOnQueryRepositoryReadRepository"
-  ReloadEntityContentOnQueryRepositoryReadRepository:
-    class: Osds\Api\Application\Search\SearchEntityRepository
-    arguments:
-      - "@DoctrineRepository"
+      - "@EntityDoctrineRepository"
 
 
   LogConsumer:
