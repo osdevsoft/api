@@ -27,19 +27,17 @@ DDD
 Roles
 
 
+[ ] el itemnotfoundexception meterlo en el repository. el log del error hacerlo en el controller, junto con el catch
+[ ] exceptions dentro de su dominio service
+[ ] tipar use cases
+[ ] php inspections ea extended
+[X] basurilla de funcion en utils.php
+[X] comandbus a interface, el resto a application
 [X] en containerInterface, añadir mtodos required
 [X] symfonycontainer get
-[?] el modelo SearchRepository tiene que implementar Domain/Search/SearchEntityRepository.
-    ?Que tiene que tener SearchEntityRepositoryInterface? donde se inyecta Elastic
-en searchentityusecase, inyectar domain\search\searchentityrepositoryinterface (copia de baserepository), que tendra insert, search, etc.
-A esta interface, se le dira en el yml que sea del tipo de Persistence que queremos
+[X] el modelo SearchRepository tiene que implementar Domain/Search/SearchEntityRepository. Que tiene que tener SearchEntityRepositoryInterface? donde se inyecta Elastic? en searchentityusecase, inyectar domain\search\searchentityrepositoryinterface (copia de baserepository), que tendra insert, search, etc. A esta interface, se le dira en el yml que sea del tipo de Persistence que queremos
 [X] en el loginusecase utilizar el querybus de search en lugar de su usecase
-[ ] el itemnotfoundexception meterlo en el repository. el log del error hacerlo en el controller, junto con el catch
 [X] insertentitytcommandhandler con dd()
 [X] en el insertentityconsumer usar el logger interface
 [X] logconsumer dentro de Replicate
 [X] replicateforquerycommandhandler exception
-exceptions dentro de su dominio service
-comandbus a interface, el resto a application
-tipar use cases
-php inspections ea extended

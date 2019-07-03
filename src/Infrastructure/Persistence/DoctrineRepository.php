@@ -6,8 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 
-use function Osds\Api\Utils\underscoreToCamelCase;
-use function Osds\Api\Utils\camelCaseToUnderscore;
+use Osds\Api\Domain\Exception\ItemNotFoundException;
+use Osds\Api\Infrastructure\Helpers\StringConversion;
 
 abstract class  DoctrineRepository
 {
@@ -32,7 +32,7 @@ abstract class  DoctrineRepository
     public function setEntity($entity)
     {
         if (is_string($entity)) {
-            $entity = underscoreToCamelCase($entity);
+            $entity = StringConversion::underscoreToCamelCase($entity);
             $entityPath = self::ENTITY_PATH . $entity;
             $this->entity = new $entityPath;
         } else {
@@ -57,7 +57,7 @@ abstract class  DoctrineRepository
             $entity = get_class($entity);
         }
         $entity = str_replace('App\Entity\\', '', $entity);
-        return camelCaseToUnderscore($entity);
+        return StringConversion::camelCaseToUnderscore($entity);
     }
 
     public function getEntityFQName()
@@ -139,6 +139,16 @@ abstract class  DoctrineRepository
         ];
     }
 
+    public function find($entity, Array $searchFields = null, Array $queryFilters = null)
+    {
+        $result = $this->search($entity, $searchFields, $queryFilters);
+
+        if (count($result['items']) == 0) {
+            throw new ItemNotFoundException;
+        }
+    }
+
+
     public function insert($entity_uuid, $data): string
     {
         $data['uuid'] = $entity_uuid;
@@ -151,7 +161,7 @@ abstract class  DoctrineRepository
 
             #persisting a referenced entity field
             if (strstr($field, '.')) {
-                $field = preg_replace('/\..*/', '', underscoreToCamelCase($field));
+                $field = preg_replace('/\..*/', '', StringConversion::underscoreToCamelCase($field));
                 $this->setEntity($field);
                 $referencedEntity =
                     $this->entityManager->getRepository($this->getEntityFQName())->find(['uuid' => $value]);
@@ -177,7 +187,7 @@ abstract class  DoctrineRepository
 
             #persisting a referenced entity field
             if (strstr($field, '.')) {
-                $field = preg_replace('/\..*/', '', underscoreToCamelCase($field));
+                $field = preg_replace('/\..*/', '', StringConversion::underscoreToCamelCase($field));
                 $this->setEntity($field);
                 $referencedEntity =
                     $this->entityManager->getRepository($this->getEntityFQName())->find(['uuid' => $value]);
@@ -236,7 +246,7 @@ abstract class  DoctrineRepository
                 }
 
                 #call the method that recovers the subentity for this entity_item (from a post, get its user entity)
-                $function = "get" . underscoreToCamelCase($entityToGather);
+                $function = "get" . StringConversion::underscoreToCamelCase($entityToGather);
                 $subentity = $entityItem->{$function}();
                 if (strstr(get_class($subentity), 'PersistentCollection')) {
                     #it's a One to Many relation type. Get all the items for this subentity

@@ -1,6 +1,6 @@
 <?php
 
-namespace Osds\Api\UI\Controller;
+namespace Osds\Api\Infrastructure\UI\Controller;
 
 use Illuminate\Http\Request;
 

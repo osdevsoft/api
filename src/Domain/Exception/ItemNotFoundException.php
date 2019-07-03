@@ -8,7 +8,7 @@ class ItemNotFoundException extends BaseException
 {
     public function setMessage($entity, $uuid)
     {
-        $message = 'Item with uuid ' . $uuid . ' not found for entity ' . $entity;
+        $message = 'No item found for this search criteria';
         $this->logger->info($message);
         parent::setMessageAndCode($message, Response::HTTP_NOT_FOUND);
     }

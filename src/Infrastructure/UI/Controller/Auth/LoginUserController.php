@@ -1,8 +1,8 @@
 <?php
 
-namespace Osds\Api\UI\Controller\Auth;
+namespace Osds\Api\Infrastructure\UI\Controller\Auth;
 
-use Osds\Api\UI\Controller\BaseUIController;
+use Osds\Api\Infrastructure\UI\Controller\BaseUIController;
 
 use Illuminate\Http\Request;
 use Osds\Api\Domain\Bus\Query\QueryBus;
@@ -90,11 +90,11 @@ class LoginUserController extends BaseUIController
 
             $result = $this->queryBus->ask($messageObject);
             if ($result['total_items'] != 1) {
-                throw new ItemNotFoundException($this->logger);
+                throw new ItemNotFoundException;
             }
             $user = $result['items'][0];
             if (!password_verify($this->request->parameters['password'], $user['password'])) {
-                throw new UnauthorizedException($this->logger);
+                throw new UnauthorizedException;
             }
 
             $this->authUser->setUsername($user['email']);
@@ -108,16 +108,20 @@ class LoginUserController extends BaseUIController
                 ]
             ];
         } catch (UnauthorizedException $e) {
+            $e->setLogger($this->logger);
             $e->setMessage($this->request->parameters['username'], $e);
             $result = $e->getResponse();
         } catch (ItemNotFoundException $e) {
+            $e->setLogger($this->logger);
             $e->setMessage('user', $this->request->parameters['username']);
             $result = $e->getResponse();
         } catch (BadRequestException $e) {
+            $e->setLogger($this->logger);
             $e->setMessage('Invalid parameters on the request', $e);
             $result = $e->getResponse();
         } catch (\Exception $e) {
-            $exception = new ErrorException($this->logger);
+            $exception = new ErrorException();
+            $exception->setLogger($this->logger);
             $exception->setMessage('Server Error', $e);
             $result = $exception->getResponse();
         }
@@ -131,7 +135,7 @@ class LoginUserController extends BaseUIController
         if (!isset($request->parameters['username'])
             || !isset($request->parameters['password'])
         ) {
-            throw new BadRequestException($this->logger);
+            throw new BadRequestException();
         }
 
         return new LoginUserQuery(

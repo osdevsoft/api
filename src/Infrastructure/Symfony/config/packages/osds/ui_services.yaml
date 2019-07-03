@@ -5,14 +5,14 @@ services:
   ##########
 
   ### Shared actions
-  Osds\Api\UI\Controller\CheckStatusController:
+  Osds\Api\Infrastructure\UI\Controller\CheckStatusController:
     autowire: true
     tags: ['controller.service_arguments']
 
 
   ### AUTH ###
   ### LoginUser
-  Osds\Api\UI\Controller\Auth\LoginUserController:
+  Osds\Api\Infrastructure\UI\Controller\Auth\LoginUserController:
     autowire: true
     arguments:
       - "@Illuminate\\Http\\Request"
@@ -30,8 +30,9 @@ services:
     class: Osds\Api\Application\Auth\LoginUserUseCase
     autowire: true
 
+
   #### Insert Entity
-  Osds\Api\UI\Controller\InsertEntityController:
+  Osds\Api\Infrastructure\UI\Controller\InsertEntityController:
     arguments:
       - "@Illuminate\\Http\\Request"
       - "@Osds\\Api\\Domain\\Bus\\Command\\CommandBus"
@@ -55,7 +56,7 @@ services:
 
 
   #### Search Entity
-  Osds\Api\UI\Controller\SearchEntityController:
+  Osds\Api\Infrastructure\UI\Controller\SearchEntityController:
     autowire: true
     arguments:
       - "@Illuminate\\Http\\Request"
@@ -74,9 +75,29 @@ services:
 #      - "@EntityDoctrineRepository"
 
 
+  #### Find Entity
+  Osds\Api\Infrastructure\UI\Controller\FindEntityController:
+    autowire: true
+    arguments:
+      - "@Illuminate\\Http\\Request"
+      - "@Osds\\Api\\Domain\\Bus\\Query\\QueryBus"
+      - "@PSRLogger"
+    tags: ['controller.service_arguments']
+  Osds\Api\Application\Find\FindEntityQueryHandler:
+    public: true
+    arguments:
+      - "@FindEntityUseCase"
+  FindEntityUseCase:
+    class: Osds\Api\Application\Find\FindEntityUseCase
+    public: true
+    arguments:
+      - "@EntityElasticCacheRepository"
+#      - "@EntityDoctrineRepository"
+
+
 
   #### Update Entity
-  Osds\Api\UI\Controller\UpdateEntityController:
+  Osds\Api\Infrastructure\UI\Controller\UpdateEntityController:
     public: true
     arguments:
       - "@Illuminate\\Http\\Request"
@@ -98,7 +119,7 @@ services:
 
 
   #### Delete Entity
-  Osds\Api\UI\Controller\DeleteEntityController:
+  Osds\Api\Infrastructure\UI\Controller\DeleteEntityController:
     public: true
     arguments:
       - "@Illuminate\\Http\\Request"
@@ -143,7 +164,7 @@ services:
     tags:
       name: 'console.command'
       command: 'osds:reload-entity-content'
-    class: Osds\Api\UI\Command\ReloadEntityContentOnQueryRepositoryCommand
+    class: Osds\Api\Infrastructure\UI\Command\ReloadEntityContentOnQueryRepositoryCommand
     arguments:
       - "@ReloadEntityContentOnQueryRepositoryQueryHandler"
       - "@Osds\\Api\\Application\\Replicate\\ReplicateForQueryCommandHandler"

@@ -2,6 +2,8 @@
 
 namespace Osds\Api\Infrastructure\Persistence;
 
+use Osds\Api\Domain\Exception\ItemNotFoundException;
+
 abstract class ElasticCacheRepository
 {
     private $client;
@@ -113,6 +115,17 @@ abstract class ElasticCacheRepository
         } catch (\Exception $e) {
 //            dd($e);
         }
+    }
+
+    public function find($entity, Array $searchFields = null, Array $queryFilters = null)
+    {
+        $result = $this->search($entity, $searchFields, $queryFilters);
+
+        if (count($result['items']) == 0) {
+            throw new ItemNotFoundException();
+        }
+
+        return $result;
     }
 
     public function update($entity_uuid, $data)

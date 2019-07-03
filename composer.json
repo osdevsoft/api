@@ -35,10 +35,6 @@
         "Osds\\Api\\": "tests/"
       }
     },
-
-    "files": [
-      "src/utils.php"
-    ]
   },
 
   "scripts": {

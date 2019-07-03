@@ -1,6 +1,6 @@
 <?php
 
-namespace Osds\Api\UI\Controller\Auth;
+namespace Osds\Api\Infrastructure\UI\Controller\Auth;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

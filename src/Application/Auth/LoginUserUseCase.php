@@ -2,7 +2,7 @@
 
 namespace Osds\Api\Application\Auth;
 
-use Osds\Api\Application\Search\SearchEntityQuery;
+use Osds\Api\Application\Find\FindEntityQuery;
 use Osds\Api\Domain\Bus\Query\QueryBus;
 
 final class LoginUserUseCase
@@ -16,7 +16,7 @@ final class LoginUserUseCase
 
     public function execute($entity, $email)
     {
-        $messageObject = new SearchEntityQuery(
+        $messageObject = new FindEntityQuery(
             $entity,
             ['email' => $email]
         );

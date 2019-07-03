@@ -1,9 +1,11 @@
 <?php
 
-namespace Osds\Api\UI\Controller;
+namespace Osds\Api\Infrastructure\UI\Controller;
 
 use Illuminate\Http\Request;
-use Osds\Api\Application\Delete\DeleteEntityCommand;
+
+use Osds\Api\Application\Update\UpdateEntityCommand;
+
 use Osds\Api\Domain\Bus\Command\CommandBus;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -13,7 +15,7 @@ use Swagger\Annotations as SWG;
 /**
  * @Route("/api/{entity}")
  */
-class DeleteEntityController extends BaseUIController
+class UpdateEntityController extends BaseUIController
 {
 
     protected $request;
@@ -30,48 +32,54 @@ class DeleteEntityController extends BaseUIController
     /**
      * @Route(
      *     "/{uuid}",
-     *     methods={"DELETE"}
+     *     methods={"POST"},
      * )
      *
-     * Deletes an item from an entity
+     * Updates an item
      *
-     * No furter explanation, delete from entity where id=$id
+     * Updates an item for the requested entity
      *
      * @SWG\Parameter(
-     *     name="id",
-     *     in="path",
+     *     name="{entity_field}[]",
+     *     in="formData",
      *     type="string",
-     *     description="ID of the item to delete"
+     *     required=true,
+     *     description="Each of the different fields of the entity",
      * )
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the id of the deleted item",
+     *     description="Returns the id of the Updateed item",
      *     )
      * )
-     * @SWG\Tag(name="delete")
+     * @SWG\Tag(name="update")
      * @Security(name="Bearer")
+     *
      * @param $entity
-     * @param null $uuid
+     * @param $uuid
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
 
-    public function handle($entity, $uuid = null)
+    public function handle($entity, $uuid)
     {
         $this->build($this->request);
 
-        $messageObject = $this->getEntityMessageObject($entity, $uuid);
-        $messageObject->setQueue('delete');
+        $messageObject = $this->getEntityMessageObject($entity, $uuid, $this->request);
+        $messageObject->setQueue('update');
 
         $result = $this->commandBus->dispatch($messageObject);
 
         return $this->generateResponse($result);
     }
 
-    public function getEntityMessageObject($entity, $uuid = null)
+    public function getEntityMessageObject($entity, $uuid, $request)
     {
-        return new DeleteEntityCommand(
+
+        $data = $request->parameters;
+
+        return new UpdateEntityCommand(
             $entity,
-            $uuid
+            $uuid,
+            $data
         );
     }
 }
