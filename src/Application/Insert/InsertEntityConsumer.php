@@ -29,7 +29,8 @@ class InsertEntityConsumer extends BaseConsumer
             $this->command->handle($originCommand, true);
 
         } catch (\Exception $e) {
-            $exception = new ErrorException($this->logger);
+            $exception = new ErrorException();
+            $exception->setLogger($this->logger);
             $exception->setMessage(
                 'there was an error during the insertion: ' . $message->getBody(),
                 $e

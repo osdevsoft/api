@@ -3,19 +3,19 @@
 namespace Osds\Api\Application\Delete;
 
 use Osds\Api\Domain\Bus\Command\CommandHandler;
-use Osds\Api\Infrastructure\AMQP\AMQPInterface;
+use Osds\Api\Infrastructure\Messaging\MessagingInterface;
 
 final class DeleteEntityCommandHandler implements CommandHandler
 {
     private $useCase;
-    private $amqp;
+    private $messaging;
 
     public function __construct(
         DeleteEntityUseCase $useCase,
-        AMQPInterface $amqp
+        MessagingInterface $messaging
     ) {
         $this->useCase = $useCase;
-        $this->amqp = $amqp;
+        $this->messaging = $messaging;
     }
 
     public function handle(DeleteEntityCommand $command, $forceExecution = false)
@@ -25,13 +25,13 @@ final class DeleteEntityCommandHandler implements CommandHandler
             if (!$forceExecution
                 && ($queue !== null)
             ) {
-                 $this->amqp->publish($queue, $command->getPayload());
+                 $this->messaging->publish($queue, $command->getPayload());
             } else {
                 $this->useCase->execute(
                     $command->entity(),
                     $command->uuid()
                 );
-                $this->amqp->publish('delete_completed', $command->getPayload());
+                $this->messaging->publish('delete_completed', $command->getPayload());
 
             }
         } catch (\Exception $e) {

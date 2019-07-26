@@ -1,13 +1,13 @@
 API
 -------------
 
-
 BO
 --------------
 
 
 DevOps
 --------------
+grafana
 Jenkins (tests + deploys)
 git hooks
 
@@ -15,6 +15,8 @@ git hooks
 #########
 [improve]
 API
+depurar elasticSearch busquedas
+colas: exchange, jsonapi, asyncapi
 Aggregates con invariantes: rate.me
 Call vendor from outside
 logstash lee de DB para meter en ELK
@@ -28,9 +30,9 @@ Roles
 
 
 [ ] el itemnotfoundexception meterlo en el repository. el log del error hacerlo en el controller, junto con el catch
-[ ] exceptions dentro de su dominio service
+[ ] exceptions dentro de su domain service
 [ ] tipar use cases
-[ ] php inspections ea extended
+[ ] php inspections ea extended plugin
 [X] basurilla de funcion en utils.php
 [X] comandbus a interface, el resto a application
 [X] en containerInterface, añadir mtodos required

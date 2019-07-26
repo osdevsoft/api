@@ -1,8 +1,8 @@
 <?php
 
-namespace Osds\Api\Infrastructure\AMQP;
+namespace Osds\Api\Infrastructure\Messaging;
 
-interface AMQPInterface
+interface MessagingInterface
 {
     public function connect($server, $port, $user, $password);
 

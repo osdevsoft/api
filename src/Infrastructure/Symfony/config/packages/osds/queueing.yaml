@@ -8,7 +8,7 @@ parameters:
 
 services:
   RabbitMQ:
-    class: Osds\Api\Infrastructure\AMQP\RabbitMQ
+    class: Osds\Api\Infrastructure\Messaging\RabbitMQ
     arguments:
       - '%rabbitmq_configuration%'
 
@@ -20,9 +20,19 @@ old_sound_rabbit_mq:
       user: rabbitmq
       password: rabbitmq
 
+#  producers:
+#    insert:
+#      connection: default
+#      exchange_options:
+#        name: insert_element_exchange
+#        type: fanout
+
   consumers:
     insert:
       connection: default
+      exchange_options:
+        name: insert
+        type: fanout
       queue_options:
         name: insert
       callback: InsertEntityConsumer

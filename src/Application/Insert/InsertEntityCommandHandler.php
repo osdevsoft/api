@@ -3,19 +3,19 @@
 namespace Osds\Api\Application\Insert;
 
 use Osds\Api\Domain\Bus\Command\CommandHandler;
-use Osds\Api\Infrastructure\AMQP\AMQPInterface;
+use Osds\Api\Infrastructure\Messaging\MessagingInterface;
 
 final class InsertEntityCommandHandler implements CommandHandler
 {
     private $useCase;
-    private $amqp;
+    private $messaging;
 
     public function __construct(
         InsertEntityUseCase $useCase,
-        AMQPInterface $amqp
+        MessagingInterface $messaging
     ) {
         $this->useCase = $useCase;
-        $this->amqp = $amqp;
+        $this->messaging = $messaging;
     }
 
     public function handle(InsertEntityCommand $command, $forceExecution = false)
@@ -24,14 +24,14 @@ final class InsertEntityCommandHandler implements CommandHandler
         if (!$forceExecution
             && ($queue !== null)
         ) {
-             $this->amqp->publish($queue, $command->getPayload());
+             $this->messaging->publish($queue, $command->getPayload());
         } else {
             $this->useCase->execute(
                 $command->entity(),
                 $command->uuid(),
                 $command->data()
             );
-            $this->amqp->publish('insert_completed', $command->getPayload());
+            $this->messaging->publish('insert_completed', $command->getPayload());
         }
 
          return $command->uuid();

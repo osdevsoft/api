@@ -1,11 +1,11 @@
 <?php
 
-namespace Osds\Api\Infrastructure\AMQP;
+namespace Osds\Api\Infrastructure\Messaging;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class RabbitMQ implements AMQPInterface
+class RabbitMQ implements MessagingInterface
 {
 
     private $connection;
@@ -32,6 +32,7 @@ class RabbitMQ implements AMQPInterface
 
     public function publish($queue, $message)
     {
+//        $this->channel->exchange_declare($exchange, 'fanout', false, false, false);
         $this->channel->queue_declare($queue, false, true, false, false);
 
         $msg = new AMQPMessage($message);

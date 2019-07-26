@@ -1,10 +1,11 @@
 <?php
 
-namespace Osds\Api\Application\Search;
+namespace Osds\Api\Application\Find;
 
 use Osds\Api\Domain\Entity\EntityRepositoryInterface;
+use Osds\Api\Domain\Exception\ItemNotFoundException;
 
-final class SearchEntityUseCase
+final class FindEntityUseCase
 {
     private $repository;
 
@@ -43,15 +44,21 @@ final class SearchEntityUseCase
      * @return array : total_items : total number of elements (with no pagination)
      *                 items : items got
      *                 schema : schema (db fields) of the entity requested
+     * @throws ItemNotFoundException Item not found
      */
     public function execute($entity = null, $searchFields = [], $queryFilters = [], $additionalRequests = [])
     {
+
         #retrieve the data from the database, using the specified repository
         $resultData = $this->repository->search(
             $entity,
             $searchFields,
             $queryFilters
         );
+
+        if ($resultData['total_items'] == 0) {
+            throw new ItemNotFoundException();
+        }
 
         if (isset($additionalRequests['referenced_entities'])) {
             $referencedEntities = explode(',', $additionalRequests['referenced_entities']);
