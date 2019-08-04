@@ -67,7 +67,6 @@ abstract class ElasticCacheRepository
                                     ]
                                 ];
             }
-
             if (count($queryFilters) > 0) {
                 #TODO: add mappings to index
                 if (isset($queryFilters['sortby'])) {
@@ -113,7 +112,7 @@ abstract class ElasticCacheRepository
             ];
 
         } catch (\Exception $e) {
-//            dd($e);
+            dd($e);
         }
     }
 
@@ -121,9 +120,10 @@ abstract class ElasticCacheRepository
     {
         $result = $this->search($entity, $searchFields, $queryFilters);
 
-        if (count($result['items']) == 0) {
+        if (isset($result['items']) && count($result['items']) == 0) {
             throw new ItemNotFoundException();
         }
+
 
         return $result;
     }

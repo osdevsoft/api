@@ -163,7 +163,6 @@ class FindEntityController extends BaseUIController
     {
 
         $result = '';
-
         try {
             $this->build($this->request);
 

@@ -29,10 +29,8 @@ DDD
 Roles
 
 
-[ ] el itemnotfoundexception meterlo en el repository. el log del error hacerlo en el controller, junto con el catch
-[ ] exceptions dentro de su domain service
-[ ] tipar use cases
 [ ] php inspections ea extended plugin
+[x] el itemnotfoundexception meterlo en el repository. el log del error hacerlo en el controller, junto con el catch
 [X] basurilla de funcion en utils.php
 [X] comandbus a interface, el resto a application
 [X] en containerInterface, añadir mtodos required

@@ -9,6 +9,8 @@ interface EntityRepositoryInterface
 
     public function search($entity, Array $searchFields = null, Array $queryFilters = null);
 
+    public function find($entity, Array $searchFields = null, Array $queryFilters = null);
+
     public function update($entity_uuid, $data);
 
     public function delete($entity_uuid);

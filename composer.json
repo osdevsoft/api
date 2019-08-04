@@ -23,7 +23,8 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^8.1",
-    "guzzlehttp/guzzle": "^6.3"
+    "guzzlehttp/guzzle": "^6.3",
+    "behat/behat": "^3.5"
   },
 
   "autoload": {
@@ -34,7 +35,7 @@
       "psr-4": {
         "Osds\\Api\\": "tests/"
       }
-    },
+    }
   },
 
   "scripts": {

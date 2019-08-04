@@ -50,15 +50,11 @@ final class FindEntityUseCase
     {
 
         #retrieve the data from the database, using the specified repository
-        $resultData = $this->repository->search(
+        $resultData = $this->repository->find(
             $entity,
             $searchFields,
             $queryFilters
         );
-
-        if ($resultData['total_items'] == 0) {
-            throw new ItemNotFoundException();
-        }
 
         if (isset($additionalRequests['referenced_entities'])) {
             $referencedEntities = explode(',', $additionalRequests['referenced_entities']);
