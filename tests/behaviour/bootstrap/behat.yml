@@ -1,0 +1,9 @@
+default:
+  autoload:
+    '': /var/www/osds/code/api/vendor/osds/api/tests/behaviour/contexts
+  suites:
+    default:
+      paths:
+        - /var/www/osds/code/api/vendor/osds/api/tests/behaviour/features
+      contexts:
+        - CheckStatusContext

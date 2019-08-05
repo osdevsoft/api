@@ -26,6 +26,10 @@ para las relaciones many to one, en la entidad "many" (por ejemplo Post)
 - los datetime hay que cambiarlos a string
 
 
+launch behaviour tests:
+./vendor/bin/behat --config vendor/osds/api/tests/behaviour/bootstrap/behat.yml 
+
+
 pending
 -------
 hacer que el annotation genere tambien los one to many

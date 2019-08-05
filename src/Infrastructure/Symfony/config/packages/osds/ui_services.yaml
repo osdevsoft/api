@@ -5,6 +5,9 @@ services:
   ##########
 
   ### Shared actions
+  Osds\Api\Infrastructure\UI\Controller\HomeController:
+    autowire: true
+    tags: ['controller.service_arguments']
   Osds\Api\Infrastructure\UI\Controller\CheckStatusController:
     autowire: true
     tags: ['controller.service_arguments']
