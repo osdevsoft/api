@@ -18,7 +18,7 @@ class RabbitMQ implements MessagingInterface
         $this->connect(
             $configuration['server'],
             $configuration['port'],
-            $configuration['user'],
+            $configuration['Admin'],
             $configuration['password']
         );
     }

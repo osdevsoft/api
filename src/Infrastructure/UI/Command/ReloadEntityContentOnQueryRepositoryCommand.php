@@ -46,7 +46,7 @@ class ReloadEntityContentOnQueryRepositoryCommand extends Command
         $io->caution('Be careful!!! This is going to reset all the content of the Read Repository');
         $io->note('Read Repo probably Elastic Search');
         $io->title('Lets get on it');
-        $entity = $io->ask('Insert the name of Entity you want to Reload', 'user');
+        $entity = $io->ask('Insert the name of Entity you want to Reload', 'Admin');
 //        $entity = $io->choice('Insert the name of Entity you want to Reload', ['user', 'post'], 'user');
         $io->newLine();
 

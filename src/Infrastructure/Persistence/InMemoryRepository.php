@@ -76,6 +76,11 @@ class InMemoryRepository implements EntityRepositoryInterface
         ];
     }
 
+    public function find($entity, Array $searchFields = null, Array $queryFilters = null)
+    {
+        // TODO: Implement find() method.
+    }
+
     public function update($entityId, $data)
     {
         // TODO: Implement update() method.

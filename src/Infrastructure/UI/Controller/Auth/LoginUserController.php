@@ -77,15 +77,19 @@ class LoginUserController extends BaseUIController
      * )
      * @SWG\Tag(name="auth")
      * @Security(name="Bearer")
+     *
+     * @param $username
+     * @param $password
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
 
     public function handle()
     {
+
         $result = '';
 
         try {
             $this->build($this->request);
-
             $messageObject = $this->getQueryMessageObject($this->request);
 
             $result = $this->queryBus->ask($messageObject);
@@ -103,7 +107,7 @@ class LoginUserController extends BaseUIController
 
             $result = [
                 'authToken' => $authToken,
-                'user' => [
+                'Admin' => [
                     'name' => $user['name']
                 ]
             ];
@@ -113,7 +117,7 @@ class LoginUserController extends BaseUIController
             $result = $e->getResponse();
         } catch (ItemNotFoundException $e) {
             $e->setLogger($this->logger);
-            $e->setMessage('user', $this->request->parameters['username']);
+            $e->setMessage('Admin', $this->request->parameters['username']);
             $result = $e->getResponse();
         } catch (BadRequestException $e) {
             $e->setLogger($this->logger);
@@ -139,7 +143,7 @@ class LoginUserController extends BaseUIController
         }
 
         return new LoginUserQuery(
-            'user',
+            'Admin',
             $request->parameters['username']
         );
     }

@@ -74,8 +74,8 @@ services:
     class: Osds\Api\Application\Search\SearchEntityUseCase
     public: true
     arguments:
-      - "@EntityElasticCacheRepository"
-#      - "@EntityDoctrineRepository"
+#      - "@EntityElasticCacheRepository"
+      - "@EntityDoctrineRepository"
 
 
   #### Find Entity
@@ -94,8 +94,8 @@ services:
     class: Osds\Api\Application\Find\FindEntityUseCase
     public: true
     arguments:
-      - "@EntityElasticCacheRepository"
-#      - "@EntityDoctrineRepository"
+#      - "@EntityElasticCacheRepository"
+      - "@EntityDoctrineRepository"
 
 
 

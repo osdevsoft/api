@@ -14,6 +14,7 @@ git hooks
 #########
 [improve]
 API
+require jwt
 depurar elasticSearch busquedas
 colas: exchange, jsonapi, asyncapi
 Aggregates con invariantes: rate.me

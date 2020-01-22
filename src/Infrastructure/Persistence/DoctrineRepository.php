@@ -9,14 +9,14 @@ use Doctrine\ORM\Query;
 use Osds\Api\Domain\Exception\ItemNotFoundException;
 use Osds\Api\Infrastructure\Helpers\StringConversion;
 
-abstract class  DoctrineRepository
+abstract class DoctrineRepository
 {
 
     private $entity;
 
     private $entityManager;
 
-    const ENTITY_PATH = '\App\Entity\\';
+    const ENTITY_PATH = 'App\%site%\Domain\Entity\\';
 
     public function __construct(
         $client
@@ -33,7 +33,7 @@ abstract class  DoctrineRepository
     {
         if (is_string($entity)) {
             $entity = StringConversion::underscoreToCamelCase($entity);
-            $entityPath = self::ENTITY_PATH . $entity;
+            $entityPath = $this->getNamespace() . $entity;
             $this->entity = new $entityPath;
         } else {
             $this->entity = $entity;
@@ -56,13 +56,23 @@ abstract class  DoctrineRepository
         if (is_object($entity)) {
             $entity = get_class($entity);
         }
-        $entity = str_replace('App\Entity\\', '', $entity);
+        $entity = str_replace($this->getNamespace(), '', $entity);
         return StringConversion::camelCaseToUnderscore($entity);
     }
 
     public function getEntityFQName()
     {
         return get_class($this->entity);
+    }
+
+    public function getNamespace()
+    {
+        $baseNamespace = self::ENTITY_PATH;
+        $session = new SessionRepository();
+        $requestParameters = $session->find('request_parameters');
+        $site = $requestParameters['originSite'];
+
+        return str_replace('%site%', StringConversion::underscoreToCamelCase($site), $baseNamespace);
     }
 
     /**

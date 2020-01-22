@@ -38,10 +38,24 @@ class DeleteEntityController extends BaseUIController
      * No furter explanation, delete from entity where id=$id
      *
      * @SWG\Parameter(
-     *     name="id",
+     *     name="Authorization",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="Bearer $token",
+     *     description="Authorization"
+     * )
+     * @SWG\Parameter(
+     *     name="entity",
      *     in="path",
      *     type="string",
-     *     description="ID of the item to delete"
+     *     description="Entity to find in"
+     * )
+     * @SWG\Parameter(
+     *     name="uuid",
+     *     in="path",
+     *     type="string",
+     *     description="Returns the entity with the UUID specified. It's equivalent to '<i>search_fields[uuid]=$uuid</i>'. All previous parameters can be applied normally"
      * )
      * @SWG\Response(
      *     response=200,
@@ -50,8 +64,7 @@ class DeleteEntityController extends BaseUIController
      * )
      * @SWG\Tag(name="delete")
      * @Security(name="Bearer")
-     * @param $entity
-     * @param null $uuid
+     *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
 

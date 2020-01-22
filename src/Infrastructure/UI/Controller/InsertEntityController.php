@@ -44,6 +44,21 @@ class InsertEntityController extends BaseUIController
      *
      * Inserts an item for the requested entity
      *
+     *
+     * @SWG\Parameter(
+     *     name="Authorization",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="Bearer $token",
+     *     description="Authorization"
+     * )
+     * @SWG\Parameter(
+     *     name="entity",
+     *     in="path",
+     *     type="string",
+     *     description="Entity to find in"
+     * )
      * @SWG\Parameter(
      *     name="{entity_field}[]",
      *     in="formData",
@@ -59,7 +74,6 @@ class InsertEntityController extends BaseUIController
      * @SWG\Tag(name="insert")
      * @Security(name="Bearer")
      *
-     * @param $entity
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
 

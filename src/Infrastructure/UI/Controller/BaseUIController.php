@@ -3,6 +3,7 @@
 namespace Osds\Api\Infrastructure\UI\Controller;
 
 use Illuminate\Http\Request;
+use Osds\Api\Infrastructure\Persistence\SessionRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -25,6 +26,9 @@ class BaseUIController
         } else {
             $this->request->parameters = $_REQUEST;
         }
+
+        $session = new SessionRepository();
+        $session->insert('request_parameters', $this->request->parameters);
 
         if (!empty($_FILES)) {
             $this->request->files = $_FILES;

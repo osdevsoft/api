@@ -6,7 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 use Osds\Api\Infrastructure\Persistence\InMemoryRepository;
 
-final class SearchEntityUseCaseTest extends TestCase {
+final class SearchEntityUseCaseTest extends TestCase
+{
 
     private $useCase;
 
@@ -55,7 +56,6 @@ final class SearchEntityUseCaseTest extends TestCase {
         $this->basicResponseAssertions($result);
 
         $this->assertGreaterThan(1, $result['total_items']);
-
     }
 
     public function testGetPaginated()
@@ -69,7 +69,6 @@ final class SearchEntityUseCaseTest extends TestCase {
         $this->basicResponseAssertions($result);
 
         $this->assertGreaterThan(count($result['items']), $result['total_items']);
-
     }
 
     private function basicResponseAssertions($result)

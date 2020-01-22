@@ -40,6 +40,26 @@ class UpdateEntityController extends BaseUIController
      * Updates an item for the requested entity
      *
      * @SWG\Parameter(
+     *     name="Authorization",
+     *     in="header",
+     *     required=true,
+     *     type="string",
+     *     default="Bearer $token",
+     *     description="Authorization"
+     * )
+     * @SWG\Parameter(
+     *     name="entity",
+     *     in="path",
+     *     type="string",
+     *     description="Entity to find in"
+     * )
+     * @SWG\Parameter(
+     *     name="uuid",
+     *     in="path",
+     *     type="string",
+     *     description="Returns the entity with the UUID specified. It's equivalent to '<i>search_fields[uuid]=$uuid</i>'. All previous parameters can be applied normally"
+     * )
+     * @SWG\Parameter(
      *     name="{entity_field}[]",
      *     in="formData",
      *     type="string",
@@ -54,8 +74,6 @@ class UpdateEntityController extends BaseUIController
      * @SWG\Tag(name="update")
      * @Security(name="Bearer")
      *
-     * @param $entity
-     * @param $uuid
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
 

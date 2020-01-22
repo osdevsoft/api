@@ -42,7 +42,7 @@ class CheckStatusContext implements Context
         $responseCode = $this->api_response->getStatusCode();
 
         if ($responseCode != 200) {
-            throw new Exception('api/status not available');
+            throw new Exception($end_point . ' not available');
         }
 
         return true;
