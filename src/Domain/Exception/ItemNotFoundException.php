@@ -10,6 +10,6 @@ class ItemNotFoundException extends BaseException
     {
         $message = 'No item found for this search criteria';
         $this->logger->info($message);
-        parent::setMessageAndCode($message, Response::HTTP_NOT_FOUND);
+        parent::setMessageAndCode($message, Response::HTTP_I_AM_A_TEAPOT);
     }
 }

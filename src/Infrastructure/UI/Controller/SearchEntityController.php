@@ -2,22 +2,21 @@
 
 namespace Osds\Api\Infrastructure\UI\Controller;
 
-use Illuminate\Http\Request;
-
 use Osds\Api\Domain\Bus\Query\QueryBus;
 use Osds\Api\Application\Search\SearchEntityQuery;
 
 use Osds\Api\Domain\Exception\ErrorException;
 use Osds\Api\Domain\Exception\ItemNotFoundException;
-
 use Osds\Api\Infrastructure\Log\LoggerInterface;
+
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
+
 use Swagger\Annotations as SWG;
 
 /**
- * @Route("/{entity}")
+ * @Route("/api/{entity}")
  */
 class SearchEntityController extends BaseUIController
 {
@@ -27,12 +26,10 @@ class SearchEntityController extends BaseUIController
     private $logger;
 
     public function __construct(
-        Request $request,
         QueryBus $queryBus,
         LoggerInterface $logger
 
     ) {
-        $this->request = $request;
         $this->queryBus = $queryBus;
         $this->logger = $logger;
     }
@@ -62,13 +59,13 @@ class SearchEntityController extends BaseUIController
      *     name="entity",
      *     in="path",
      *     type="string",
-     *     description="Entity to find in"
+     *     description="Entity to search in"
      * )
      * @SWG\Parameter(
-     *     name="search_fields",
+     *     name="search_fields[]",
      *     in="query",
      *     type="string",
-     *     description="<u>Fields of the entity we want to filter by</u> <ul><li><b>Simple</b>: Adds a 'WHERE $fieldname=$value' filter<ul><li><i>search_fields[$fielname]=$value</i></li></ul></li></ul><ul><li><b>Complex</b> : Adds a 'WHERE $fieldname $operand $value' filter<ul><li><i>search_fields[$fielname][value]=$value&search_fields[$fielname][operand]=$operand</i> . Operand can be IN, LIKE</li></ul></li></ul>"
+     *     description="<u>Fields of the entity we want to filter by</u> <ul><li><b>Simple</b>: Adds a 'WHERE $fieldname=$value' filter<ul><li><i>search_fields[$fieldname]=$value</i></li></ul></li></ul><ul><li><b>Complex</b> : Adds a 'WHERE $fieldname $operand $value' filter<ul><li><i>search_fields[$fieldname][value]=$value&search_fields[$fieldname][operand]=$operand</i> . Operand can be IN, LIKE</li></ul></li></ul>"
      * )
      * @SWG\Parameter(
      *     name="query_filter",
@@ -109,10 +106,9 @@ class SearchEntityController extends BaseUIController
     {
         $result = '';
         try {
-            $this->build($this->request);
+            $requestParameters = $this->build();
 
-            $messageObject = $this->getEntityMessageObject($entity, $this->request);
-
+            $messageObject = $this->getEntityMessageObject($entity, $requestParameters['get']);
             $result = $this->queryBus->ask($messageObject);
         } catch (\Exception $e) {
             $exception = new ErrorException();
@@ -124,11 +120,11 @@ class SearchEntityController extends BaseUIController
         return $this->generateResponse($result);
     }
 
-    public function getEntityMessageObject($entity, $request)
+    public function getEntityMessageObject($entity, $requestParameters)
     {
-        $searchFields = $this->getSearchFields($request);
-        $queryFilters = $this->getQueryFilters($request);
-        $additionalRequests = $this->getAdditionalRequests($request);
+        $searchFields = $this->getSearchFields($requestParameters);
+        $queryFilters = $this->getQueryFilters($requestParameters);
+        $additionalRequests = $this->getAdditionalRequests($requestParameters);
 
         return new SearchEntityQuery(
             $entity,
@@ -142,15 +138,15 @@ class SearchEntityController extends BaseUIController
      * @param $request
      * @return array
      */
-    private function getSearchFields($request)
+    private function getSearchFields($requestParameters)
     {
         $searchFields = [];
 
         #we are filtering by something received from the external request
-        if (isset($request->parameters['search_fields'])) {
-            $searchFields += $request->parameters['search_fields'];
+        if (isset($requestParameters['search_fields'])) {
+            $searchFields += $requestParameters['search_fields'];
             #we don't need them anymore
-            unset($request->parameters['search_fields']);
+//            unset($requestParameters['search_fields']);
         }
         return $searchFields;
     }
@@ -159,20 +155,20 @@ class SearchEntityController extends BaseUIController
      * @param $request
      * @return array
      */
-    private function getQueryFilters($request)
+    private function getQueryFilters($requestParameters)
     {
         $queryFilters = [];
 
         #we are filtering the result query
-        if (isset($request->parameters['query_filters'])) {
-            $queryFilters += $request->parameters['query_filters'];
+        if (isset($requestParameters['query_filters'])) {
+            $queryFilters += $requestParameters['query_filters'];
             #we don't need them anymore
-            unset($request->parameters['query_filters']);
+//            unset($requestParameters['query_filters']);
         }
         return $queryFilters;
     }
 
-    private function getAdditionalRequests($request)
+    private function getAdditionalRequests($requestParameters)
     {
         $possibleAdditionalRequestsParameters = [
             'referenced_entities',
@@ -182,8 +178,8 @@ class SearchEntityController extends BaseUIController
         $additionalRequests = [];
 
         foreach ($possibleAdditionalRequestsParameters as $additionalRequestsParameter) {
-            if (isset($request->parameters[$additionalRequestsParameter])) {
-                $additionalRequests[$additionalRequestsParameter] = $request->parameters[$additionalRequestsParameter];
+            if (isset($requestParameters[$additionalRequestsParameter])) {
+                $additionalRequests[$additionalRequestsParameter] = $requestParameters[$additionalRequestsParameter];
             }
         }
 

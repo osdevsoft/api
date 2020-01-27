@@ -2,11 +2,14 @@
 
 namespace Osds\Api\Infrastructure\Persistence;
 
+use Doctrine\Common\Annotations\Annotation;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 
 use Osds\Api\Domain\Exception\ItemNotFoundException;
+use Osds\Api\Infrastructure\Helpers\EntityFactory;
 use Osds\Api\Infrastructure\Helpers\StringConversion;
 
 abstract class DoctrineRepository
@@ -24,20 +27,161 @@ abstract class DoctrineRepository
         $this->entityManager = $client;
     }
 
+
     /**
+     * @param string     $entity            name of the entity we want to retrieve items
+     * @param array|null $searchFields     fields we are going to filter by
+     * @param array|null $queryFilters     sorting, pagination
+     * @return array
+     */
+    public function search($entity, Array $searchFields = null, Array $queryFilters = null)
+    {
+        $joinedEntities = [];
+
+        $this->setEntity($entity);
+        $tableName = $this->getEntityData('table');
+        #get repository and query builder for the queries
+
+        $queryBuilder = $this->getEntityData('repository')->createQueryBuilder($tableName);
+
+        list($queryBuilder, $joinedEntities) =
+            $this->addFieldsToSearchBy($tableName, $searchFields, $queryBuilder, $joinedEntities);
+        list($queryBuilder, $joinedEntities) =
+            $this->addFieldsToFilterBy($tableName, $queryFilters, $queryBuilder, $joinedEntities);
+        list($queryBuilder, $total_items) =
+            $this->addFieldsToPaginateBy($tableName, $queryFilters, $queryBuilder);
+
+        $items = $queryBuilder->getQuery()->getResult(); #Query::HYDRATE_ARRAY
+
+        return [
+            'total_items' => !is_null($total_items)?$total_items:count($items),
+            'items' => $items
+        ];
+    }
+
+    public function find($entity, Array $searchFields = null, Array $queryFilters = null)
+    {
+        $result = $this->search($entity, $searchFields, $queryFilters);
+
+        if (count($result['items']) == 0) {
+            throw new ItemNotFoundException;
+        }
+
+        return $result;
+    }
+
+
+    public function insert($entity_uuid, $data): string
+    {
+        $data['uuid'] = $entity_uuid;
+        $entity = $this->entity;
+        $repository = new $entity();
+
+        #treat fields before updating / inserting
+        foreach ($data as $field => $value) {
+            $value = $this->treatValuePrePersist($field, $value);
+
+            #persisting a referenced entity field
+            if (strstr($field, '.')) {
+                $field = preg_replace('/\..*/', '', StringConversion::underscoreToCamelCase($field));
+                $this->setEntity($field);
+                $referencedEntity =
+                    $this->getEntityData('repository')->find(['uuid' => $value]);
+                $referencedEntity->setUuid($value);
+                $value = $referencedEntity;
+            }
+            $repository->{"set" . StringConversion::underscoreToCamelCase($field)}($value);
+        }
+
+        $this->entityManager->persist($repository);
+        $result = $this->entityManager->flush();
+        return $entity_uuid;
+    }
+
+    public function update($entityId, $data): string
+    {
+
+        $entityData = $this->getEntityData('repository')->find(['uuid' => $entityId]);
+
+        #treat fields before updating / inserting
+        foreach ($data as $field => $value) {
+            $value = $this->treatValuePrePersist($field, $value);
+
+            #persisting a referenced entity field
+            if (strstr($field, '_uuid')) {
+                $referencedEntity = str_replace('Uuid', '', StringConversion::underscoreToCamelCase($field));
+                $this->setEntity($referencedEntity);
+                $referencedEntityItem =
+                    $this->getEntityData('repository')->find(['uuid' => $value]);
+//                $referencedEntityItem->setUuid($value);
+                $value = $referencedEntityItem;
+            }
+            $entityData->{"set" . StringConversion::underscoreToCamelCase($field)}($value);
+        }
+
+        $this->entityManager->merge($entityData);
+        $result = $this->entityManager->flush();
+        return $entityId;
+    }
+
+
+    public function delete($entityId)
+    {
+
+        $object = $this->getEntityData('repository')->find($entityId);
+        // tell Doctrine you want to (eventually) save the Product (no queries yet)
+        $this->entityManager->remove($object);
+
+        // actually executes the queries (i.e. the INSERT query)
+        $this->entityManager->flush();
+
+        return $entityId;
+    }
+
+    public function getNamespaces()
+    {
+        return array_keys($this->entityManager->getConfiguration()->getMetadataDriverImpl()->getDrivers());
+    }
+
+    /**
+     * @param $entity
+     * @return array
+     *
+     * Given an Entity, it will return its fields
+     */
+    public function getEntityData($type, $entity = null)
+    {
+        if($entity == null) {
+            $entity = $this->entity;
+        }
+        switch($type) {
+            case 'FQName':
+                return get_class($entity);
+                break;
+            case 'table':
+                return $this->entityManager->getClassMetadata(get_class($entity))->getTableName();
+                break;
+            case 'fields':
+                return $this->entityManager->getClassMetadata(get_class($entity))->getColumnNames();
+                break;
+            case 'associations':
+                return $this->entityManager->getClassMetadata(get_class($entity))->getAssociationMappings();
+                break;
+            case 'repository':
+                return $this->entityManager->getRepository(get_class($entity));
+                break;
+        }
+    }
+
+
+   /**
      * @param string $entity entity name
      *
      * Sets the entity to use. If a string is received, will create it
      */
     public function setEntity($entity)
     {
-        if (is_string($entity)) {
-            $entity = StringConversion::underscoreToCamelCase($entity);
-            $entityPath = $this->getNamespace() . $entity;
-            $this->entity = new $entityPath;
-        } else {
-            $this->entity = $entity;
-        }
+        $this->entity = EntityFactory::getEntity($entity, $this->getNamespaces());
     }
 
     /**
@@ -48,53 +192,14 @@ abstract class DoctrineRepository
         return $this->entity;
     }
 
-    public function getEntityName($entity = null)
-    {
-        if ($entity == null) {
-            $entity = $this->entity;
-        }
-        if (is_object($entity)) {
-            $entity = get_class($entity);
-        }
-        $entity = str_replace($this->getNamespace(), '', $entity);
-        return StringConversion::camelCaseToUnderscore($entity);
-    }
-
-    public function getEntityFQName()
-    {
-        return get_class($this->entity);
-    }
-
-    public function getNamespace()
-    {
-        $baseNamespace = self::ENTITY_PATH;
-        $session = new SessionRepository();
-        $requestParameters = $session->find('request_parameters');
-        $site = $requestParameters['originSite'];
-
-        return str_replace('%site%', StringConversion::underscoreToCamelCase($site), $baseNamespace);
-    }
-
-    /**
-     * @param $entity
-     * @return array
-     *
-     * Given an Entity, it will return its fields
-     */
-    public function getEntityFields($entity)
-    {
-        $fields = $this->entityManager->getClassMetadata(get_class($entity))->getColumnNames();
-
-        return $fields;
-    }
-
     public function getReferencedEntities($entity)
     {
         $references = [];
-        $associations = $this->entityManager->getClassMetadata(get_class($entity))->getAssociationMappings();
+        $associations = $this->getEntityData('associations');
         if (count($associations) > 0) {
             foreach ($associations as $association) {
-                $references[] = $this->getEntityName($association['targetEntity']);
+                $targetEntity = EntityFactory::getEntity($association['targetEntity'], $this->getNamespaces());
+                $references[] = $this->getEntityData('table', $targetEntity);
                 /*
                 if (isset($association['mappedBy'])) {
                     $relations['parent'][] = [
@@ -115,115 +220,6 @@ abstract class DoctrineRepository
 
         return $references;
 
-    }
-
-
-    /**
-     * @param string     $entity            name of the entity we want to retrieve items
-     * @param array|null $searchFields     fields we are going to filter by
-     * @param array|null $queryFilters     sorting, pagination
-     * @return array
-     */
-    public function search($entity, Array $searchFields = null, Array $queryFilters = null)
-    {
-        $joinedEntities = [];
-
-        $this->setEntity($entity);
-
-        #get repository and query builder for the queries
-
-        $repository = $this->entityManager->getRepository($this->getEntityFQName());
-        $queryBuilder = $repository->createQueryBuilder($entity);
-
-        list($queryBuilder, $joinedEntities) =
-            $this->addFieldsToSearchBy($entity, $searchFields, $queryBuilder, $joinedEntities);
-        list($queryBuilder, $joinedEntities) =
-            $this->addFieldsToFilterBy($entity, $queryFilters, $queryBuilder, $joinedEntities);
-        list($queryBuilder, $total_items) = $this->addFieldsToPaginateBy($entity, $queryFilters, $queryBuilder);
-
-        $items = $queryBuilder->getQuery()->getResult(); #Query::HYDRATE_ARRAY
-
-        return [
-            'total_items' => !is_null($total_items)?$total_items:count($items),
-            'items' => $items
-        ];
-    }
-
-    public function find($entity, Array $searchFields = null, Array $queryFilters = null)
-    {
-        $result = $this->search($entity, $searchFields, $queryFilters);
-
-        if (count($result['items']) == 0) {
-            throw new ItemNotFoundException;
-        }
-    }
-
-
-    public function insert($entity_uuid, $data): string
-    {
-        $data['uuid'] = $entity_uuid;
-        $entity = $this->getEntity();
-        $repository = new $entity();
-
-        #treat fields before updating / inserting
-        foreach ($data as $field => $value) {
-            $value = $this->treatValuePrePersist($field, $value);
-
-            #persisting a referenced entity field
-            if (strstr($field, '.')) {
-                $field = preg_replace('/\..*/', '', StringConversion::underscoreToCamelCase($field));
-                $this->setEntity($field);
-                $referencedEntity =
-                    $this->entityManager->getRepository($this->getEntityFQName())->find(['uuid' => $value]);
-                $referencedEntity->setUuid($value);
-                $value = $referencedEntity;
-            }
-            $repository->{"set" . ucfirst($field)}($value);
-        }
-
-        $this->entityManager->persist($repository);
-        $result = $this->entityManager->flush();
-        return $entity_uuid;
-    }
-
-    public function update($entityId, $data): string
-    {
-
-        $repository = $this->entityManager->getRepository($this->getEntityFQName())->find(['uuid' => $entityId]);
-
-        #treat fields before updating / inserting
-        foreach ($data as $field => $value) {
-            $value = $this->treatValuePrePersist($field, $value);
-
-            #persisting a referenced entity field
-            if (strstr($field, '.')) {
-                $field = preg_replace('/\..*/', '', StringConversion::underscoreToCamelCase($field));
-                $this->setEntity($field);
-                $referencedEntity =
-                    $this->entityManager->getRepository($this->getEntityFQName())->find(['uuid' => $value]);
-                $referencedEntity->setUuid($value);
-                $value = $referencedEntity;
-            }
-            $repository->{"set" . ucfirst($field)}($value);
-        }
-
-        $this->entityManager->merge($repository);
-        $result = $this->entityManager->flush();
-        return $entityId;
-    }
-
-
-    public function delete($entityId)
-    {
-
-        $object = $this->entityManager->getRepository($this->getEntityFQName())->find($entityId);
-        // tell Doctrine you want to (eventually) save the Product (no queries yet)
-        $this->entityManager->remove($object);
-
-        // actually executes the queries (i.e. the INSERT query)
-        $this->entityManager->flush();
-
-        return $entityId;
     }
 
     /**
@@ -255,23 +251,24 @@ abstract class DoctrineRepository
                     $parsed_items[$ei_key] = self::convertToArray($entityItem);
                 }
 
-                #call the method that recovers the subentity for this entity_item (from a post, get its user entity)
+                #call the method that recovers the subentity for this entity_item (from a staticPage, get its user entity)
                 $function = "get" . StringConversion::underscoreToCamelCase($entityToGather);
                 $subentity = $entityItem->{$function}();
+                if(is_null($subentity)) continue;
                 if (strstr(get_class($subentity), 'PersistentCollection')) {
                     #it's a One to Many relation type. Get all the items for this subentity
                     $subentity->initialize();
                     $subItems = $subentity->getSnapshot();
 
                 } else {
-                    #Many to One
-                    $subentity->__load();
+                    #Many to One (load User from a StaticPage)
+//                    $subentity->__load();
                     $subItems[] = $subentity;
                 }
 
                 #we have subitems for this entity and more referenced entities to parse
                 if (!is_integer($referencedEntity)) {
-                    $subItems = self::getReferencedEntitiesContents($subItems, $referencedSubentities);
+                    $subItems = $this->getReferencedEntitiesContents($subItems, $referencedSubentities);
                 } else {
                     $subItemsNew = [];
                     #no subentities => convert this subitems to array
@@ -287,6 +284,7 @@ abstract class DoctrineRepository
 
         return $parsed_items;
     }
+
 
     /************************/
     /*** Helper Functions **
@@ -389,15 +387,17 @@ abstract class DoctrineRepository
             #we haven't merged this entity yet
             && !in_array($filter_entity, $joined_entities)
         ) {
-            $referenced_entity = '\App\Entity\\' . ucfirst($filter_entity);
-            $joined_entities[] = $filter_entity;
-
-            $referenced_entity_class_helper = new \ReflectionClass($referenced_entity);
+//            $referenced_entity = '\App\NexinEs\Domain\Entity\\' . ucfirst($filter_entity);
+            $referenced_entity = EntityFactory::getEntity($filter_entity, $this->getNamespaces());
+            $referenced_entity_fqname = $this->getEntityData('FQName', $referenced_entity);
+            $referenced_entity_fields = $this->getEntityData('fields', $referenced_entity);
+            $joined_entities[] = $referenced_entity_fqname;
 
             #check in which way we have to make the join "ON"
-            $entity_field = strtolower($parent_entity) . "Uuid";
-            $remote_model_field = strtolower($filter_entity)."Uuid";
-            if ($referenced_entity_class_helper->hasProperty($entity_field)) {
+            $entity_field = strtolower($parent_entity) . "_uuid";
+            $remote_model_field = strtolower($filter_entity)."_uuid";
+//            if ($referenced_entity->hasProperty($entity_field)) {
+            if (!in_array($entity_field, $referenced_entity_fields)) {
                 $origin_entity = $parent_entity;
                 $origin_field = 'uuid';
                 $joined_entity = $filter_entity;
@@ -410,7 +410,7 @@ abstract class DoctrineRepository
             }
 
             $query_builder->leftJoin(
-                $referenced_entity,
+                $referenced_entity_fqname,
                 $filter_entity,
                 \Doctrine\ORM\Query\Expr\Join::WITH,
                 "{$origin_entity}.{$origin_field} = {$joined_entity}.{$joined_field}"
@@ -482,9 +482,8 @@ abstract class DoctrineRepository
         #if another entity uuid comes, search for it to reference it
         if ($field != 'uuid' && strstr($field, 'Uuid')) {
             $entity_name = str_replace('Uuid', '', $field);
-            $entity_class_name = self::ENTITY_PATH . ucfirst($entity_name);
             $original_value = $value;
-            $value = $this->entityManager->getRepository($entity_class_name)->find(['uuid' => $original_value]);
+            $value =  $this->getEntityData('repository', EntityFactory::getEntity($entity_name))->find(['uuid' => $original_value]);
             if (is_null($value)) {
                 throw new \Exception("$entity_name with uuid '$original_value' not found");
             }
@@ -515,6 +514,7 @@ abstract class DoctrineRepository
             }
             if (is_object($aei_prop) && strstr($aei_key, 'uuid')) {
                 $aei_key = str_replace("\0", "", $aei_key);
+                $aei_key = str_replace("*", "", $aei_key);
                 $aei_key = str_replace($entity_fqn, '', $aei_key);
                 $array_entity_item[$aei_key] = $aei_prop->getUuid();
             }

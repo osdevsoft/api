@@ -3,6 +3,7 @@
 namespace Osds\Api\Application\Find;
 
 use Osds\Api\Domain\Entity\EntityRepositoryInterface;
+use Osds\Api\Infrastructure\Helpers\EntityFactory;
 use Osds\Api\Domain\Exception\ItemNotFoundException;
 
 final class FindEntityUseCase
@@ -71,9 +72,11 @@ final class FindEntityUseCase
             #TODO: refactor, in SearchReferencedEntitiesContents does the same
             #we do not do Query::HYDRATE_ARRAY on DoctrineRepository
             #because we want it as Entity Object to handle it more easily when handling referenced entities
-            foreach ($resultData['items'] as &$item) {
-                if (!is_array($item)) {
-                    $item = $this->repository->convertToArray($item);
+            if (count($resultData['items']) > 0) {
+                foreach ($resultData['items'] as &$item) {
+                    if (!is_array($item)) {
+                        $item = $this->repository->convertToArray($item);
+                    }
                 }
             }
         }
@@ -83,6 +86,7 @@ final class FindEntityUseCase
             #(for example, list of referenced contents on Backoffice detail)
             $Search_entities_contents = explode(',', $additionalRequests['referenced_entities_contents']);
             foreach ($Search_entities_contents as $entity) {
+                #TODO: think about deleting this setEntity
                 $this->repository->setEntity($entity);
                 $resultData['referenced_entities_contents'][$entity] =
                     $this->repository->search($entity);
@@ -100,10 +104,12 @@ final class FindEntityUseCase
             $this->repository->setEntity($entity);
         }
         $resultData['schema'] = [
-            'fields' => $this->repository->getEntityFields($this->repository->getEntity())
+//            'fields' => $this->repository->getEntityFields($this->repository->getEntity())
+            'fields' => $this->repository->getEntityData($entity, 'fields')
         ];
         if (isset($additionalRequests['get_referenced_entities'])) {
-            $resultData['referenced_entities'] = $this->repository->getReferencedEntities($this->repository->getEntity());
+//            $resultData['referenced_entities'] = $this->repository->getReferencedEntities($this->repository->getEntity());
+            $resultData['referenced_entities'] = $this->repository->getReferencedEntities($entity);
         }
 
         return $resultData;

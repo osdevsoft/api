@@ -24,17 +24,14 @@ use Swagger\Annotations as SWG;
 class FindEntityController extends BaseUIController
 {
 
-    protected $request;
     private $queryBus;
     private $logger;
 
     public function __construct(
-        Request $request,
         QueryBus $queryBus,
         LoggerInterface $logger
 
     ) {
-        $this->request = $request;
         $this->queryBus = $queryBus;
         $this->logger = $logger;
     }
@@ -104,14 +101,12 @@ class FindEntityController extends BaseUIController
 
     public function handle($entity, $uuid)
     {
-        dd(Auth::authenticate('xavicx@hotmail.com', 1234));
-
 
         $result = '';
-        try {
-            $this->build($this->request);
+        try {        
+            $requestParameters = $this->build();
 
-            $messageObject = $this->getEntityMessageObject($entity, $this->request, $uuid);
+            $messageObject = $this->getEntityMessageObject($entity, $requestParameters['get'], $uuid);
 
             $result = $this->queryBus->ask($messageObject);
 
@@ -130,13 +125,13 @@ class FindEntityController extends BaseUIController
     }
 
 
-    public function getEntityMessageObject($entity, $request, $uuid)
+    public function getEntityMessageObject($entity, $requestParameters, $uuid)
     {
-        $request->parameters['search_fields'] = ['uuid' => $uuid];
+        $requestParameters['search_fields'] = ['uuid' => $uuid];
 
-        $searchFields = $this->getSearchFields($request);
-        $queryFilters = $this->getQueryFilters($request);
-        $additionalRequests = $this->getAdditionalRequests($request);
+        $searchFields = $this->getSearchFields($requestParameters);
+        $queryFilters = $this->getQueryFilters($requestParameters);
+        $additionalRequests = $this->getAdditionalRequests($requestParameters);
 
         return new FindEntityQuery(
             $entity,
@@ -150,15 +145,15 @@ class FindEntityController extends BaseUIController
      * @param $request
      * @return array
      */
-    private function getSearchFields($request)
+    private function getSearchFields($requestParameters)
     {
         $searchFields = [];
 
         #we are filtering by something received from the external request
-        if (isset($request->parameters['search_fields'])) {
-            $searchFields += $request->parameters['search_fields'];
+        if (isset($requestParameters['search_fields'])) {
+            $searchFields += $requestParameters['search_fields'];
             #we don't need them anymore
-            unset($request->parameters['search_fields']);
+//            unset($request->parameters['search_fields']);
         }
         return $searchFields;
     }
@@ -167,15 +162,15 @@ class FindEntityController extends BaseUIController
      * @param $request
      * @return array
      */
-    private function getQueryFilters($request)
+    private function getQueryFilters($requestParameters)
     {
         $queryFilters = [];
 
         #we are filtering the result query
-        if (isset($request->parameters['query_filters'])) {
-            $queryFilters += $request->parameters['query_filters'];
+        if (isset($requestParameters['query_filters'])) {
+            $queryFilters += $requestParameters['query_filters'];
             #we don't need them anymore
-            unset($request->parameters['query_filters']);
+//            unset($request->parameters['query_filters']);
         }
         return $queryFilters;
     }
@@ -190,8 +185,8 @@ class FindEntityController extends BaseUIController
         $additionalRequests = [];
 
         foreach ($possibleAdditionalRequestsParameters as $additionalRequestsParameter) {
-            if (isset($request->parameters[$additionalRequestsParameter])) {
-                $additionalRequests[$additionalRequestsParameter] = $request->parameters[$additionalRequestsParameter];
+            if (isset($requestParameters[$additionalRequestsParameter])) {
+                $additionalRequests[$additionalRequestsParameter] = $requestParameters[$additionalRequestsParameter];
             }
         }
 

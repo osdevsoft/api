@@ -18,7 +18,7 @@ final class UpdateEntityCommand implements Command
     public function __construct(
         string $entity,
         string $uuid,
-        array $data
+        $data
     ) {
         $this->entity = $entity;
         $this->uuid = $uuid;
@@ -35,7 +35,7 @@ final class UpdateEntityCommand implements Command
         return $this->uuid;
     }
 
-    public function data(): array
+    public function data()
     {
         return $this->data;
     }

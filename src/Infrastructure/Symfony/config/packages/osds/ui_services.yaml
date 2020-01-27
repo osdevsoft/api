@@ -14,30 +14,28 @@ services:
 
 
   ### AUTH ###
-  ### LoginUser
-  Osds\Api\Infrastructure\UI\Controller\Auth\LoginUserController:
+  ### ServiceAuth
+  Osds\Api\Infrastructure\UI\Controller\Auth\ServiceAuthController:
     autowire: true
     arguments:
-      - "@Illuminate\\Http\\Request"
       - "@Osds\\Api\\Domain\\Bus\\Query\\QueryBus"
       - "@PSRLogger"
       - "@JWTAuth"
-      - "@SymfonyUser"
+      - "@OsdsUser"
     tags: ['controller.service_arguments']
-  Osds\Api\Application\Auth\LoginUserQueryHandler:
+  Osds\Api\Application\Auth\ServiceAuthQueryHandler:
     public: true
     autowire: true
     arguments:
-      - "@LoginUserUseCase"
-  LoginUserUseCase:
-    class: Osds\Api\Application\Auth\LoginUserUseCase
+      - "@ServiceAuthUseCase"
+  ServiceAuthUseCase:
+    class: Osds\Api\Application\Auth\ServiceAuthUseCase
     autowire: true
 
 
   #### Insert Entity
   Osds\Api\Infrastructure\UI\Controller\InsertEntityController:
     arguments:
-      - "@Illuminate\\Http\\Request"
       - "@Osds\\Api\\Domain\\Bus\\Command\\CommandBus"
       - "@PSRLogger"
     tags: ['controller.service_arguments']
@@ -62,7 +60,6 @@ services:
   Osds\Api\Infrastructure\UI\Controller\SearchEntityController:
     autowire: true
     arguments:
-      - "@Illuminate\\Http\\Request"
       - "@Osds\\Api\\Domain\\Bus\\Query\\QueryBus"
       - "@PSRLogger"
     tags: ['controller.service_arguments']
@@ -82,7 +79,6 @@ services:
   Osds\Api\Infrastructure\UI\Controller\FindEntityController:
     autowire: true
     arguments:
-      - "@Illuminate\\Http\\Request"
       - "@Osds\\Api\\Domain\\Bus\\Query\\QueryBus"
       - "@PSRLogger"
     tags: ['controller.service_arguments']
@@ -103,8 +99,8 @@ services:
   Osds\Api\Infrastructure\UI\Controller\UpdateEntityController:
     public: true
     arguments:
-      - "@Illuminate\\Http\\Request"
       - "@Osds\\Api\\Domain\\Bus\\Command\\CommandBus"
+      - "@PSRLogger"
     tags: ['controller.service_arguments']
   Osds\Api\Application\Update\UpdateEntityCommandHandler:
     public: true
@@ -125,7 +121,6 @@ services:
   Osds\Api\Infrastructure\UI\Controller\DeleteEntityController:
     public: true
     arguments:
-      - "@Illuminate\\Http\\Request"
       - "@Osds\\Api\\Domain\\Bus\\Command\\CommandBus"
     tags: ['controller.service_arguments']
   Osds\Api\Application\Delete\DeleteEntityCommandHandler:

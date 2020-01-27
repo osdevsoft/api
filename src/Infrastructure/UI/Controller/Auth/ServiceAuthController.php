@@ -4,13 +4,12 @@ namespace Osds\Api\Infrastructure\UI\Controller\Auth;
 
 use Osds\Api\Infrastructure\UI\Controller\BaseUIController;
 
-use Illuminate\Http\Request;
 use Osds\Api\Domain\Bus\Query\QueryBus;
 use Osds\Api\Infrastructure\Log\LoggerInterface;
 use Osds\Api\Infrastructure\Auth\AuthInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-use Osds\Api\Application\Auth\LoginUserQuery;
+use Osds\Api\Application\Auth\ServiceAuthQuery;
 
 use Osds\Api\Domain\Exception\BadRequestException;
 use Osds\Api\Domain\Exception\UnauthorizedException;
@@ -24,25 +23,22 @@ use Nelmio\ApiDocBundle\Annotation\Security;
 use Swagger\Annotations as SWG;
 
 /**
- * @Route("/api/auth/login")
+ * @Route("/apiServiceAuth")
  */
-class LoginUserController extends BaseUIController
+class ServiceAuthController extends BaseUIController
 {
 
-    protected $request;
     private $queryBus;
     private $logger;
     private $authenticator;
     private $authUser;
 
     public function __construct(
-        Request $request,
         QueryBus $queryBus,
         LoggerInterface $logger,
         AuthInterface $authenticator,
         UserInterface $authUser
     ) {
-        $this->request = $request;
         $this->queryBus = $queryBus;
         $this->logger = $logger;
         $this->authenticator = $authenticator->manager();
@@ -53,7 +49,7 @@ class LoginUserController extends BaseUIController
      *
      * @Route(
      *     "",
-     *     methods={"POST"}
+     *     methods={"GET"}
      * )
      *
      * Tries to authenticate an user
@@ -89,35 +85,35 @@ class LoginUserController extends BaseUIController
         $result = '';
 
         try {
-            $this->build($this->request);
-            $messageObject = $this->getQueryMessageObject($this->request);
+            $requestParameters = $this->build();
+            $messageObject = $this->getQueryMessageObject($requestParameters['get']);
 
             $result = $this->queryBus->ask($messageObject);
             if ($result['total_items'] != 1) {
                 throw new ItemNotFoundException;
             }
             $user = $result['items'][0];
-            if (!password_verify($this->request->parameters['password'], $user['password'])) {
+            if (!password_verify($requestParameters['get']['password'], $user['password'])) {
                 throw new UnauthorizedException;
             }
 
-            $this->authUser->setUsername($user['email']);
+            $this->authUser->setUsername($user['username']);
             $this->authUser->setPassword($user['password']);
             $authToken = $this->authenticator->create($this->authUser);
 
             $result = [
                 'authToken' => $authToken,
-                'Admin' => [
-                    'name' => $user['name']
+                'User' => [
+                    'name' => $user['username']
                 ]
             ];
         } catch (UnauthorizedException $e) {
             $e->setLogger($this->logger);
-            $e->setMessage($this->request->parameters['username'], $e);
+            $e->setMessage($requestParameters['username'], $e);
             $result = $e->getResponse();
         } catch (ItemNotFoundException $e) {
             $e->setLogger($this->logger);
-            $e->setMessage('Admin', $this->request->parameters['username']);
+            $e->setMessage('Admin', $requestParameters['username']);
             $result = $e->getResponse();
         } catch (BadRequestException $e) {
             $e->setLogger($this->logger);
@@ -134,17 +130,17 @@ class LoginUserController extends BaseUIController
         return $this->generateResponse($result);
     }
 
-    private function getQueryMessageObject($request)
+    private function getQueryMessageObject($requestParameters)
     {
-        if (!isset($request->parameters['username'])
-            || !isset($request->parameters['password'])
+        if (!isset($requestParameters['username'])
+            || !isset($requestParameters['password'])
         ) {
             throw new BadRequestException();
         }
 
-        return new LoginUserQuery(
-            'Admin',
-            $request->parameters['username']
+        return new ServiceAuthQuery(
+            'User',
+            $requestParameters['username']
         );
     }
 }

@@ -4,19 +4,19 @@ namespace Osds\Api\Application\Auth;
 
 use Osds\Api\Domain\Bus\Query\Query;
 
-final class LoginUserQuery implements Query
+final class ServiceAuthQuery implements Query
 {
 
     private $entity;
 
-    private $email;
+    private $username;
 
     public function __construct(
         string $entity,
-        string $email
+        string $username
     ) {
         $this->entity = $entity;
-        $this->email = $email;
+        $this->username = $username;
     }
 
     public function entity(): string
@@ -24,8 +24,8 @@ final class LoginUserQuery implements Query
         return $this->entity;
     }
 
-    public function email(): string
+    public function username(): string
     {
-        return $this->email;
+        return $this->username;
     }
 }

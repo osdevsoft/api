@@ -5,7 +5,7 @@ namespace Osds\Api\Application\Auth;
 use Osds\Api\Application\Find\FindEntityQuery;
 use Osds\Api\Domain\Bus\Query\QueryBus;
 
-final class LoginUserUseCase
+final class ServiceAuthUseCase
 {
     private $queryBus;
 
@@ -14,11 +14,11 @@ final class LoginUserUseCase
         $this->queryBus = $queryBus;
     }
 
-    public function execute($entity, $email)
+    public function execute($entity, $username)
     {
         $messageObject = new FindEntityQuery(
             $entity,
-            ['email' => $email]
+            ['username' => $username]
         );
 
         return $this->queryBus->ask($messageObject);

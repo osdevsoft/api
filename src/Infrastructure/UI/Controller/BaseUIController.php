@@ -2,7 +2,6 @@
 
 namespace Osds\Api\Infrastructure\UI\Controller;
 
-use Illuminate\Http\Request;
 use Osds\Api\Infrastructure\Persistence\SessionRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,24 +14,23 @@ class BaseUIController
 {
     protected $request;
 
-    public function build(
-        Request $request
-    ) {
-        $this->request = new \stdClass();
-        $postData = file_get_contents("php://input");
-
+    public function build() {
+        $requestParameters = [];
+//        $postData = file_get_contents("php://input");
+        $postData = null;
         if (!empty($postData)) {
-            $this->request->parameters = json_decode($postData, true);
+            $requestParameters['post'] = http_build_query(json_decode($postData, true));
         } else {
-            $this->request->parameters = $_REQUEST;
+            $requestParameters['all'] = $_REQUEST;
+            $requestParameters['post'] = $_POST;
+            $requestParameters['get'] = $_GET;
         }
-
-        $session = new SessionRepository();
-        $session->insert('request_parameters', $this->request->parameters);
 
         if (!empty($_FILES)) {
-            $this->request->files = $_FILES;
+            $requestParameters['files'] = $_FILES;
         }
+
+        return $requestParameters;
     }
 
     public function generateResponse($data)

@@ -28,17 +28,17 @@ final class FindEntityQuery implements Query
         return $this->entity;
     }
 
-    public function searchFields(): array
+    public function searchFields():? array
     {
         return $this->searchFields;
     }
 
-    public function queryFilters(): array
+    public function queryFilters():? array
     {
         return $this->queryFilters;
     }
 
-    public function additionalRequests(): array
+    public function additionalRequests():? array
     {
         return $this->additionalRequests;
     }

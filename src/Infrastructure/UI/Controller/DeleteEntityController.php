@@ -2,7 +2,6 @@
 
 namespace Osds\Api\Infrastructure\UI\Controller;
 
-use Illuminate\Http\Request;
 use Osds\Api\Application\Delete\DeleteEntityCommand;
 use Osds\Api\Domain\Bus\Command\CommandBus;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,14 +15,11 @@ use Swagger\Annotations as SWG;
 class DeleteEntityController extends BaseUIController
 {
 
-    protected $request;
     private $commandBus;
 
     public function __construct(
-        Request $request,
         CommandBus $commandBus
     ) {
-        $this->request = $request;
         $this->commandBus = $commandBus;
     }
 
@@ -70,7 +66,7 @@ class DeleteEntityController extends BaseUIController
 
     public function handle($entity, $uuid = null)
     {
-        $this->build($this->request);
+        $requestParameters = $this->build();
 
         $messageObject = $this->getEntityMessageObject($entity, $uuid);
         $messageObject->setQueue('delete');

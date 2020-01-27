@@ -18,7 +18,7 @@ class RabbitMQ implements MessagingInterface
         $this->connect(
             $configuration['server'],
             $configuration['port'],
-            $configuration['Admin'],
+            $configuration['user'],
             $configuration['password']
         );
     }
@@ -26,8 +26,8 @@ class RabbitMQ implements MessagingInterface
 
     public function connect($server, $port, $user, $password)
     {
-        $this->connection = new AMQPStreamConnection($server, $port, $user, $password);
-        $this->channel = $this->connection->channel();
+//        $this->connection = new AMQPStreamConnection($server, $port, $user, $password);
+//        $this->channel = $this->connection->channel();
     }
 
     public function publish($queue, $message)

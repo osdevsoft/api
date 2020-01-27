@@ -2,8 +2,6 @@
 
 namespace Osds\Api\Infrastructure\UI\Controller;
 
-use Illuminate\Http\Request;
-
 use Osds\Api\Application\Insert\InsertEntityCommand;
 
 use Osds\Api\Domain\Bus\Command\CommandBus;
@@ -20,12 +18,10 @@ use Swagger\Annotations as SWG;
 class InsertEntityController extends BaseUIController
 {
 
-    protected $request;
     private $commandBus;
     private $logger;
 
     public function __construct(
-        Request $request,
         CommandBus $commandBus,
         LoggerInterface $logger
     ) {
@@ -81,9 +77,9 @@ class InsertEntityController extends BaseUIController
     {
         $messageObject = '';
         try {
-            $this->build($this->request);
+            $requestParameters = $this->build();
 
-            $messageObject = $this->getEntityMessageObject($entity, $this->request);
+            $messageObject = $this->getEntityMessageObject($entity, $requestParameters['post']);
             $messageObject->setQueue('insert');
 
             $result = $this->commandBus->dispatch($messageObject);
@@ -96,17 +92,15 @@ class InsertEntityController extends BaseUIController
         }
     }
 
-    public function getEntityMessageObject($entity, $request)
+    public function getEntityMessageObject($entity, $requestParameters)
     {
 
         $uuid = Uuid::random();
 
-        $data = $request->parameters;
-
         return new InsertEntityCommand(
             $entity,
             $uuid,
-            $data
+            $requestParameters
         );
     }
 }

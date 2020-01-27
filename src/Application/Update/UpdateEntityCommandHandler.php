@@ -27,13 +27,15 @@ final class UpdateEntityCommandHandler implements CommandHandler
                 && ($queue !== null)
             ) {
                  $this->messaging->publish($queue, $command->getPayload());
+                 return 'published';
+                 
             } else {
-                $this->useCase->execute(
+                $update = $this->useCase->execute(
                     $command->entity(),
                     $command->uuid(),
                     $command->data()
                 );
-                $this->messaging->publish('update_completed', $command->getPayload());
+//                $this->messaging->publish('update_completed', $command->getPayload());
             }
         } catch (\Exception $e) {
             dd($e->getMessage());

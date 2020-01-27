@@ -2,15 +2,15 @@
 
 namespace Osds\Api\Infrastructure\UI\Controller;
 
-use Illuminate\Http\Request;
-
 use Osds\Api\Application\Update\UpdateEntityCommand;
 
 use Osds\Api\Domain\Bus\Command\CommandBus;
+use Osds\Api\Infrastructure\Log\PSRLogger;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Swagger\Annotations as SWG;
+use Log;
 
 /**
  * @Route("/api/{entity}")
@@ -22,11 +22,11 @@ class UpdateEntityController extends BaseUIController
     private $commandBus;
 
     public function __construct(
-        Request $request,
-        CommandBus $commandBus
+        CommandBus $commandBus,
+        PSRLogger $log
     ) {
-        $this->request = $request;
         $this->commandBus = $commandBus;
+        $this->log = $log;
     }
 
     /**
@@ -79,25 +79,23 @@ class UpdateEntityController extends BaseUIController
 
     public function handle($entity, $uuid)
     {
-        $this->build($this->request);
+        $requestParameters = $this->build();
+        $this->log->info(json_encode($requestParameters));
 
-        $messageObject = $this->getEntityMessageObject($entity, $uuid, $this->request);
-        $messageObject->setQueue('update');
-
+        $messageObject = $this->getEntityMessageObject($entity, $uuid, $requestParameters['post']);
+//        $messageObject->setQueue('update');
         $result = $this->commandBus->dispatch($messageObject);
-
-        return $this->generateResponse($result);
+        $return = $this->prepareResponseByItems(['upsert_id' => $result]);
+        return $this->generateResponse($return);
     }
 
-    public function getEntityMessageObject($entity, $uuid, $request)
+    public function getEntityMessageObject($entity, $uuid, $requestParameters)
     {
-
-        $data = $request->parameters;
 
         return new UpdateEntityCommand(
             $entity,
             $uuid,
-            $data
+            $requestParameters
         );
     }
 }
