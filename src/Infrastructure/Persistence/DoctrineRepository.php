@@ -106,7 +106,9 @@ abstract class DoctrineRepository
         #treat fields before updating / inserting
         foreach ($data as $field => $value) {
             $value = $this->treatValuePrePersist($field, $value);
-
+            if($value == null) {
+                continue;
+            }
             #persisting a referenced entity field
             if (strstr($field, '_uuid')) {
                 $referencedEntity = str_replace('Uuid', '', StringConversion::underscoreToCamelCase($field));
@@ -476,14 +478,15 @@ abstract class DoctrineRepository
             if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}$/', $value)) {
                 $value .= ':00';
             }
-//            $value = new \DateTime($value);
+            $value = new \DateTime($value);
         }
 
         #if another entity uuid comes, search for it to reference it
-        if ($field != 'uuid' && strstr($field, 'Uuid')) {
-            $entity_name = str_replace('Uuid', '', $field);
+        if ($field != 'uuid' && strstr($field, '_uuid')) {
+            if(empty($value)) return null;
+            $entity_name = str_replace('_uuid', '', $field);
             $original_value = $value;
-            $value =  $this->getEntityData('repository', EntityFactory::getEntity($entity_name))->find(['uuid' => $original_value]);
+            $value =  $this->getEntityData('repository', EntityFactory::getEntity($entity_name, $this->getNamespaces()))->find(['uuid' => $original_value]);
             if (is_null($value)) {
                 throw new \Exception("$entity_name with uuid '$original_value' not found");
             }
@@ -509,6 +512,7 @@ abstract class DoctrineRepository
             if (!is_object($aei_prop) && !strstr($aei_key, '__')) {
                 #remove null characters when doing the conversion
                 $aei_key = str_replace("\0", "", $aei_key);
+                $aei_key = str_replace("*", "", $aei_key);
                 $aei_key = str_replace($entity_fqn, '', $aei_key);
                 $array_entity_item[$aei_key] = $aei_prop;
             }

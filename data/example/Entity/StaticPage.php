@@ -96,8 +96,8 @@ class StaticPage
 
     public function __construct()
     {
-        $this->createdAt = date('Y-m-d H:i:s');
-        $this->updatedAt = date('Y-m-d H:i:s');
+        $this->createdAt = new \DateTime('now');
+        $this->updatedAt = new \DateTime('now');
     }
 
     /**
@@ -110,6 +110,11 @@ class StaticPage
         if ($this->createdAt == null) {
             $this->createdAt = new \DateTime('now');
         }
+    }
+
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
     }
 
     public function getUuid()

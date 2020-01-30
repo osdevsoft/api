@@ -49,7 +49,7 @@ final class DeleteEntityCommand implements Command
         $this->queue = $queue;
     }
 
-    public function getQueue(): string
+    public function getQueue():? string
     {
         return $this->queue;
     }

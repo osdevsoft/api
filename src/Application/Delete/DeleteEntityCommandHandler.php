@@ -31,7 +31,7 @@ final class DeleteEntityCommandHandler implements CommandHandler
                     $command->entity(),
                     $command->uuid()
                 );
-                $this->messaging->publish('delete_completed', $command->getPayload());
+                #$this->messaging->publish('delete_completed', $command->getPayload());
 
             }
         } catch (\Exception $e) {

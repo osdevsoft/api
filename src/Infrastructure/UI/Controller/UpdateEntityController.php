@@ -80,7 +80,6 @@ class UpdateEntityController extends BaseUIController
     public function handle($entity, $uuid)
     {
         $requestParameters = $this->build();
-        $this->log->info(json_encode($requestParameters));
 
         $messageObject = $this->getEntityMessageObject($entity, $uuid, $requestParameters['post']);
 //        $messageObject->setQueue('update');

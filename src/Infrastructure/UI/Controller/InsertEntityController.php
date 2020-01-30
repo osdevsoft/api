@@ -25,7 +25,6 @@ class InsertEntityController extends BaseUIController
         CommandBus $commandBus,
         LoggerInterface $logger
     ) {
-        $this->request = $request;
         $this->commandBus = $commandBus;
         $this->logger = $logger;
     }
@@ -80,16 +79,18 @@ class InsertEntityController extends BaseUIController
             $requestParameters = $this->build();
 
             $messageObject = $this->getEntityMessageObject($entity, $requestParameters['post']);
-            $messageObject->setQueue('insert');
+//            $messageObject->setQueue('insert');
 
             $result = $this->commandBus->dispatch($messageObject);
 
-            return $this->generateResponse($result);
+            $return = $this->prepareResponseByItems(['upsert_id' => $result]);
         } catch (\Exception $e) {
-            $this->logger->error(
-                'Error during the insertion. Entity: ' . $entity.', data: '. $this->request
-            );
+            $message = 'Error during the insertion. Error: ' . $e->getMessage() . ', Entity: ' . $entity.', data: '. json_encode($requestParameters);
+            $this->logger->error($message);
+            $return = $this->prepareResponseByItems(['error_message' => $message]);
+            
         }
+        return $this->generateResponse($return);
     }
 
     public function getEntityMessageObject($entity, $requestParameters)

@@ -31,7 +31,7 @@ final class InsertEntityCommandHandler implements CommandHandler
                 $command->uuid(),
                 $command->data()
             );
-            $this->messaging->publish('insert_completed', $command->getPayload());
+            #$this->messaging->publish('insert_completed', $command->getPayload());
         }
 
          return $command->uuid();
