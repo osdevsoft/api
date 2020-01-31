@@ -2,9 +2,10 @@
 
 namespace Osds\Api\Application\Insert;
 
+use Osds\DDDCommon\Infrastructure\Log\LoggerInterface;
+
 use Osds\Api\Application\BaseConsumer;
 use Osds\Api\Domain\Exception\ErrorException;
-use Osds\Api\Infrastructure\Log\LoggerInterface;
 
 class InsertEntityConsumer extends BaseConsumer
 {

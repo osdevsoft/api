@@ -2,12 +2,11 @@
 
 namespace Osds\Api\Infrastructure\UI\Controller;
 
-use Osds\Api\Infrastructure\Persistence\SessionRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Nelmio\ApiDocBundle\Annotation\Security;
-use Swagger\Annotations as SWG;
+//use Symfony\Component\Routing\Annotation\Route;
+//use Nelmio\ApiDocBundle\Annotation\Model;
+//use Nelmio\ApiDocBundle\Annotation\Security;
+//use Swagger\Annotations as SWG;
 
 
 class BaseUIController

@@ -4,7 +4,7 @@ namespace Osds\Api\Application\Replicate;
 
 use Osds\Api\Application\BaseConsumer;
 use Osds\Api\Domain\Bus\Command\CommandBus;
-use Osds\Api\Infrastructure\Log\LoggerInterface;
+use Osds\DDDCommon\Infrastructure\Log\LoggerInterface;
 
 class ReplicateForQueryConsumer extends BaseConsumer
 {

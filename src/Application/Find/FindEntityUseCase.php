@@ -3,7 +3,7 @@
 namespace Osds\Api\Application\Find;
 
 use Osds\Api\Domain\Entity\EntityRepositoryInterface;
-use Osds\Api\Infrastructure\Helpers\EntityFactory;
+use Osds\DDDCommon\Infrastructure\Helpers\EntityFactory;
 use Osds\Api\Domain\Exception\ItemNotFoundException;
 
 final class FindEntityUseCase

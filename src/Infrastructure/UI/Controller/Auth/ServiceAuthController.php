@@ -2,10 +2,15 @@
 
 namespace Osds\Api\Infrastructure\UI\Controller\Auth;
 
+use Symfony\Component\Routing\Annotation\Route;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use Swagger\Annotations as SWG;
+
 use Osds\Api\Infrastructure\UI\Controller\BaseUIController;
 
 use Osds\Api\Domain\Bus\Query\QueryBus;
-use Osds\Api\Infrastructure\Log\LoggerInterface;
+use Osds\DDDCommon\Infrastructure\Log\LoggerInterface;
 use Osds\Api\Infrastructure\Auth\AuthInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -15,12 +20,6 @@ use Osds\Api\Domain\Exception\BadRequestException;
 use Osds\Api\Domain\Exception\UnauthorizedException;
 use Osds\Api\Domain\Exception\ItemNotFoundException;
 use Osds\Api\Domain\Exception\ErrorException;
-
-
-use Symfony\Component\Routing\Annotation\Route;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Nelmio\ApiDocBundle\Annotation\Security;
-use Swagger\Annotations as SWG;
 
 /**
  * @Route("/apiServiceAuth")

@@ -5,7 +5,7 @@ namespace Osds\Api\Infrastructure\UI\Controller;
 use Osds\Api\Application\Update\UpdateEntityCommand;
 
 use Osds\Api\Domain\Bus\Command\CommandBus;
-use Osds\Api\Infrastructure\Log\PSRLogger;
+use Osds\DDDCommon\Infrastructure\Log\PSRLogger;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;

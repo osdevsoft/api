@@ -2,15 +2,16 @@
 
 namespace Osds\Api\Infrastructure\UI\Controller;
 
-use Osds\Api\Application\Insert\InsertEntityCommand;
-
-use Osds\Api\Domain\Bus\Command\CommandBus;
-use Osds\Api\Domain\ValueObject\Uuid;
-use Osds\Api\Infrastructure\Log\LoggerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Swagger\Annotations as SWG;
+
+use Osds\Api\Domain\Bus\Command\CommandBus;
+use Osds\DDDCommon\Infrastructure\Log\LoggerInterface;
+
+use Osds\Api\Application\Insert\InsertEntityCommand;
+use Osds\Api\Domain\ValueObject\Uuid;
 
 /**
  * @Route("/api/{entity}")

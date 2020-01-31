@@ -3,7 +3,8 @@
 namespace Osds\Api\Application\Update;
 
 use Osds\Api\Domain\Bus\Command\CommandHandler;
-use Osds\Api\Infrastructure\Messaging\MessagingInterface;
+
+use Osds\DDDCommon\Infrastructure\Messaging\MessagingInterface;
 
 final class UpdateEntityCommandHandler implements CommandHandler
 {

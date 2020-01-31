@@ -2,16 +2,17 @@
 
 namespace Osds\Api\Infrastructure\UI\Controller;
 
-use Osds\Api\Domain\Bus\Query\QueryBus;
-use Osds\Api\Application\Search\SearchEntityQuery;
-
-use Osds\Api\Domain\Exception\ErrorException;
-use Osds\Api\Domain\Exception\ItemNotFoundException;
-use Osds\Api\Infrastructure\Log\LoggerInterface;
-
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
+
+use Osds\Api\Domain\Bus\Query\QueryBus;
+use Osds\DDDCommon\Infrastructure\Log\LoggerInterface;
+
+use Osds\Api\Application\Search\SearchEntityQuery;
+use Osds\Api\Domain\Exception\ErrorException;
+use Osds\Api\Domain\Exception\ItemNotFoundException;
+
 
 use Swagger\Annotations as SWG;
 

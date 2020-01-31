@@ -8,7 +8,7 @@ parameters:
 
 services:
   RabbitMQ:
-    class: Osds\Api\Infrastructure\Messaging\RabbitMQ
+    class: Osds\DDDCommon\Infrastructure\Messaging\RabbitMQ
     arguments:
       - '%rabbitmq_configuration%'
 
