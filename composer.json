@@ -10,12 +10,7 @@
   "minimum-stability": "dev",
   "version": "1.0a",
   "require": {
-    "symfony/orm-pack": "^1.0",
-    "elasticsearch/elasticsearch": "^6.7",
-    "php-amqplib/rabbitmq-bundle": "^1.14",
-    "illuminate/http": "^5.6",
     "doctrine/annotations": "~1.0",
-    "symfony/monolog-bundle": "^3.3",
     "nelmio/api-doc-bundle": "^3.3",
     "symfony/asset": "^4.1",
     "lexik/jwt-authentication-bundle": "^2.6",

@@ -9,14 +9,14 @@ final class ServiceAuthQuery implements Query
 
     private $entity;
 
-    private $username;
+    private $email;
 
     public function __construct(
         string $entity,
-        string $username
+        string $email
     ) {
         $this->entity = $entity;
-        $this->username = $username;
+        $this->email = $email;
     }
 
     public function entity(): string
@@ -24,8 +24,8 @@ final class ServiceAuthQuery implements Query
         return $this->entity;
     }
 
-    public function username(): string
+    public function email(): string
     {
-        return $this->username;
+        return $this->email;
     }
 }

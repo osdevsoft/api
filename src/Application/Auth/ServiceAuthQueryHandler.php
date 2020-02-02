@@ -17,7 +17,7 @@ final class ServiceAuthQueryHandler implements QueryHandler
     {
         return $this->useCase->execute(
             $query->entity(),
-            $query->username()
+            $query->email()
         );
     }
 }

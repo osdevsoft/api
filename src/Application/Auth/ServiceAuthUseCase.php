@@ -14,11 +14,11 @@ final class ServiceAuthUseCase
         $this->queryBus = $queryBus;
     }
 
-    public function execute($entity, $username)
+    public function execute($entity, $email)
     {
         $messageObject = new FindEntityQuery(
             $entity,
-            ['username' => $username]
+            ['email' => $email]
         );
 
         return $this->queryBus->ask($messageObject);

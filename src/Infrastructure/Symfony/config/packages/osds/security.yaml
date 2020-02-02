@@ -22,7 +22,7 @@ security:
     custom:
       entity:
         class: App\NexinEs\Domain\Entity\User
-        property: username
+        property: email
 
   encoders:
     App\Entity\User:

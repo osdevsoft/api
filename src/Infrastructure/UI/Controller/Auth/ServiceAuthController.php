@@ -48,13 +48,13 @@ class ServiceAuthController extends BaseUIController
      *
      * @Route(
      *     "",
-     *     methods={"GET"}
+     *     methods={"POST"}
      * )
      *
      * Tries to authenticate an user
      *
      * @SWG\Parameter(
-     *     name="username",
+     *     name="email",
      *     in="query",
      *     type="string",
      *     description="User to authenticate"
@@ -73,7 +73,7 @@ class ServiceAuthController extends BaseUIController
      * @SWG\Tag(name="auth")
      * @Security(name="Bearer")
      *
-     * @param $username
+     * @param $email
      * @param $password
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
@@ -84,19 +84,19 @@ class ServiceAuthController extends BaseUIController
         $result = '';
 
         try {
-            $requestParameters = $this->build();
-            $messageObject = $this->getQueryMessageObject($requestParameters['get']);
+            $requestParameters = $this->build()['post'];
+            $messageObject = $this->getQueryMessageObject($requestParameters);
 
             $result = $this->queryBus->ask($messageObject);
             if ($result['total_items'] != 1) {
                 throw new ItemNotFoundException;
             }
             $user = $result['items'][0];
-            if (!password_verify($requestParameters['get']['password'], $user['password'])) {
+            if (!password_verify($requestParameters['password'], $user['password'])) {
                 throw new UnauthorizedException;
             }
 
-            $this->authUser->setUsername($user['username']);
+            $this->authUser->setUsername($user['email']);
             $this->authUser->setPassword($user['password']);
             $authToken = $this->authenticator->create($this->authUser);
 
@@ -108,11 +108,11 @@ class ServiceAuthController extends BaseUIController
             ];
         } catch (UnauthorizedException $e) {
             $e->setLogger($this->logger);
-            $e->setMessage($requestParameters['username'], $e);
+            $e->setMessage($requestParameters['email'], $e);
             $result = $e->getResponse();
         } catch (ItemNotFoundException $e) {
             $e->setLogger($this->logger);
-            $e->setMessage('Admin', $requestParameters['username']);
+            $e->setMessage('Admin', $requestParameters['email']);
             $result = $e->getResponse();
         } catch (BadRequestException $e) {
             $e->setLogger($this->logger);
@@ -131,7 +131,7 @@ class ServiceAuthController extends BaseUIController
 
     private function getQueryMessageObject($requestParameters)
     {
-        if (!isset($requestParameters['username'])
+        if (!isset($requestParameters['email'])
             || !isset($requestParameters['password'])
         ) {
             throw new BadRequestException();
@@ -139,7 +139,7 @@ class ServiceAuthController extends BaseUIController
 
         return new ServiceAuthQuery(
             'User',
-            $requestParameters['username']
+            $requestParameters['email']
         );
     }
 }
