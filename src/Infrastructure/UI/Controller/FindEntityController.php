@@ -105,7 +105,11 @@ class FindEntityController extends BaseUIController
         $result = '';
         try {        
             $requestParameters = $this->build();
-
+            if(is_object($this->tokenValidation) && strstr(get_class($this->tokenValidation), 'JsonResponse')) {
+                #Ooops!
+                return $this->tokenValidation;
+            }
+            
             $messageObject = $this->getEntityMessageObject($entity, $requestParameters['get'], $uuid);
 
             $result = $this->queryBus->ask($messageObject);
@@ -142,7 +146,7 @@ class FindEntityController extends BaseUIController
     }
 
     /**
-     * @param $request
+     * @param $requestParameters
      * @return array
      */
     private function getSearchFields($requestParameters)
@@ -159,7 +163,7 @@ class FindEntityController extends BaseUIController
     }
 
     /**
-     * @param $request
+     * @param $requestParameters
      * @return array
      */
     private function getQueryFilters($requestParameters)

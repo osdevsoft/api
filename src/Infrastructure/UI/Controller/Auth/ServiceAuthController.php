@@ -11,8 +11,7 @@ use Osds\Api\Infrastructure\UI\Controller\BaseUIController;
 
 use Osds\Api\Domain\Bus\Query\QueryBus;
 use Osds\DDDCommon\Infrastructure\Log\LoggerInterface;
-use Osds\Api\Infrastructure\Auth\AuthInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Osds\Auth\Infrastructure\UI\ServiceAuth;
 
 use Osds\Api\Application\Auth\ServiceAuthQuery;
 
@@ -29,19 +28,16 @@ class ServiceAuthController extends BaseUIController
 
     private $queryBus;
     private $logger;
-    private $authenticator;
-    private $authUser;
+    private $serviceAuth;
 
     public function __construct(
         QueryBus $queryBus,
         LoggerInterface $logger,
-        AuthInterface $authenticator,
-        UserInterface $authUser
+        ServiceAuth $serviceAuth
     ) {
         $this->queryBus = $queryBus;
         $this->logger = $logger;
-        $this->authenticator = $authenticator->manager();
-        $this->authUser = $authUser;
+        $this->serviceAuth = $serviceAuth;
     }
 
     /**
@@ -96,9 +92,8 @@ class ServiceAuthController extends BaseUIController
                 throw new UnauthorizedException;
             }
 
-            $this->authUser->setUsername($user['email']);
-            $this->authUser->setPassword($user['password']);
-            $authToken = $this->authenticator->create($this->authUser);
+            unset($user['password']);
+            $authToken = $this->serviceAuth->encodeServiceToken($user);
 
             $result = [
                 'authToken' => $authToken,

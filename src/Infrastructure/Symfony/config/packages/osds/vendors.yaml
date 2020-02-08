@@ -5,3 +5,17 @@ services:
     ###############
     Elasticsearch\ClientBuilder:
         autowire: true
+
+    ServiceAuth:
+        class: Osds\Auth\Infrastructure\UI\ServiceAuth
+        public: true
+        arguments:
+            - ""
+            - ""
+            - ""
+            - ""
+            - "@JWTCoder"
+
+    JWTCoder:
+        class: Osds\Auth\Infrastructure\Coder\JWTCoder
+        autowire: true

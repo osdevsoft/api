@@ -1,70 +1,70 @@
-lexik_jwt_authentication:
-  secret_key:       '%kernel.project_dir%/vendor/osds/api/src/Infrastructure/Symfony/config/packages/osds/jwt/private.pem' # required for token creation
-  public_key:       '%kernel.project_dir%/vendor/osds/api/src/Infrastructure/Symfony/config/packages/osds/jwt/public.pem'  # required for token verification
-  pass_phrase:      'osds' # required for token creation, usage of an environment variable is recommended
-  token_ttl:        604800 #604800
-
-
-services:
-
-  JWTAuth:
-    class: Osds\Api\Infrastructure\Auth\JWTAuth
-    arguments:
-      - "@Lexik\\Bundle\\JWTAuthenticationBundle\\Services\\JWTTokenManagerInterface"
-
-  OsdsUser:
-    class: App\NexinEs\Domain\Entity\User
-
-
-security:
-
-  providers:
-    custom:
-      entity:
-        class: App\NexinEs\Domain\Entity\User
-        property: email
-
-  encoders:
-    App\Entity\User:
-      algorithm: bcrypt
-      cost: 10
-
-  firewalls:
-    login:
-      pattern:  ^/apiServiceAuth
-      stateless: true
-      anonymous: true
-      json_login:
-        check_path:               /apiServiceAuth
-        success_handler:          lexik_jwt_authentication.handler.authentication_success
-        failure_handler:          lexik_jwt_authentication.handler.authentication_failure
-    doc:
-      pattern: ^/api/doc
-      stateless: true
-      anonymous: true
-    status:
-      pattern: ^/api/status
-      stateless: true
-      anonymous: true
-    api:
-      pattern:   ^/api
-      stateless: true
-      guard:
-        authenticators:
-          - lexik_jwt_authentication.jwt_token_authenticator
-  access_control:
-    - {
-        path: ^/apiServiceAuth,
-        roles: IS_AUTHENTICATED_ANONYMOUSLY
-      }
-    - {
-        path: ^/api/doc,
-        roles: IS_AUTHENTICATED_ANONYMOUSLY
-      }
-    - {
-        path: ^/api/status,
-        roles: IS_AUTHENTICATED_ANONYMOUSLY
-      }
+#lexik_jwt_authentication:
+#  secret_key:       '%kernel.project_dir%/vendor/osds/api/src/Infrastructure/Symfony/config/packages/osds/jwt/private.pem' # required for token creation
+#  public_key:       '%kernel.project_dir%/vendor/osds/api/src/Infrastructure/Symfony/config/packages/osds/jwt/public.pem'  # required for token verification
+#  pass_phrase:      'osds' # required for token creation, usage of an environment variable is recommended
+#  token_ttl:        604800 #604800
+#
+#
+#services:
+#
+#  JWTAuth:
+#    class: Osds\Api\Infrastructure\Auth\JWTAuth
+#    arguments:
+#      - "@Lexik\\Bundle\\JWTAuthenticationBundle\\Services\\JWTTokenManagerInterface"
+#
+#  OsdsUser:
+#    class: Osds\Auth\Domain\Entity\Auth
+#
+#
+#security:
+#
+#  providers:
+#    custom:
+#      entity:
+#        class: Osds\Auth\Domain\Entity\Auth
+#        property: email
+#
+#  encoders:
+#    App\Entity\User:
+#      algorithm: bcrypt
+#      cost: 10
+#
+#  firewalls:
+#    login:
+#      pattern:  ^/apiServiceAuth
+#      stateless: true
+#      anonymous: true
+#      json_login:
+#        check_path:               /apiServiceAuth
+#        success_handler:          lexik_jwt_authentication.handler.authentication_success
+#        failure_handler:          lexik_jwt_authentication.handler.authentication_failure
+#    doc:
+#      pattern: ^/api/doc
+#      stateless: true
+#      anonymous: true
+#    status:
+#      pattern: ^/api/status
+#      stateless: true
+#      anonymous: true
+#    api:
+#      pattern:   ^/api
+#      stateless: true
+#      guard:
+#        authenticators:
+#          - lexik_jwt_authentication.jwt_token_authenticator
+#  access_control:
+#    - {
+#        path: ^/apiServiceAuth,
+#        roles: IS_AUTHENTICATED_ANONYMOUSLY
+#      }
+#    - {
+#        path: ^/api/doc,
+#        roles: IS_AUTHENTICATED_ANONYMOUSLY
+#      }
+#    - {
+#        path: ^/api/status,
+#        roles: IS_AUTHENTICATED_ANONYMOUSLY
+#      }
 #    - {
 #        path: ^/api,
 #        roles: IS_AUTHENTICATED_FULLY

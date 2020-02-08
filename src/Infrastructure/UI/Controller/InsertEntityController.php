@@ -78,7 +78,11 @@ class InsertEntityController extends BaseUIController
         $messageObject = '';
         try {
             $requestParameters = $this->build();
-
+            if(is_object($this->tokenValidation) && strstr(get_class($this->tokenValidation), 'JsonResponse')) {
+                #Ooops!
+                return $this->tokenValidation;
+            }
+            
             $messageObject = $this->getEntityMessageObject($entity, $requestParameters['post']);
 //            $messageObject->setQueue('insert');
 

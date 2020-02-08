@@ -2,18 +2,20 @@
 
 namespace Osds\Api\Infrastructure\UI\Controller;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
-//use Symfony\Component\Routing\Annotation\Route;
-//use Nelmio\ApiDocBundle\Annotation\Model;
-//use Nelmio\ApiDocBundle\Annotation\Security;
-//use Swagger\Annotations as SWG;
+use Osds\Auth\Domain\Exception\InvalidTokenException;
+use Osds\Auth\Infrastructure\UI\ServiceAuth;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class BaseUIController
 {
-    protected $request;
+    protected $tokenValidation;
+    private $newServiceToken = null;
 
     public function build() {
+
+        $this->tokenValidation = $this->checkServiceAuth();
+
         $requestParameters = [];
 //        $postData = file_get_contents("php://input");
         $postData = null;
@@ -32,8 +34,31 @@ class BaseUIController
         return $requestParameters;
     }
 
+    public function checkServiceAuth()
+    {
+        try {
+            if(!strstr(get_called_class(), 'ServiceAuthController')) {
+                $token = isset($_SERVER['HTTP_AUTHORIZATION'])?$_SERVER['HTTP_AUTHORIZATION']:null;
+                $serviceTokenCheck = ServiceAuth::checkServiceToken($token);
+                if (is_string($serviceTokenCheck)) {
+                    #new token provided => we have to return it
+                    $this->newServiceToken = $serviceTokenCheck;
+                }
+                return true;
+            }
+        } catch(InvalidTokenException $e) {
+            $e->setLogger($this->logger);
+            $e->setMessage('Invalid Service Token', $e);
+            return $this->generateResponse($e->getResponse());
+        }
+
+    }
+
     public function generateResponse($data)
     {
+        if($this->newServiceToken !== null) {
+            $data['renewedServiceToken'] = $this->newServiceToken;
+        }
         return new JsonResponse($data, 200);
     }
 

@@ -67,7 +67,11 @@ class DeleteEntityController extends BaseUIController
     public function handle($entity, $uuid = null)
     {
         $requestParameters = $this->build();
-
+        if(is_object($this->tokenValidation) && strstr(get_class($this->tokenValidation), 'JsonResponse')) {
+            #Ooops!
+            return $this->tokenValidation;
+        }
+        
         $messageObject = $this->getEntityMessageObject($entity, $uuid);
 //        $messageObject->setQueue('delete');
 

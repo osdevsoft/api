@@ -12,8 +12,6 @@ use Swagger\Annotations as SWG;
 class HomeController extends BaseUIController
 {
 
-    protected $request;
-
     public function __construct()
     {
     }

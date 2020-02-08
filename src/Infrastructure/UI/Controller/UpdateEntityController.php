@@ -18,7 +18,7 @@ use Log;
 class UpdateEntityController extends BaseUIController
 {
 
-    protected $request;
+    private $log;
     private $commandBus;
 
     public function __construct(
@@ -80,6 +80,10 @@ class UpdateEntityController extends BaseUIController
     public function handle($entity, $uuid)
     {
         $requestParameters = $this->build();
+        if(is_object($this->tokenValidation) && strstr(get_class($this->tokenValidation), 'JsonResponse')) {
+            #Ooops!
+            return $this->tokenValidation;
+        }
 
         $messageObject = $this->getEntityMessageObject($entity, $uuid, $requestParameters['post']);
 //        $messageObject->setQueue('update');

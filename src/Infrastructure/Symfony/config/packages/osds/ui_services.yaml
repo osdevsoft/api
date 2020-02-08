@@ -20,8 +20,7 @@ services:
     arguments:
       - "@Osds\\Api\\Domain\\Bus\\Query\\QueryBus"
       - "@PSRLogger"
-      - "@JWTAuth"
-      - "@OsdsUser"
+      - "@ServiceAuth"
     tags: ['controller.service_arguments']
   Osds\Api\Application\Auth\ServiceAuthQueryHandler:
     public: true
