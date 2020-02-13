@@ -1,0 +1,23 @@
+doctrine:
+    dbal:
+        connections:
+            samplesite_sandbox:
+                # configure these for your database server
+                url: '%env(resolve:DATABASE_URL)%samplesite_sandbox'
+                driver: 'pdo_mysql'
+                server_version: '5.7'
+                charset: utf8mb4
+
+    orm:
+        auto_generate_proxy_classes: true
+        entity_managers:
+            samplesite_sandbox:
+                naming_strategy: doctrine.orm.naming_strategy.underscore
+                connection: samplesite_sandbox
+                mappings:
+                    App\SamplesiteSandbox:
+                        is_bundle: false
+                        type: annotation
+                        dir: '%kernel.project_dir%/sites_configurations/_api/src/SamplesiteSandbox/Domain/Entity'
+                        prefix: 'App\SamplesiteSandbox\Domain\Entity'
+                        alias: App\SamplesiteSandbox

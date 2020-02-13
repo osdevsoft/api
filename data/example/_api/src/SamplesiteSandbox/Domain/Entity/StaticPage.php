@@ -1,6 +1,6 @@
 <?php
 
-namespace App\NexinEs\Domain\Entity;
+namespace App\SamplesiteSandbox\Domain\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,14 +21,6 @@ class StaticPage
      * @ORM\Column(name="uuid", type="string", length=255, nullable=false)
      */
     private $uuid;
-//
-//    /**
-//     * @var string|null
-//     *
-//     * @ORM\Column(name="parent_uuid", type="text", length=255, nullable=true, options={"default"="NULL"})
-//
-//     */
-//    private $parent_uuid;
 
     /**
      * @var \StaticPage

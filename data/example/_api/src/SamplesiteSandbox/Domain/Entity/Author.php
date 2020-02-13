@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Entity;
+namespace App\SamplesiteSandbox\Domain\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Visitor
+ * Author
  *
- * @ORM\Table(name="visitor")
+ * @ORM\Table(name="author")
  * @ORM\Entity
  */
-class Visitor
+class Author
 {
     /**
      * @var string
@@ -47,30 +47,31 @@ class Visitor
      *
      * @ORM\Column(name="created_at", type="string", nullable=true, options={"default"="current_timestamp()"})
      */
-    private $createdAt = 'current_timestamp()';
+    private $createdAt;
 
     /**
      * @var \DateTime|null
      *
      * @ORM\Column(name="updated_at", type="string", nullable=true, options={"default"="current_timestamp()"})
      */
-    private $updatedAt = 'current_timestamp()';
+    private $updatedAt;
 
     /**
      * @var \DateTime|null
      *
      * @ORM\Column(name="deleted_at", type="string", nullable=true, options={"default"="NULL"})
      */
-    private $deletedAt = 'NULL';
+    private $deletedAt;
+
 
     /**
-     * @ORM\OneToMany(targetEntity="Comment", mappedBy="visitorUuid")
+     * @ORM\OneToMany(targetEntity="Post", mappedBy="author_uuid")
      **/
-    private $comments;
+    private $posts;
 
     public function __construct()
     {
-        $this->comments = new ArrayCollection();
+        $this->posts = new ArrayCollection();
         $this->createdAt = date('Y-m-d H:i:s');
         $this->updatedAt = date('Y-m-d H:i:s');
     }
@@ -80,23 +81,26 @@ class Visitor
         return $this->uuid;
     }
 
+    public function getPost()
+    {
+        return $this->posts;
+    }
+
     public function setUuid($uuid)
     {
         $this->uuid = $uuid;
     }
+
 
     public function setName($name)
     {
         $this->name = $name;
     }
 
+
     public function setEmail($email)
     {
         $this->email = $email;
     }
 
-    public function getComment()
-    {
-        return $this->comments;
-    }
 }

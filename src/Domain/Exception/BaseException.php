@@ -10,8 +10,9 @@ abstract class BaseException extends Exception implements ApiExceptionInterface
 
     protected $logger;
 
-    public function __construct()
+    public function __construct($message = '', $code = 500)
     {
+        $this->setMessageAndCode($message, $code);
     }
 
     public function setLogger(LoggerInterface $logger)
