@@ -8,7 +8,7 @@
     }
   ],
   "minimum-stability": "dev",
-  "version": "1.0a",
+  "version": "1.0.0",
   "require": {
     "doctrine/annotations": "^1.8",
     "nelmio/api-doc-bundle": "^3.3",
