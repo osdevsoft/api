@@ -7,10 +7,10 @@
       "email": "info@osds.com"
     }
   ],
-  "version": "1.0.2",
+  "version": "1.0.3",
   "require": {
     "doctrine/annotations": "^1.8",
-    "nelmio/api-doc-bundle": "^3.3",
+    "nelmio/api-doc-bundle": "^3.6",
     "symfony/asset": "^5.0",
     "ramsey/uuid": "^3.8",
     "osds/ddd-common": "^1.0",
