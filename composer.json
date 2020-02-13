@@ -7,7 +7,6 @@
       "email": "info@osds.com"
     }
   ],
-  "minimum-stability": "dev",
   "version": "1.0.0",
   "require": {
     "doctrine/annotations": "^1.8",
