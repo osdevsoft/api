@@ -7,7 +7,7 @@
       "email": "info@osds.com"
     }
   ],
-  "version": "1.0.0",
+  "version": "1.0.2",
   "require": {
     "doctrine/annotations": "^1.8",
     "nelmio/api-doc-bundle": "^3.3",
