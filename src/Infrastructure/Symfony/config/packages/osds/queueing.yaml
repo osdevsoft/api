@@ -13,68 +13,68 @@ services:
       - '%rabbitmq_configuration%'
 
 
-old_sound_rabbit_mq:
-  connections:
-    default:
-      host: rabbitmq
-      user: rabbitmq
-      password: rabbitmq
-
-#  producers:
+#old_sound_rabbit_mq:
+#  connections:
+#    default:
+#      host: rabbitmq
+#      user: rabbitmq
+#      password: rabbitmq
+#
+##  producers:
+##    insert:
+##      connection: default
+##      exchange_options:
+##        name: insert_element_exchange
+##        type: fanout
+#
+#  consumers:
 #    insert:
 #      connection: default
 #      exchange_options:
-#        name: insert_element_exchange
+#        name: insert
 #        type: fanout
-
-  consumers:
-    insert:
-      connection: default
-      exchange_options:
-        name: insert
-        type: fanout
-      queue_options:
-        name: insert
-      callback: InsertEntityConsumer
-    update:
-      connection: default
-      queue_options:
-        name: update
-      callback: UpdateEntityConsumer
-    delete:
-      connection: default
-      queue_options:
-        name: delete
-      callback: DeleteEntityConsumer
-
-  multiple_consumers:
-    insert_completed:
-      connection: default
-      exchange_options:
-        name: insert_completed
-        type: fanout
-      queues:
-        insert_completed_replicate:
-          name: insert_completed
-          callback: ReplicateForQueryConsumer
-    #                insert_completed_log:
-    #                    name: insert_completed
-    #                    callback: LogConsumer
-    update_completed:
-      connection: default
-      exchange_options:
-        name: update_completed
-        type: fanout
-      queues:
-        update_completed:
-          name: update_completed
-          callback: ReplicateForQueryConsumer
-    delete_completed:
-      connection: default
-      exchange_options:
-        name: delete_completed
-        type: fanout
-      queues:
-        delete_completed:
-          name: delete_completed
-          callback: ReplicateForQueryConsumer
+#      queue_options:
+#        name: insert
+#      callback: InsertEntityConsumer
+#    update:
+#      connection: default
+#      queue_options:
+#        name: update
+#      callback: UpdateEntityConsumer
+#    delete:
+#      connection: default
+#      queue_options:
+#        name: delete
+#      callback: DeleteEntityConsumer
+#
+#  multiple_consumers:
+#    insert_completed:
+#      connection: default
+#      exchange_options:
+#        name: insert_completed
+#        type: fanout
+#      queues:
+#        insert_completed_replicate:
+#          name: insert_completed
+#          callback: ReplicateForQueryConsumer
+#    #                insert_completed_log:
+#    #                    name: insert_completed
+#    #                    callback: LogConsumer
+#    update_completed:
+#      connection: default
+#      exchange_options:
+#        name: update_completed
+#        type: fanout
+#      queues:
+#        update_completed:
+#          name: update_completed
+#          callback: ReplicateForQueryConsumer
+#    delete_completed:
+#      connection: default
+#      exchange_options:
+#        name: delete_completed
+#        type: fanout
+#      queues:
+#        delete_completed:
+#          name: delete_completed
+#          callback: ReplicateForQueryConsumer

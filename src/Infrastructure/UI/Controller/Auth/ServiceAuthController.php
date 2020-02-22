@@ -51,13 +51,13 @@ class ServiceAuthController extends BaseUIController
      *
      * @SWG\Parameter(
      *     name="email",
-     *     in="query",
+     *     in="formData",
      *     type="string",
      *     description="User to authenticate"
      * )
      * @SWG\Parameter(
      *     name="password",
-     *     in="query",
+     *     in="formData",
      *     type="string",
      *     description="Password of the user to authenticate"
      * )

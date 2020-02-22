@@ -18,12 +18,6 @@ Basic API system to handle basic CRUD operations on a Laravel - Mysql Server
 > una vez creada la DB, para crear las entidades de Symfony en src/Entity, ejecutar:
 ```
 php bin/console doctrine:mapping:import 'App\Entity' annotation --path=src/Entity
-```
-cambiar los atriutos de las entidades a underscore y generar getters y setters 
-para las relaciones many to one, en la entidad "many" (por ejemplo Post)
-- hay que cambiar el nombre del campo al nombre de la entidad. Ejemplo: user_id -> user
-- generar su funcion "getUser" que retorne this->user
-- los datetime hay que cambiarlos a string
 
 
 launch behaviour tests:

@@ -6,5 +6,8 @@ cat ./vendor/osds/api/src/Infrastructure/Symfony/config/routes/osds_api.yaml >> 
 
 cat ./vendor/osds/api/src/Infrastructure/Symfony/.env >> .env
 
+#sites configurations
+ln -s ../sites_configurations sites_configurations
+
 #nelmio documentation (enable /api/doc url)
 cp ./vendor/osds/api/src/Infrastructure/Symfony/config/routes/nelmio_api_doc.yaml ./config/routes/nelmio_api_doc.yaml

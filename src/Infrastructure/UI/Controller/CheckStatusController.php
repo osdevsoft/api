@@ -24,8 +24,15 @@ class CheckStatusController extends BaseUIController
      *
      * Check API status
      *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the status of the API",
+     *     )
+     * )
      * @SWG\Tag(name="Common")
      * @Security(name="Bearer")
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
 
     public function handle()

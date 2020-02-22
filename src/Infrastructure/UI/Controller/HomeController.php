@@ -19,7 +19,7 @@ class HomeController extends BaseUIController
     /**
      *
      * @Route(
-     *     "",
+     *     "/",
      *     methods={"GET"}
      * )
      * @Route(
@@ -27,10 +27,16 @@ class HomeController extends BaseUIController
      *     methods={"GET"}
      * )
      *
-     * Check API status
+     * @SWG\Response(
+     *     response=200,
+     *     description="Welcome page",
+     *     )
+     * )
      *
      * @SWG\Tag(name="Common")
      * @Security(name="Bearer")
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
 
     public function handle()
