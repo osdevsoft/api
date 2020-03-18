@@ -1,6 +1,6 @@
 <?php
 
-namespace App\SamplesiteSandbox\Domain\Entity;
+namespace App\NexinEs\Domain\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,10 +15,17 @@ class StaticPage
 {
 
     /**
-     * @var string
      *
      * @ORM\Id
-     * @ORM\Column(name="uuid", type="string", length=255, nullable=false)
+     * @ORM\Column(name="id", type="binary", unique=true)
+     */
+    protected $id;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="uuid", type="string", length=40, nullable=false)
      */
     private $uuid;
 
@@ -27,17 +34,17 @@ class StaticPage
      *
      * @ORM\ManyToOne(targetEntity="StaticPage")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="static_page_uuid", referencedColumnName="uuid")
+     *   @ORM\JoinColumn(name="static_page_id", referencedColumnName="id")
      * })
      */
-    protected $static_page_uuid;
+    protected $static_page_id;
 
     /**
      * @var \User
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user_uuid", referencedColumnName="uuid")
+     *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      * })
      */
     private $user_uuid;
@@ -65,31 +72,38 @@ class StaticPage
     private $content;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="menu_position", type="integer", length=1, nullable=true, options={"default"="0"})
+     */
+    private $menu_position;
+
+    /**
      * @var \DateTime|null
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=true, options={"default":"CURRENT_TIMESTAMP"})
      */
-    private $createdAt;
+    private $created_at;
 
     /**
      * @var \DateTime|null
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=true, options={"default":"CURRENT_TIMESTAMP"})
      */
-    private $updatedAt;
+    private $updated_at;
 
     /**
      * @var \DateTime|null
      *
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true, options={"default"=NULL})
      */
-    private $deletedAt;
+    private $deleted_at;
 
 
     public function __construct()
     {
-        $this->createdAt = new \DateTime('now');
-        $this->updatedAt = new \DateTime('now');
+        $this->created_at = new \DateTime('now');
+        $this->updated_at = new \DateTime('now');
     }
 
     /**
@@ -98,15 +112,26 @@ class StaticPage
      */
     public function setTimestamps()
     {
-        $this->updatedAt = new \DateTime('now');
-        if ($this->createdAt == null) {
-            $this->createdAt = new \DateTime('now');
+        $this->updated_at = new \DateTime('now');
+        if ($this->created_at == null) {
+            $this->created_at = new \DateTime('now');
         }
+    }
+
+    public function setId($uuid)
+    {
+        $this->id = pack("H*", str_replace('-', '', $uuid));
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     public function setUuid($uuid)
     {
         $this->uuid = $uuid;
+        $this->setId($uuid);
     }
 
     public function getUuid()
@@ -122,6 +147,11 @@ class StaticPage
     public function getUserUuid()
     {
         return $this->user_uuid;
+    }
+
+    public function setUser($user)
+    {
+        $this->user_uuid = $user->getUuid();
     }
 
     public function setUserUuid($user_uuid)
@@ -196,4 +226,23 @@ class StaticPage
     {
         $this->content = $content;
     }
+
+
+    /**
+     * @return integer|null
+     */
+    public function getMenuPosition(): ?int
+    {
+        return $this->menu_position;
+    }
+
+    /**
+     * @param integer|null $menu_position
+     */
+    public function setMenuPosition(?int $menu_position): void
+    {
+        $this->menu_position = $menu_position;
+    }
+
+
 }
