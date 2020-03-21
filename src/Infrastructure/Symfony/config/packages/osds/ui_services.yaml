@@ -121,6 +121,7 @@ services:
     public: true
     arguments:
       - "@Osds\\Api\\Domain\\Bus\\Command\\CommandBus"
+      - "@PSRLogger"
     tags: ['controller.service_arguments']
   Osds\Api\Application\Delete\DeleteEntityCommandHandler:
     public: true

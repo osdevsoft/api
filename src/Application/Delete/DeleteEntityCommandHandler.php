@@ -21,22 +21,18 @@ final class DeleteEntityCommandHandler implements CommandHandler
 
     public function handle(DeleteEntityCommand $command, $forceExecution = false)
     {
-        try {
-            $queue = $command->getQueue();
-            if (!$forceExecution
-                && ($queue !== null)
-            ) {
-                 $this->messaging->publish($queue, $command->getPayload());
-            } else {
-                $this->useCase->execute(
-                    $command->entity(),
-                    $command->uuid()
-                );
-                #$this->messaging->publish('delete_completed', $command->getPayload());
+        $queue = $command->getQueue();
+        if (!$forceExecution
+            && ($queue !== null)
+        ) {
+             $this->messaging->publish($queue, $command->getPayload());
+        } else {
+            $this->useCase->execute(
+                $command->entity(),
+                $command->uuid()
+            );
+            #$this->messaging->publish('delete_completed', $command->getPayload());
 
-            }
-        } catch (\Exception $e) {
-            dd($e->getMessage());
         }
 
          return $command->uuid();

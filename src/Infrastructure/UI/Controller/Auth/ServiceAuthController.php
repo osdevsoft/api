@@ -61,6 +61,13 @@ class ServiceAuthController extends BaseUIController
      *     type="string",
      *     description="Password of the user to authenticate"
      * )
+
+     * @SWG\Parameter(
+     *     name="originSite",
+     *     in="formData",
+     *     type="string",
+     *     description="Snaked Id of OriginSite"
+     * )
      * @SWG\Response(
      *     response=200,
      *     description="Returns a JWT or an error",
@@ -93,6 +100,7 @@ class ServiceAuthController extends BaseUIController
             }
 
             unset($user['password']);
+            unset($user['id']);
             $authToken = $this->serviceAuth->encodeServiceToken($user);
 
             $result = [
