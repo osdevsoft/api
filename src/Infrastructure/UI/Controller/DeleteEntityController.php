@@ -4,6 +4,7 @@ namespace Osds\Api\Infrastructure\UI\Controller;
 
 use Osds\Api\Application\Delete\DeleteEntityCommand;
 use Osds\Api\Domain\Bus\Command\CommandBus;
+use Osds\Api\Domain\Exception\ErrorException;
 use Osds\Api\Domain\Exception\ItemNotFoundException;
 use Osds\DDDCommon\Infrastructure\Log\LoggerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -87,19 +88,20 @@ class DeleteEntityController extends BaseUIController
     //        $messageObject->setQueue('delete');
 
             $result = $this->commandBus->dispatch($messageObject);
+            $return = $this->prepareResponseByItems(['deleted_id' => $result]);
 
         } catch (ItemNotFoundException $e) {
             $e->setLogger($this->logger);
             $e->setMessage($entity, json_encode($messageObject));
-            $result = $e->getResponse();
+            $return = $e->getResponse();
         } catch (\Exception $e) {
             $exception = new ErrorException();
             $exception->setLogger($this->logger);
             $exception->setMessage('Server Error', $e);
-            $result = $exception->getResponse();
+            $return = $exception->getResponse();
         }
 
-        return $this->generateResponse($result);
+        return $this->generateResponse($return);
 
     }
 

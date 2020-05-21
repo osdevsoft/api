@@ -189,8 +189,8 @@ class FindEntityController extends BaseUIController
         $additionalRequests = [];
 
         foreach ($possibleAdditionalRequestsParameters as $additionalRequestsParameter) {
-            if (isset($requestParameters[$additionalRequestsParameter])) {
-                $additionalRequests[$additionalRequestsParameter] = $requestParameters[$additionalRequestsParameter];
+            if (isset($request[$additionalRequestsParameter])) {
+                $additionalRequests[$additionalRequestsParameter] = $request[$additionalRequestsParameter];
             }
         }
 

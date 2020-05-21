@@ -17,10 +17,14 @@ final class FindEntityQuery implements Query
 
     public function __construct(
         string $entity,
-        Array $searchFields = []
+        Array $searchFields = [],
+        Array $queryFilters = [],
+        Array $additionalRequests = []
     ) {
         $this->entity = $entity;
         $this->searchFields = $searchFields;
+        $this->queryFilters = $queryFilters;
+        $this->additionalRequests = $additionalRequests;
     }
 
     public function entity(): string
