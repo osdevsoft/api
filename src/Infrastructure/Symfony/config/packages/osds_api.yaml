@@ -1,3 +1,4 @@
 imports:
   - ../../vendor/osds/api/src/Infrastructure/Symfony/config/packages/osds/*
-  - ../../sites_configurations/_api/symfony/config/packages/*
+  - ../../sites_configurations/sites/*/user/config/symfony/api/doctrine_entity_manager.yaml
+  - ../../sites_configurations/sites/*/user/config/symfony/api/doctrine_connection.yaml
