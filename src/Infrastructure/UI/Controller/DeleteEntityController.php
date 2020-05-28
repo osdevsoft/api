@@ -35,7 +35,7 @@ class DeleteEntityController extends BaseUIController
 
     /**
      * @Route(
-     *     "/{uuid}",
+     *     "/{uuid}/",
      *     methods={"DELETE"}
      * )
      *

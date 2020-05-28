@@ -31,7 +31,7 @@ class UpdateEntityController extends BaseUIController
 
     /**
      * @Route(
-     *     "/{uuid}",
+     *     "/{uuid}/",
      *     methods={"POST"},
      * )
      *

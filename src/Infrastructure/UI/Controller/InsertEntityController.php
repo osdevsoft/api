@@ -32,7 +32,7 @@ class InsertEntityController extends BaseUIController
 
     /**
      * @Route(
-     *     "",
+     *     "/",
      *     methods={"POST"},
      * )
      *
