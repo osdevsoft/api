@@ -16,5 +16,7 @@ services:
         arguments:
             - "@Elasticsearch\\ClientBuilder"
             - '%elk_configuration%'
+    EntityCsvRepository:
+        class: Osds\Api\Infrastructure\Persistence\Domain\Entity\EntityCsvRepository
     EntityInMemoryRepository:
         class: Osds\Api\Infrastructure\Persistence\Domain\Entity\InMemoryRepository

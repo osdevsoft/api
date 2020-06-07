@@ -48,6 +48,7 @@ services:
     public: true
     arguments:
       - "@EntityDoctrineRepository"
+#      - "@EntityCsvRepository"
   InsertEntityConsumer:
     class: Osds\Api\Application\Insert\InsertEntityConsumer
     arguments:
@@ -70,8 +71,9 @@ services:
     class: Osds\Api\Application\Search\SearchEntityUseCase
     public: true
     arguments:
-#      - "@EntityElasticCacheRepository"
       - "@EntityDoctrineRepository"
+#      - "@EntityElasticCacheRepository"
+#      - "@EntityCsvRepository"
 
 
   #### Find Entity
@@ -89,8 +91,9 @@ services:
     class: Osds\Api\Application\Find\FindEntityUseCase
     public: true
     arguments:
-#      - "@EntityElasticCacheRepository"
       - "@EntityDoctrineRepository"
+#      - "@EntityElasticCacheRepository"
+#      - "@EntityCsvRepository"
 
 
 
@@ -111,6 +114,7 @@ services:
     public: true
     arguments:
       - "@EntityDoctrineRepository"
+#      - "@EntityCsvRepository"
   UpdateEntityConsumer:
     class: Osds\Api\Application\Update\UpdateEntityConsumer
     autowire: true
@@ -133,6 +137,7 @@ services:
     public: true
     arguments:
       - "@EntityDoctrineRepository"
+#      - "@EntityCsvRepository"
   DeleteEntityConsumer:
     class: Osds\Api\Application\Delete\DeleteEntityConsumer
     autowire: true
